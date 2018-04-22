@@ -7,9 +7,8 @@ using System.Threading;
 using SteamKit2;
 
 
-namespace steamclient_common
+namespace ArgonCore
 {
-
     /// <summary>
     ///  Implements a backend representation of a user.
     /// </summary>
@@ -25,8 +24,8 @@ namespace steamclient_common
         CallbackManager callback_manager;
 
         // Whether user is connected / running
-        public bool running;
-        public bool connected;
+        public bool Running { get; private set; }
+        public bool Connected { get; private set; }
 
         // Logging instance for this user
         public Logger Log { get; private set; }
@@ -54,6 +53,8 @@ namespace steamclient_common
         /// <param name="instance"></param>
         public User()
         {
+            InterfaceLoader.Load();
+
             Id = next_user_id;
             next_user_id += 1;
 
@@ -88,7 +89,7 @@ namespace steamclient_common
         {
             Log.WriteLine("client", "Attempting connection...");
             client.Connect();
-            running = true;
+            Running = true;
         }
 
         /// <summary>
@@ -98,7 +99,7 @@ namespace steamclient_common
         {
             Log.WriteLine("client", "Disconnecting...");
             client.Disconnect();
-            running = false;
+            Running = false;
         }
 
         public void RunFrame()
@@ -111,14 +112,14 @@ namespace steamclient_common
         {
             Log.WriteLine("client", "Connected [token: {0}]", client.SessionToken);
 
-            connected = true;
+            Connected = true;
         }
 
         public void OnDisconnect(SteamClient.DisconnectedCallback cb)
         {
             Log.WriteLine("client", "Disconnected");
 
-            connected = false;
+            Connected = false;
         }
 
         /// <summary>
@@ -127,7 +128,7 @@ namespace steamclient_common
         /// </summary>
         private void LogOnInternal()
         {
-            if (connected == false) ConnectClient();
+            if (Connected == false) ConnectClient();
 
             Thread.Sleep(1000);
 

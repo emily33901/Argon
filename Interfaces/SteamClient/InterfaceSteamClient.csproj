@@ -2,11 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SteamKit2" Version="2.0.0" />
+    <ProjectReference Include="..\..\ArgonCore\ArgonCore.csproj" />
   </ItemGroup>
 
 </Project>

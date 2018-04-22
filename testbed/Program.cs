@@ -8,7 +8,7 @@ using System.IO;
 
 using Newtonsoft.Json;
 
-using steamclient_common;
+using ArgonCore;
 
 namespace testbed
 {
@@ -30,7 +30,7 @@ namespace testbed
             Thread t1 = new Thread(
                 () =>
                 {
-                    while (u.running)
+                    while (u.Running)
                     {
                         u.RunFrame();
                     }

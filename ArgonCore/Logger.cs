@@ -4,7 +4,7 @@ using System.Threading;
 using System.IO;
 using System.Text;
 
-namespace steamclient_common
+namespace ArgonCore
 {
     public sealed class Logger
     {
@@ -17,7 +17,7 @@ namespace steamclient_common
         public Logger(User u)
         {
             core_id = u.Id;
-            file = string.Format("log_core_{0}.log", core_id);
+            file = string.Format("log_user_{0}.log", core_id);
         }
 
         public void WriteLine(string code_section, string format, params object[] args)

@@ -4,7 +4,7 @@ using System.Text;
 
 using SteamKit2;
 
-namespace steamclient_common
+namespace ArgonCore
 {
     /// <summary>
     /// Dispatches packets to the correct handlers
