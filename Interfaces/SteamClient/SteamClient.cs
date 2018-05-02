@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace SteamClient
+namespace InterfaceSteamClient
 {
-    [ArgonCore.Interface(Contextless = true, Name = "STEAMCLIENT_INTERFACE_VERSION")]
+    [ArgonCore.InterfaceImpl(Implements = "STEAMCLIENT_INTERFACE_VERSION", Name = "STEAMCLIENT_INTERFACE_VERSION001")]
     public class SteamClient
     {
-        public static void Test(string wow, int amazing)
+        public int Test(string a, int n)
         {
-
+            return a.Length + n;
         }
     }
 }

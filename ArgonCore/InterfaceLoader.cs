@@ -4,23 +4,22 @@ using System.Text;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Linq.Expressions;
 
 namespace ArgonCore
 {
     /// <summary>
     /// Represents a class with a vtable
     /// </summary>
-    public struct VtableClass
+    [StructLayout(LayoutKind.Sequential)]
+    public struct InterfaceContext
     {
+        [MarshalAs(UnmanagedType.LPArray)]
         unsafe public IntPtr* vtable;
-
-        public bool contextless;
-
-
     }
 
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
-    public class InterfaceAttribute : Attribute
+    public class InterfaceDelegateAttribute : Attribute
     {
         // Name of this interface
         // TODO: this should be got from path + dllname
@@ -30,23 +29,51 @@ namespace ArgonCore
         public bool Contextless { get; set; }
     }
 
-    public struct Plugin
+    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
+    public class InterfaceImplAttribute : Attribute
     {
-        public class Interface
+        // Name of this interface implementation
+        public string Name { get; set; }
+
+        // Interface this version / interface implements
+        public string Implements { get; set; }
+    }
+
+    public class Plugin
+    {
+        public class InterfaceDelegates
         {
             public string name;
             public bool contextless;
-            public List<Delegate> delagates;
-            public IntPtr[] vtable;
+            public List<MemberInfo> delegate_types;
 
-            public Interface()
+            public InterfaceDelegates()
             {
-                delagates = new List<Delegate>();
+                delegate_types = new List<MemberInfo>();
+            }
+        }
+
+        public class InterfaceImpl
+        {
+            public string name;
+            public string implements;
+            public List<MethodInfo> methods;
+
+            public InterfaceImpl()
+            {
+                methods = new List<MethodInfo>();
             }
         }
 
         public string name;
-        public List<Interface> interfaces;
+        public List<InterfaceDelegates> interface_delegates;
+        public List<InterfaceImpl> interface_impls;
+
+        public Plugin()
+        {
+            interface_delegates = new List<InterfaceDelegates>();
+            interface_impls = new List<InterfaceImpl>();
+        }
     }
 
     /// <summary>
@@ -71,51 +98,83 @@ namespace ArgonCore
                 var p = new Plugin
                 {
                     name = f,
-                    interfaces = new List<Plugin.Interface>()
                 };
 
                 var assembly = Assembly.LoadFile(f);
 
                 foreach (var t in assembly.GetTypes())
                 {
-                    if (t.IsDefined(typeof(InterfaceAttribute)))
+                    if (t.IsDefined(typeof(InterfaceDelegateAttribute)))
                     {
-                        var attribute = t.GetCustomAttribute<InterfaceAttribute>();
+                        var attribute = t.GetCustomAttribute<InterfaceDelegateAttribute>();
                         var name = attribute.Name;
                         var contextless = attribute.Contextless;
 
-                        var new_interface = new Plugin.Interface { name = name, contextless = contextless };
+                        var new_interface = new Plugin.InterfaceDelegates { name = name, contextless = contextless };
 
-                        var methods = t.GetMethods(BindingFlags.Static | BindingFlags.Public);
-
-                        var new_vtable = new IntPtr[methods.Length];
-
-                        foreach (var m in methods)
+                        var members = t.GetMembers(BindingFlags.Public);
+                        
+                        foreach(var m in members)
                         {
-                            var d = m.CreateDelegate(m.ReflectedType);
-
-                            // TODO: handle contextful delegates
-                            if (contextless)
-                            {
-                                new_interface.delagates.Add(d);
-                            }
+                            new_interface.delegate_types.Add(m);
                         }
 
-                        for (int i = 0; i < new_interface.delagates.Count; i++)
+                        // Just assume all members are delegate types
+                        p.interface_delegates.Add(new_interface);
+
+                        
+                    }
+                    else if(t.IsDefined(typeof(InterfaceImplAttribute)))
+                    {
+                        var attribute = t.GetCustomAttribute<InterfaceImplAttribute>();
+                        var name = attribute.Name;
+                        var implements = attribute.Implements;
+
+                        var new_interface_impl = new Plugin.InterfaceImpl { name = name };
+
+                        foreach(var m in t.GetMethods(BindingFlags.Public))
                         {
-                            var d = new_interface.delagates[i];
-                            new_vtable[i] = Marshal.GetFunctionPointerForDelegate(d);
+                            new_interface_impl.methods.Add(m);
                         }
 
-                        new_interface.vtable = new_vtable;
-
-                        p.interfaces.Add(new_interface);
+                        p.interface_impls.Add(new_interface_impl);
                     }
                 }
             }
 
             loaded = true;
             return;
+        }
+
+        public static IntPtr CreateInterface<T>(T instance, string name)
+        {
+            foreach(var p in LoadedPlugins)
+            {
+                foreach(var impl in p.interface_impls)
+                {
+                    if (impl.name == name)
+                    {
+                        var iface = p.interface_delegates.Find(x => x.name.Contains(impl.name));
+
+                        var vtable = new IntPtr[impl.methods.Count];
+
+                        var new_delegates = new List<Delegate>();
+
+                        for(int i = 0; i < impl.methods.Count; i++)
+                        {
+                            // Find the delegate type that matches the method
+                            var mi = impl.methods[i];
+                            var type = iface.delegate_types.Find(x => x.Name.Contains(mi.Name));
+
+                            var new_delegate = Delegate.CreateDelegate(type.ReflectedType, instance, mi, true);
+
+                            new_delegates.Add(new_delegate);
+                        }
+                    }
+                }
+            }
+
+            return IntPtr.Zero;
         }
     }
 }
