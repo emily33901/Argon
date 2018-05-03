@@ -58,10 +58,16 @@ namespace ArgonCore
             public string name;
             public string implements;
             public List<MethodInfo> methods;
+            public Type this_type;
+
+            public List<List<Delegate>> stored_delegates;
+            public List<IntPtr[]> stored_function_pointers;
 
             public InterfaceImpl()
             {
                 methods = new List<MethodInfo>();
+                stored_delegates = new List<List<Delegate>>();
+                stored_function_pointers = new List<IntPtr[]>();
             }
         }
 
@@ -113,8 +119,8 @@ namespace ArgonCore
                         var new_interface = new Plugin.InterfaceDelegates { name = name, contextless = contextless };
 
                         var members = t.GetMembers(BindingFlags.Public);
-                        
-                        foreach(var m in members)
+
+                        foreach (var m in members)
                         {
                             new_interface.delegate_types.Add(m);
                         }
@@ -122,9 +128,9 @@ namespace ArgonCore
                         // Just assume all members are delegate types
                         p.interface_delegates.Add(new_interface);
 
-                        
+
                     }
-                    else if(t.IsDefined(typeof(InterfaceImplAttribute)))
+                    else if (t.IsDefined(typeof(InterfaceImplAttribute)))
                     {
                         var attribute = t.GetCustomAttribute<InterfaceImplAttribute>();
                         var name = attribute.Name;
@@ -132,10 +138,12 @@ namespace ArgonCore
 
                         var new_interface_impl = new Plugin.InterfaceImpl { name = name };
 
-                        foreach(var m in t.GetMethods(BindingFlags.Public))
+                        foreach (var m in t.GetMethods(BindingFlags.Public))
                         {
                             new_interface_impl.methods.Add(m);
                         }
+
+                        new_interface_impl.this_type = t;
 
                         p.interface_impls.Add(new_interface_impl);
                     }
@@ -146,21 +154,21 @@ namespace ArgonCore
             return;
         }
 
-        public static IntPtr CreateInterface<T>(T instance, string name)
+        public static IntPtr CreateInterface(string name)
         {
-            foreach(var p in LoadedPlugins)
+            foreach (var p in LoadedPlugins)
             {
-                foreach(var impl in p.interface_impls)
+                foreach (var impl in p.interface_impls)
                 {
                     if (impl.name == name)
                     {
-                        var iface = p.interface_delegates.Find(x => x.name.Contains(impl.name));
+                        var instance = Activator.CreateInstance(impl.this_type);
 
-                        var vtable = new IntPtr[impl.methods.Count];
+                        var iface = p.interface_delegates.Find(x => x.name.Contains(impl.name));
 
                         var new_delegates = new List<Delegate>();
 
-                        for(int i = 0; i < impl.methods.Count; i++)
+                        for (int i = 0; i < impl.methods.Count; i++)
                         {
                             // Find the delegate type that matches the method
                             var mi = impl.methods[i];
@@ -170,6 +178,17 @@ namespace ArgonCore
 
                             new_delegates.Add(new_delegate);
                         }
+
+                        impl.stored_delegates.Add(new_delegates);
+
+                        var vtable = new IntPtr[impl.methods.Count];
+
+                        for (int i = 0; i < new_delegates.Count; i++)
+                        {
+                            vtable[i] = Marshal.GetFunctionPointerForDelegate(new_delegates[i]);
+                        }
+
+                        impl.stored_function_pointers.Add(vtable);
                     }
                 }
             }
