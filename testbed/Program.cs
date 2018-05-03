@@ -27,6 +27,9 @@ namespace testbed
             User u = new User();
             u.ConnectClient();
 
+            var new_interface = User.CreateInterface("STEAMCLIENT_INTERFACE_VERSION001");
+
+
             Thread t1 = new Thread(
                 () =>
                 {

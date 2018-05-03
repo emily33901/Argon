@@ -82,6 +82,11 @@ namespace ArgonCore
             logon_needs = LogonNeeded.None;
         }
 
+        public static IntPtr CreateInterface(string name)
+        {
+            return InterfaceLoader.CreateInterface(name);
+        }
+
         /// <summary>
         /// Handles connecting the users' client instance to steam.
         /// </summary>
