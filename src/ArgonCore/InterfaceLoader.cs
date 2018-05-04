@@ -8,21 +8,43 @@ using System.Linq.Expressions;
 
 namespace ArgonCore
 {
+    /// <summary>
+    /// Used to signal to <see cref="InterfaceLoader"/> that this class is used for interface delegates
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
     public class InterfaceDelegateAttribute : Attribute
     {
-        // Name of this interface
-        // TODO: this should be got from path + dllname
+        /// <summary>
+        /// General name of the interfaces that use these delegates
+        /// </summary>
         public string Name { get; set; }
     }
 
+    /// <summary>
+    /// Interface that all interface implementations must inherit from
+    /// </summary>
+    public interface IBaseInterface
+    {
+        /// <summary>
+        /// Set by <see cref="ArgonCore.User"/> to allow interfaces to know what user they belong too
+        /// </summary>
+        int UserId { get; set; }
+    }
+
+    /// <summary>
+    /// Used to signal to <see cref="InterfaceLoader"/> that this class is used for interface implementations
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
     public class InterfaceImplAttribute : Attribute
     {
-        // Name of this interface implementation
+        /// <summary>
+        /// Name that this interface wants to be exported as
+        /// </summary>
         public string Name { get; set; }
 
-        // Interface this version / interface implements
+        /// <summary>
+        /// Name of the interface delegates that this class implements
+        /// </summary>
         public string Implements { get; set; }
     }
 
@@ -30,7 +52,14 @@ namespace ArgonCore
     {
         public class InterfaceDelegates
         {
+            /// <summary>
+            /// Refer to <see cref="InterfaceDelegateAttribute.Name"/>
+            /// </summary>
             public string name;
+
+            /// <summary>
+            /// Delegate types that were extracted from the class at runtime
+            /// </summary>
             public List<Type> delegate_types;
 
             public InterfaceDelegates()
@@ -41,16 +70,39 @@ namespace ArgonCore
 
         public class InterfaceImpl
         {
+            /// <summary>
+            /// Refer to <see cref="InterfaceImplAttribute.Name"/>
+            /// </summary>
             public string name;
+
+            /// <summary>
+            /// Refer to <see cref="InterfaceImplAttribute.Implements"/>
+            /// </summary>
             public string implements;
+
+            /// <summary>
+            /// Methods that were extracted from the class at runtime
+            /// </summary>
             public List<MethodInfo> methods;
+
+            /// <summary>
+            /// The runtime type of this class (used in <see cref="InterfaceLoader.CreateContext"/> to create an instance of this interface)
+            /// </summary>
             public Type this_type;
 
-            // Generated data related to this interface that needs to be cleaned up
+            /// <summary>
+            /// Delegates that are allocated by this interface at runtime
+            /// </summary>
             public List<List<Delegate>> stored_delegates;
 
-            // Handles to Marshal allocs
+            /// <summary>
+            /// Handles to memory that are used by this interface for storing unmanaged function pointers
+            /// </summary>
             public List<IntPtr> stored_function_pointers;
+
+            /// <summary>
+            /// Handles to memory that are used by this interface for storing unmanaged context pointers
+            /// </summary>
             public List<IntPtr> stored_contexts;
 
             public InterfaceImpl()
@@ -62,8 +114,19 @@ namespace ArgonCore
             }
         }
 
+        /// <summary>
+        /// Name of this plugin
+        /// </summary>
         public string name;
+
+        /// <summary>
+        /// Interface delegates contained within this plugin
+        /// </summary>
         public List<InterfaceDelegates> interface_delegates;
+
+        /// <summary>
+        /// Interface implementations contained within this plugin
+        /// </summary>
         public List<InterfaceImpl> interface_impls;
 
         public Plugin()
@@ -92,10 +155,7 @@ namespace ArgonCore
 
             foreach (var f in filenames)
             {
-                var p = new Plugin
-                {
-                    name = f,
-                };
+                var p = new Plugin { name = f, };
 
                 var assembly = Assembly.LoadFile(f);
 
@@ -112,7 +172,8 @@ namespace ArgonCore
 
                         foreach (var type in types)
                         {
-                            new_interface.delegate_types.Add(type);
+                            // Filter out types that are not delegates
+                            if (type.IsSubclassOf(typeof(System.Delegate))) new_interface.delegate_types.Add(type);
                         }
 
                         // Just assume all members are delegate types
@@ -120,13 +181,25 @@ namespace ArgonCore
                     }
                     else if (t.IsDefined(typeof(InterfaceImplAttribute)))
                     {
+                        // In order to see whether this class is inherited from IBaseInterface
+                        // we need to see whether we could assign an IBaseInterface object from it
+                        if (!typeof(IBaseInterface).IsAssignableFrom(t))
+                        {
+                            Console.WriteLine("Class {0} has InterfaceImplAttribute but does not inherit IBaseInterface! IGNORING!", t.Name);
+                            continue;
+                        }
+
                         var attribute = t.GetCustomAttribute<InterfaceImplAttribute>();
                         var name = attribute.Name;
                         var implements = attribute.Implements;
 
                         var new_interface_impl = new Plugin.InterfaceImpl { name = name, implements = implements };
 
-                        new_interface_impl.methods.AddRange(t.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                        var all_methods = t.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+
+                        // TODO: maybe it would just be better to look for all methods that have a delegate type and only use those
+                        new_interface_impl.methods.AddRange(all_methods);
+                        new_interface_impl.methods.RemoveAll(x => x.Name.StartsWith("get_") || x.Name.StartsWith("set_"));
 
                         new_interface_impl.this_type = t;
 
@@ -141,9 +214,9 @@ namespace ArgonCore
             return;
         }
 
-        private static IntPtr CreateContext(Plugin.InterfaceDelegates iface, Plugin.InterfaceImpl impl)
+        private static (IntPtr, IBaseInterface) CreateContext(Plugin.InterfaceDelegates iface, Plugin.InterfaceImpl impl)
         {
-            var instance = Activator.CreateInstance(impl.this_type);
+            var instance = (IBaseInterface)Activator.CreateInstance(impl.this_type);
 
             var new_delegates = new List<Delegate>();
 
@@ -162,6 +235,15 @@ namespace ArgonCore
             impl.stored_delegates.Add(new_delegates);
 
 
+            // Create a new context (class) that mimics what the C++ compiler would generate
+
+            // class:
+            //  vtable:
+            //   1
+            //   2
+            //   3
+            //   4
+
             // TODO: Warn if not x86
             var ptr_size = Marshal.SizeOf(typeof(IntPtr));
 
@@ -176,15 +258,18 @@ namespace ArgonCore
 
             impl.stored_function_pointers.Add(vtable);
 
-            var new_context = Marshal.AllocHGlobal(impl.methods.Count);
+            // create the context
+            var new_context = Marshal.AllocHGlobal(ptr_size);
 
+            // Write the pointer to the vtable at the address pointed to by new_context;
             Marshal.WriteIntPtr(new_context, vtable);
 
-            return new_context;
+            return (new_context, instance);
         }
 
-        public static IntPtr CreateInterface(string name)
+        public static (IntPtr, IBaseInterface) CreateInterface(string name)
         {
+            // Ensure that we are loaded before trying to query loaded plugins
             Load();
 
             foreach (var p in LoadedPlugins)
@@ -195,12 +280,13 @@ namespace ArgonCore
                     {
                         var iface = p.interface_delegates.Find(x => x.name == impl.implements);
 
+                        // Try to create a new context based on this interface + impl pair
                         return CreateContext(iface, impl);
                     }
                 }
             }
 
-            return IntPtr.Zero;
+            return (IntPtr.Zero, null);
         }
     }
 }

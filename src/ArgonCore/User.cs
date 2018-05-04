@@ -82,9 +82,30 @@ namespace ArgonCore
             logon_needs = LogonNeeded.None;
         }
 
-        public static IntPtr CreateInterface(string name)
+        /// <summary>
+        /// Creates an instance of an interface based on <paramref name="name"/> and assigns this users id
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns>Pointer to the context created</returns>
+        public IntPtr CreateInterface(string name)
         {
-            return InterfaceLoader.CreateInterface(name);
+            var (context, iface) = InterfaceLoader.CreateInterface(name);
+
+            iface.UserId = (int)Id;
+
+            return context;
+        }
+
+        /// <summary>
+        /// Creates an instance of an interface based on <paramref name="name"/>
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns>Pointer to the context created</returns>
+        public static IntPtr CreateInterfaceNoUser(string name)
+        {
+            var (context, _) = InterfaceLoader.CreateInterface(name);
+
+            return context;
         }
 
         /// <summary>

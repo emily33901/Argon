@@ -24,7 +24,7 @@ namespace DllExportTest
                 return IntPtr.Zero;
             }
 
-            return User.CreateInterface(string_name);
+            return User.CreateInterfaceNoUser(string_name);
         }
     }
 }
