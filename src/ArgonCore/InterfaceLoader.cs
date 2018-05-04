@@ -14,9 +14,6 @@ namespace ArgonCore
         // Name of this interface
         // TODO: this should be got from path + dllname
         public string Name { get; set; }
-
-        // Does this interface require user context
-        public bool Contextless { get; set; }
     }
 
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
@@ -34,7 +31,6 @@ namespace ArgonCore
         public class InterfaceDelegates
         {
             public string name;
-            public bool contextless;
             public List<Type> delegate_types;
 
             public InterfaceDelegates()
@@ -109,9 +105,8 @@ namespace ArgonCore
                     {
                         var attribute = t.GetCustomAttribute<InterfaceDelegateAttribute>();
                         var name = attribute.Name;
-                        var contextless = attribute.Contextless;
 
-                        var new_interface = new Plugin.InterfaceDelegates { name = name, contextless = contextless };
+                        var new_interface = new Plugin.InterfaceDelegates { name = name };
 
                         var types = t.GetNestedTypes(BindingFlags.Public);
 
