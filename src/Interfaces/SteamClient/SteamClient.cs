@@ -13,5 +13,10 @@ namespace InterfaceSteamClient
         {
             return a.Length + n;
         }
+
+        public string Test2(string a, string b)
+        {
+            return a + b;
+        }
     }
 }

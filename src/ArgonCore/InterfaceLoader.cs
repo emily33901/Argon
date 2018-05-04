@@ -4,7 +4,6 @@ using System.Text;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Linq.Expressions;
 
 namespace ArgonCore
 {
@@ -220,10 +219,11 @@ namespace ArgonCore
 
             var new_delegates = new List<Delegate>();
 
-            for (int i = 0; i < impl.methods.Count; i++)
+            for (var i = 0; i < impl.methods.Count; i++)
             {
                 // Find the delegate type that matches the method
                 var mi = impl.methods[i];
+
                 var type = iface.delegate_types.Find(x => x.Name.Contains(mi.Name));
 
                 // Create new delegates that are bounded to this instance
@@ -250,7 +250,7 @@ namespace ArgonCore
             // Allocate enough space for the new pointers in local memory
             var vtable = Marshal.AllocHGlobal(impl.methods.Count * ptr_size);
 
-            for (int i = 0; i < new_delegates.Count; i++)
+            for (var i = 0; i < new_delegates.Count; i++)
             {
                 // Create all function pointers as neccessary
                 Marshal.WriteIntPtr(vtable, i * ptr_size, Marshal.GetFunctionPointerForDelegate(new_delegates[i]));

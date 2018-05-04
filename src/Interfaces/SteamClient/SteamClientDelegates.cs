@@ -10,7 +10,10 @@ namespace InterfaceSteamClient
     public class SteamClientDelegates
     {
         public delegate int TestDelegate(
-            [MarshalAs(UnmanagedType.LPStr)] string a,
+            string a,
             int n);
+        public delegate string Test2Delegate(
+            string a,
+            string b);
     }
 }
