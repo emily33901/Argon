@@ -541,4 +541,4 @@ $RECYCLE.BIN/
 
 # End of https://www.gitignore.io/api/linux,emacs,csharp,windows,visualstudio,visualstudiocode
 
-testbed/secrets\.json
+**/secrets.json

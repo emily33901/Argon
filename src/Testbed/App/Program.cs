@@ -7,7 +7,6 @@ using System.Threading;
 using System.IO;
 
 using Newtonsoft.Json;
-
 using ArgonCore;
 
 namespace testbed
@@ -28,7 +27,6 @@ namespace testbed
             u.ConnectClient();
 
             var new_interface = User.CreateInterface("STEAMCLIENT_INTERFACE_VERSION001");
-
 
             Thread t1 = new Thread(
                 () =>

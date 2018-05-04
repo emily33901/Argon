@@ -190,6 +190,8 @@ namespace ArgonCore
 
         public static IntPtr CreateInterface(string name)
         {
+            Load();
+
             foreach (var p in LoadedPlugins)
             {
                 foreach (var impl in p.interface_impls)
