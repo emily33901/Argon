@@ -138,11 +138,51 @@ namespace ArgonCore
     /// <summary>
     /// Creates interfaces from their respective dlls on disk
     /// </summary>
-    class InterfaceLoader
+    public class InterfaceLoader
     {
         private static bool loaded;
 
         public static List<Plugin> LoadedPlugins { get; private set; }
+
+        public static List<MethodInfo> InterfaceMethodsForType(Type t)
+        {
+            var all_methods = new List<MethodInfo>(t.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            // TODO: maybe it would just be better to look for all methods that have a delegate type and only use those
+            all_methods.RemoveAll(x => x.Name.StartsWith("get_") || x.Name.StartsWith("set_"));
+
+            return all_methods;
+        }
+
+        public static bool IsInterfaceDelegate(Type t) => t.IsDefined(typeof(InterfaceDelegateAttribute));
+        public static bool IsInterfaceImpl(Type t)
+        {
+            var has_attribute = t.IsDefined(typeof(InterfaceImplAttribute));
+
+            // In order to see whether this class is inherited from IBaseInterface
+            // we need to see whether we could assign an IBaseInterface object from it
+            if (has_attribute && !typeof(IBaseInterface).IsAssignableFrom(t))
+            {
+                Console.WriteLine("Class {0} has InterfaceImplAttribute but does not inherit IBaseInterface! IGNORING!", t.Name);
+                return false;
+            }
+
+            return has_attribute;
+        }
+
+        public static List<Assembly> GetInterfaceAssemblies()
+        {
+            var assemblies = new List<Assembly>();
+
+            var filenames = Directory.EnumerateFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Interface*.dll");
+
+            foreach (var f in filenames)
+            {
+                assemblies.Add(Assembly.LoadFile(f));
+            }
+
+            return assemblies;
+        }
 
         public static void Load()
         {
@@ -150,17 +190,13 @@ namespace ArgonCore
 
             LoadedPlugins = new List<Plugin>();
 
-            var filenames = Directory.EnumerateFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Interface*.dll");
-
-            foreach (var f in filenames)
+            foreach (var a in GetInterfaceAssemblies())
             {
-                var p = new Plugin { name = f, };
+                var p = new Plugin { name = a.GetName().Name };
 
-                var assembly = Assembly.LoadFile(f);
-
-                foreach (var t in assembly.GetTypes())
+                foreach (var t in a.GetTypes())
                 {
-                    if (t.IsDefined(typeof(InterfaceDelegateAttribute)))
+                    if (IsInterfaceDelegate(t))
                     {
                         var attribute = t.GetCustomAttribute<InterfaceDelegateAttribute>();
                         var name = attribute.Name;
@@ -178,29 +214,19 @@ namespace ArgonCore
                         // Just assume all members are delegate types
                         p.interface_delegates.Add(new_interface);
                     }
-                    else if (t.IsDefined(typeof(InterfaceImplAttribute)))
+                    else if (IsInterfaceImpl(t))
                     {
-                        // In order to see whether this class is inherited from IBaseInterface
-                        // we need to see whether we could assign an IBaseInterface object from it
-                        if (!typeof(IBaseInterface).IsAssignableFrom(t))
-                        {
-                            Console.WriteLine("Class {0} has InterfaceImplAttribute but does not inherit IBaseInterface! IGNORING!", t.Name);
-                            continue;
-                        }
-
                         var attribute = t.GetCustomAttribute<InterfaceImplAttribute>();
                         var name = attribute.Name;
                         var implements = attribute.Implements;
 
-                        var new_interface_impl = new Plugin.InterfaceImpl { name = name, implements = implements };
-
-                        var all_methods = t.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-
-                        // TODO: maybe it would just be better to look for all methods that have a delegate type and only use those
-                        new_interface_impl.methods.AddRange(all_methods);
-                        new_interface_impl.methods.RemoveAll(x => x.Name.StartsWith("get_") || x.Name.StartsWith("set_"));
-
-                        new_interface_impl.this_type = t;
+                        var new_interface_impl = new Plugin.InterfaceImpl
+                        {
+                            name = name,
+                            implements = implements,
+                            this_type = t,
+                            methods = InterfaceMethodsForType(t)
+                        };
 
                         p.interface_impls.Add(new_interface_impl);
                     }
@@ -242,7 +268,7 @@ namespace ArgonCore
             //   1
             //   2
             //   3
-            //   4
+            //   ...
 
             // TODO: Warn if not x86
             var ptr_size = Marshal.SizeOf(typeof(IntPtr));
