@@ -19,7 +19,7 @@ namespace InterfaceSteamClient
         public bool ReleaseSteamPipe(IntPtr pipe)
         {
             Console.WriteLine("ReleaseSteamPipe");
-            return false;
+            return true;
         }
 
         public IntPtr ConnectToGlobalUser(IntPtr pipe)
@@ -132,7 +132,7 @@ namespace InterfaceSteamClient
         public uint GetIPCCallCount()
         {
             Console.WriteLine("GetIPCCallCount");
-            return 0;
+            return 0x1000;
         }
 
         public void SetWarningMessageHook(IntPtr function)
