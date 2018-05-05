@@ -252,6 +252,12 @@ namespace ArgonCore
 
                 var type = iface.delegate_types.Find(x => x.Name.Contains(mi.Name));
 
+                if (type == null)
+                {
+                    Console.WriteLine("Unable to find delegate for {0} in {1}! (maybe you need to regen autogen?)", mi.Name, iface.name);
+                    return (IntPtr.Zero, null);
+                }
+
                 // Create new delegates that are bounded to this instance
                 var new_delegate = Delegate.CreateDelegate(type, instance, mi, true);
 

@@ -8,5 +8,7 @@
     {
         public delegate int TestDelegate(string a, int n);
         public delegate string Test2Delegate(string a, string b);
+        public delegate int Test3Delegate(string a, int n);
+        public delegate string Test4Delegate(string a, string b);
     }
 }
