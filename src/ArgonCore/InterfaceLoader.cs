@@ -299,9 +299,8 @@ namespace ArgonCore
             return (new_context, instance);
         }
 
-        public static (IntPtr, IBaseInterface) CreateInterface(string name)
+        public static Plugin.InterfaceImpl FindInterfaceImpl(string name)
         {
-            // Ensure that we are loaded before trying to query loaded plugins
             Load();
 
             foreach (var p in LoadedPlugins)
@@ -310,15 +309,55 @@ namespace ArgonCore
                 {
                     if (impl.name == name)
                     {
-                        var iface = p.interface_delegates.Find(x => x.name == impl.implements);
-
-                        // Try to create a new context based on this interface + impl pair
-                        return CreateContext(iface, impl);
+                        return impl;
                     }
                 }
             }
 
-            return (IntPtr.Zero, null);
+            return null;
+        }
+
+        public static Plugin.InterfaceDelegates FindInterfaceDelegates(string name)
+        {
+            Load();
+
+            foreach (var p in LoadedPlugins)
+            {
+                foreach (var dels in p.interface_delegates)
+                {
+                    if (dels.name == name)
+                    {
+                        return dels;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public static (IntPtr, IBaseInterface) CreateInterface(string name)
+        {
+            // Ensure that we are loaded before trying to query loaded plugins
+            Load();
+
+            var impl = FindInterfaceImpl(name);
+
+            if (impl == null)
+            {
+                Console.WriteLine("Unable to find implementation for interface {0}", name);
+                return (IntPtr.Zero, null);
+            }
+
+            var iface = FindInterfaceDelegates(impl.implements);
+
+            if(iface == null)
+            {
+                Console.WriteLine("Unable to find delegates for interface that implements {0}", impl.implements);
+                return (IntPtr.Zero, null);
+            }
+
+            // Try to create a new context based on this interface + impl pair
+            return CreateContext(iface, impl);
         }
     }
 }
