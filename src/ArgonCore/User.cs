@@ -103,7 +103,9 @@ namespace ArgonCore
         /// <returns>Pointer to the context created</returns>
         public static IntPtr CreateInterfaceNoUser(string name)
         {
-            var (context, _) = InterfaceLoader.CreateInterface(name);
+            var (context, iface) = InterfaceLoader.CreateInterface(name);
+
+            iface.UserId = -1;
 
             return context;
         }
@@ -248,7 +250,6 @@ namespace ArgonCore
 
                 return;
             }
-
         }
 
         public void UserLoggedOff(SteamUser.LoggedOffCallback callback)
