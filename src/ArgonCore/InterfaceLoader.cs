@@ -299,6 +299,11 @@ namespace ArgonCore
             return (new_context, instance);
         }
 
+        /// <summary>
+        /// Get an interface implementation by its exported name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static Plugin.InterfaceImpl FindInterfaceImpl(string name)
         {
             Load();
@@ -317,6 +322,11 @@ namespace ArgonCore
             return null;
         }
 
+        /// <summary>
+        /// Get interface delegates by their exported name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static Plugin.InterfaceDelegates FindInterfaceDelegates(string name)
         {
             Load();

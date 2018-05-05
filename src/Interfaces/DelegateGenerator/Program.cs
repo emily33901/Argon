@@ -43,6 +43,35 @@ namespace DelegateGenerator
 
         public static List<DelegateClassDefinition> DelegateClasses { get; set; }
 
+        static string GetCorrectTypeName(Type t)
+        {
+            var original_name = t.Name;
+            var new_name = original_name;
+
+            if(t.IsByRef)
+            {
+                new_name = "ref " + original_name.Substring(0, original_name.Length - 1);
+            }
+
+            switch(t.FullName)
+            {
+                case "System.Void":
+                    new_name = "void";
+                    break;
+                case "System.Int":
+                    new_name = "int";
+                    break;
+                case "System.String":
+                    new_name = "string";
+                    break;
+                case "System.UInt32":
+                    new_name = "uint";
+                    break;
+            }
+
+            return new_name;
+        }
+
         static void Main(string[] args)
         {
             DelegateClasses = new List<DelegateClassDefinition>();
@@ -80,12 +109,12 @@ namespace DelegateGenerator
                             var new_delegate = new DelegateClassDefinition.DelegateDefinition
                             {
                                 name = delegate_name,
-                                return_type = mi.ReturnType.Name,
+                                return_type = GetCorrectTypeName(mi.ReturnType),
                             };
 
                             foreach (var param in mi.GetParameters())
                             {
-                                new_delegate.args.Add((param.ParameterType.Name, param.Name));
+                                new_delegate.args.Add((GetCorrectTypeName(param.ParameterType), param.Name));
                             }
 
                             new_delegates.Add(new_delegate);
@@ -152,7 +181,7 @@ namespace {0}
 
                 Console.WriteLine(new_file.ToString());
                 
-                File.WriteAllText(String.Format("../../../GeneratorOutput/{0}Delegates.cs", c.name), new_file.ToString());
+                File.WriteAllText(String.Format("../../../InterfaceDelegates/{0}Delegates.cs", c.name), new_file.ToString());
             }
         }
     }
