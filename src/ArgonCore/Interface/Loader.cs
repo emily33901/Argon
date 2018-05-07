@@ -1,144 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 
-namespace ArgonCore
+namespace ArgonCore.Interface
 {
-    /// <summary>
-    /// Used to signal to <see cref="InterfaceLoader"/> that this class is used for interface delegates
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
-    public class InterfaceDelegateAttribute : Attribute
-    {
-        /// <summary>
-        /// General name of the interfaces that use these delegates
-        /// </summary>
-        public string Name { get; set; }
-    }
-
-    /// <summary>
-    /// Interface that all interface implementations must inherit from
-    /// </summary>
-    public interface IBaseInterface
-    {
-        /// <summary>
-        /// Set by <see cref="ArgonCore.User"/> to allow interfaces to know what user they belong too
-        /// </summary>
-        int UserId { get; set; }
-    }
-
-    /// <summary>
-    /// Used to signal to <see cref="InterfaceLoader"/> that this class is used for interface implementations
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
-    public class InterfaceImplAttribute : Attribute
-    {
-        /// <summary>
-        /// Name that this interface wants to be exported as
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Name of the interface delegates that this class implements
-        /// </summary>
-        public string Implements { get; set; }
-    }
-
-    public class Plugin
-    {
-        public class InterfaceDelegates
-        {
-            /// <summary>
-            /// Refer to <see cref="InterfaceDelegateAttribute.Name"/>
-            /// </summary>
-            public string name;
-
-            /// <summary>
-            /// Delegate types that were extracted from the class at runtime
-            /// </summary>
-            public List<Type> delegate_types;
-
-            public InterfaceDelegates()
-            {
-                delegate_types = new List<Type>();
-            }
-        }
-
-        public class InterfaceImpl
-        {
-            /// <summary>
-            /// Refer to <see cref="InterfaceImplAttribute.Name"/>
-            /// </summary>
-            public string name;
-
-            /// <summary>
-            /// Refer to <see cref="InterfaceImplAttribute.Implements"/>
-            /// </summary>
-            public string implements;
-
-            /// <summary>
-            /// Methods that were extracted from the class at runtime
-            /// </summary>
-            public List<MethodInfo> methods;
-
-            /// <summary>
-            /// The runtime type of this class (used in <see cref="InterfaceLoader.CreateContext"/> to create an instance of this interface)
-            /// </summary>
-            public Type this_type;
-
-            /// <summary>
-            /// Delegates that are allocated by this interface at runtime
-            /// </summary>
-            public List<List<Delegate>> stored_delegates;
-
-            /// <summary>
-            /// Handles to memory that are used by this interface for storing unmanaged function pointers
-            /// </summary>
-            public List<IntPtr> stored_function_pointers;
-
-            /// <summary>
-            /// Handles to memory that are used by this interface for storing unmanaged context pointers
-            /// </summary>
-            public List<IntPtr> stored_contexts;
-
-            public InterfaceImpl()
-            {
-                methods = new List<MethodInfo>();
-                stored_delegates = new List<List<Delegate>>();
-                stored_function_pointers = new List<IntPtr>();
-                stored_contexts = new List<IntPtr>();
-            }
-        }
-
-        /// <summary>
-        /// Name of this plugin
-        /// </summary>
-        public string name;
-
-        /// <summary>
-        /// Interface delegates contained within this plugin
-        /// </summary>
-        public List<InterfaceDelegates> interface_delegates;
-
-        /// <summary>
-        /// Interface implementations contained within this plugin
-        /// </summary>
-        public List<InterfaceImpl> interface_impls;
-
-        public Plugin()
-        {
-            interface_delegates = new List<InterfaceDelegates>();
-            interface_impls = new List<InterfaceImpl>();
-        }
-    }
-
     /// <summary>
     /// Creates interfaces from their respective dlls on disk
     /// </summary>
-    public class InterfaceLoader
+    public class Loader
     {
         private static bool loaded;
 
@@ -154,10 +26,10 @@ namespace ArgonCore
             return all_methods;
         }
 
-        public static bool IsInterfaceDelegate(Type t) => t.IsDefined(typeof(InterfaceDelegateAttribute));
+        public static bool IsInterfaceDelegate(Type t) => t.IsDefined(typeof(DelegateAttribute));
         public static bool IsInterfaceImpl(Type t)
         {
-            var has_attribute = t.IsDefined(typeof(InterfaceImplAttribute));
+            var has_attribute = t.IsDefined(typeof(ImplAttribute));
 
             // In order to see whether this class is inherited from IBaseInterface
             // we need to see whether we could assign an IBaseInterface object from it
@@ -198,7 +70,7 @@ namespace ArgonCore
                 {
                     if (IsInterfaceDelegate(t))
                     {
-                        var attribute = t.GetCustomAttribute<InterfaceDelegateAttribute>();
+                        var attribute = t.GetCustomAttribute<DelegateAttribute>();
                         var name = attribute.Name;
 
                         var new_interface = new Plugin.InterfaceDelegates { name = name };
@@ -216,7 +88,7 @@ namespace ArgonCore
                     }
                     else if (IsInterfaceImpl(t))
                     {
-                        var attribute = t.GetCustomAttribute<InterfaceImplAttribute>();
+                        var attribute = t.GetCustomAttribute<ImplAttribute>();
                         var name = attribute.Name;
                         var implements = attribute.Implements;
 
@@ -360,7 +232,7 @@ namespace ArgonCore
 
             var iface = FindInterfaceDelegates(impl.implements);
 
-            if(iface == null)
+            if (iface == null)
             {
                 Console.WriteLine("Unable to find delegates for interface that implements {0}", impl.implements);
                 return (IntPtr.Zero, null);
