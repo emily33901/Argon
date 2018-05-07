@@ -53,7 +53,7 @@ namespace ArgonCore
         /// <param name="instance"></param>
         public User()
         {
-            InterfaceLoader.Load();
+            Interface.Loader.Load();
 
             Id = next_user_id;
             next_user_id += 1;
@@ -89,7 +89,7 @@ namespace ArgonCore
         /// <returns>Pointer to the context created</returns>
         public IntPtr CreateInterface(string name)
         {
-            var (context, iface) = InterfaceLoader.CreateInterface(name);
+            var (context, iface) = Interface.Loader.CreateInterface(name);
 
             iface.UserId = (int)Id;
 
@@ -103,7 +103,7 @@ namespace ArgonCore
         /// <returns>Pointer to the context created</returns>
         public static IntPtr CreateInterfaceNoUser(string name)
         {
-            var (context, iface) = InterfaceLoader.CreateInterface(name);
+            var (context, iface) = Interface.Loader.CreateInterface(name);
 
             iface.UserId = -1;
 

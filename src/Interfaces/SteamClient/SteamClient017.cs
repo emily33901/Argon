@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace InterfaceSteamClient
 {
-    [ArgonCore.InterfaceImpl(Name = "SteamClient017", Implements = "SteamClient")]
-    public class SteamClient017 : ArgonCore.IBaseInterface
+    [ArgonCore.Interface.Impl(Name = "SteamClient017", Implements = "SteamClient")]
+    public class SteamClient017 : ArgonCore.Interface.IBaseInterface
     {
         public int UserId { get; set; }
 

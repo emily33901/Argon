@@ -67,6 +67,9 @@ namespace DelegateGenerator
                 case "System.UInt32":
                     new_name = "uint";
                     break;
+                case "System.Boolean":
+                    new_name = "bool";
+                    break;
             }
 
             return new_name;
@@ -76,13 +79,13 @@ namespace DelegateGenerator
         {
             DelegateClasses = new List<DelegateClassDefinition>();
 
-            foreach (var a in InterfaceLoader.GetInterfaceAssemblies())
+            foreach (var a in ArgonCore.Interface.Loader.GetInterfaceAssemblies())
             {
                 foreach (var type in a.GetTypes())
                 {
-                    if (InterfaceLoader.IsInterfaceImpl(type))
+                    if (ArgonCore.Interface.Loader.IsInterfaceImpl(type))
                     {
-                        var impl_attribute = type.GetCustomAttribute<InterfaceImplAttribute>();
+                        var impl_attribute = type.GetCustomAttribute<ArgonCore.Interface.ImplAttribute>();
 
                         var found = true;
 
@@ -96,7 +99,7 @@ namespace DelegateGenerator
 
                         var new_delegates = new List<DelegateClassDefinition.DelegateDefinition>();
 
-                        var methods = InterfaceLoader.InterfaceMethodsForType(type);
+                        var methods = ArgonCore.Interface.Loader.InterfaceMethodsForType(type);
 
                         foreach (var mi in methods)
                         {
@@ -141,7 +144,7 @@ namespace {0}
     /// <summary>
     /// Exports the delegates for all interfaces that implement {1}
     /// </summary>
-    [ArgonCore.InterfaceDelegate(Name = ""{1}"")]
+    [ArgonCore.Interface.Delegate(Name = ""{1}"")]
     class {1}_Delegates
     {{";
 

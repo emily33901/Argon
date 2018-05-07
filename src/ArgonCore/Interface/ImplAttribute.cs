@@ -8,7 +8,7 @@ namespace ArgonCore.Interface
     /// Used to signal to <see cref="Loader"/> that this class is used for interface implementations
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
-    class ImplAttribute : Attribute
+    public class ImplAttribute : Attribute
     {
         /// <summary>
         /// Name that this interface wants to be exported as
