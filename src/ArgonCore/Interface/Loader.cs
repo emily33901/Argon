@@ -75,6 +75,8 @@ namespace ArgonCore.Interface
 
                         var new_interface = new Plugin.InterfaceDelegates { name = name };
 
+                        Console.WriteLine("Found interface delegates \"{0}\"", name);
+
                         var types = t.GetNestedTypes(BindingFlags.Public);
 
                         foreach (var type in types)
@@ -99,6 +101,9 @@ namespace ArgonCore.Interface
                             this_type = t,
                             methods = InterfaceMethodsForType(t)
                         };
+
+                        Console.WriteLine("Found interface impl \"{0}\"", name);
+
 
                         p.interface_impls.Add(new_interface_impl);
                     }
