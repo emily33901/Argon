@@ -14,9 +14,9 @@ namespace ArgonCore
         private List<string> buffered = new List<string>();
         private object file_lock = new object();
 
-        public Logger(User u)
+        public Logger(uint id)
         {
-            core_id = u.Id;
+            core_id = id;
             file = string.Format("log_user_{0}.log", core_id);
         }
 
@@ -38,7 +38,6 @@ namespace ArgonCore
 
                 Monitor.Exit(file_lock);
             }
-
         }
     }
 }

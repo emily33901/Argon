@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
 
+using NamedPipeWrapper;
+
 namespace InterfaceSteamClient
 {
-    [ArgonCore.Interface.Impl(Name = "SteamClient017", Implements = "SteamClient")]
+    [ArgonCore.Interface.Impl(Name = "SteamClient017", Implements = "SteamClient", ServerMapped = false)]
     public class SteamClient017 : ArgonCore.Interface.IBaseInterface
     {
-        public int UserId { get; set; }
-
         public IntPtr CreateSteamPipe()
         {
             Console.WriteLine("CreateSteamPipe");

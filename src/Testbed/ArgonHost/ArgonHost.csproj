@@ -1,12 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\ArgonCore\ArgonCore.csproj" />
+    <ProjectReference Include="..\..\Interfaces\ArgonCore\InterfaceArgonCore.csproj" />
+    <ProjectReference Include="..\..\Interfaces\InterfaceAutogen\InterfaceAutogen.csproj" />
     <ProjectReference Include="..\..\Interfaces\SteamClient\InterfaceSteamClient.csproj" />
+    <ProjectReference Include="..\..\Interfaces\SteamUser\InterfaceSteamUser.csproj" />
   </ItemGroup>
 
 </Project>

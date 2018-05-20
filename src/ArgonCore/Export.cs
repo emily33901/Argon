@@ -16,12 +16,9 @@ namespace ArgonCore
             // Create an argon core interface
             Console.WriteLine("RecieveArgonCore");
             Interface.Loader.Load();
-            var (argon_core, _) = Interface.Loader.CreateInterface("ArgonCore001");
+            var (argon_core, _, _) = Interface.Context.CreateInterface("ArgonCore001");
 
             return argon_core;
         }
-
-        static Export inst = new Export();
-
     }
 }

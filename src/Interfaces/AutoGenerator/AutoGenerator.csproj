@@ -53,13 +53,17 @@
       <Project>{c52d6617-9ae8-43a0-b3bb-80d11d22008c}</Project>
       <Name>ArgonCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\InterfaceArgonCore\InterfaceArgonCore.csproj">
-      <Project>{5d575441-1ebc-4fab-9d3c-6750d58f3158}</Project>
+    <ProjectReference Include="..\ArgonCore\InterfaceArgonCore.csproj">
+      <Project>{15464858-cc45-4769-9e03-07cb9b04db92}</Project>
       <Name>InterfaceArgonCore</Name>
     </ProjectReference>
     <ProjectReference Include="..\SteamClient\InterfaceSteamClient.csproj">
       <Project>{b6572a85-59d1-48d5-a068-f2ee59d40416}</Project>
       <Name>InterfaceSteamClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SteamUser\InterfaceSteamUser.csproj">
+      <Project>{3eb44666-f36e-4589-979a-a94afcc1a6fd}</Project>
+      <Name>InterfaceSteamUser</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

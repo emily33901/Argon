@@ -19,5 +19,7 @@ namespace ArgonCore.Interface
         /// Name of the interface delegates that this class implements
         /// </summary>
         public string Implements { get; set; }
+
+        public bool ServerMapped { get; set; }
     }
 }

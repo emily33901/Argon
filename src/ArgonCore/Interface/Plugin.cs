@@ -71,6 +71,10 @@ namespace ArgonCore.Interface
             }
         }
 
+        public class InterfaceMap : InterfaceImpl
+        {
+        }
+
         /// <summary>
         /// Name of this plugin
         /// </summary>
@@ -86,10 +90,14 @@ namespace ArgonCore.Interface
         /// </summary>
         public List<InterfaceImpl> interface_impls;
 
+        public List<InterfaceMap> interface_maps;
+
+
         public Plugin()
         {
             interface_delegates = new List<InterfaceDelegates>();
             interface_impls = new List<InterfaceImpl>();
+            interface_maps = new List<InterfaceMap>();
         }
     }
 }

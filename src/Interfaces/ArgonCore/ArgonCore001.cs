@@ -7,11 +7,9 @@ namespace InterfaceArgonCore
     /// <summary>
     /// Exports Argon functions to unmanaged code
     /// </summary>
-    [Impl(Name = "ArgonCore001", Implements = "ArgonCore")]
+    [Impl(Name = "ArgonCore001", Implements = "ArgonCore", ServerMapped = false)]
     public class ArgonCore001 : IBaseInterface
     {
-        public int UserId { get; set; }
-
         /// <summary>
         /// Linked to <see cref="User.CreateInterfaceNoUser(string)"/>
         /// </summary>

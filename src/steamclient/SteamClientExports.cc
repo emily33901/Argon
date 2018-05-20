@@ -176,8 +176,8 @@ EXPORT void STEAM_CALL Steam_SetLocalIpBinding(int ip, short port) {
 // These call SteamUser related functions by creating a new interaface based on the user + pipe handles
 EXPORT void STEAM_CALL Steam_LogOn(HSteamUser user, HSteamPipe pipe, unsigned long long id) {}
 EXPORT void STEAM_CALL Steam_LogOff(HSteamUser user, HSteamPipe pipe) {}
-EXPORT bool STEAM_CALL Steam_BLoggedOn(HSteamUser user, HSteamPipe pipe) {}
-EXPORT bool STEAM_CALL Steam_BConnected(HSteamUser user, HSteamPipe pipe) {}
+EXPORT bool STEAM_CALL Steam_BLoggedOn(HSteamUser user, HSteamPipe pipe) { return false; }
+EXPORT bool STEAM_CALL Steam_BConnected(HSteamUser user, HSteamPipe pipe) { return false; }
 EXPORT void STEAM_CALL Steam_InitiateGameConnection(HSteamUser user,
                                                     HSteamPipe pipe, void *blob,
                                                     int max_blob, unsigned long long id,
