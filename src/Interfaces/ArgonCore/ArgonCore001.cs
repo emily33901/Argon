@@ -16,7 +16,7 @@ namespace InterfaceArgonCore
         /// <param name="name"></param>
         public IntPtr CreateInterface(string name)
         {
-            return User.CreateInterfaceNoUser(name);
+            return ArgonCore.Client.Client.CreateInterfaceNoUser(name);
         }
     }
 }
