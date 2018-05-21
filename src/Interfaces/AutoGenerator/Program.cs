@@ -197,7 +197,7 @@ namespace {0}
 
                 Console.WriteLine(new_file.ToString());
 
-                File.WriteAllText(String.Format("../InterfaceAutogen/{0}Delegates.cs", c.name), new_file.ToString());
+                File.WriteAllText(String.Format("../InterfaceAutogen/Delegates/{0}Delegates.cs", c.name), new_file.ToString());
             }
         }
 
@@ -210,7 +210,7 @@ namespace {0}
 namespace {0}
 {{
     /// <summary>
-    /// Exports the delegates for all interfaces that implement {1}
+    /// Implements the map for interface {1}
     /// </summary>
     [ArgonCore.Interface.Map(Name = ""{1}"", Implements = ""{2}"")]
     public class {1}_Map : ArgonCore.Interface.IBaseInterfaceMap
@@ -287,7 +287,7 @@ namespace {0}
 
                 Console.WriteLine(new_file.ToString());
 
-                File.WriteAllText(String.Format("../InterfaceAutogen/{0}Map.cs", c.name), new_file.ToString());
+                File.WriteAllText(String.Format("../InterfaceAutogen/Maps/{0}Map.cs", c.name), new_file.ToString());
             }
         }
 

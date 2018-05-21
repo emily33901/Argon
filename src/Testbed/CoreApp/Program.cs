@@ -8,8 +8,6 @@ using System.IO;
 
 using Newtonsoft.Json;
 using ArgonCore;
-using InterfaceSteamClient;
-using InterfaceSteamUser;
 using ArgonCore.Client;
 
 namespace testbed

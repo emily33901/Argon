@@ -7,9 +7,29 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ArgonCore\ArgonCore.csproj" />
-    <ProjectReference Include="..\ArgonCore\InterfaceArgonCore.csproj" />
-    <ProjectReference Include="..\SteamClient\InterfaceSteamClient.csproj" />
-    <ProjectReference Include="..\SteamUser\InterfaceSteamUser.csproj" />
+    <ProjectReference Include="..\Implementation\AppList\InterfaceAppList.csproj" />
+    <ProjectReference Include="..\Implementation\Apps\InterfaceApps.csproj" />
+    <ProjectReference Include="..\Implementation\ArgonCore\InterfaceArgonCore.csproj" />
+    <ProjectReference Include="..\Implementation\Client\InterfaceClient.csproj" />
+    <ProjectReference Include="..\Implementation\Controller\InterfaceController.csproj" />
+    <ProjectReference Include="..\Implementation\GameServerStats\InterfaceGameServerStats.csproj" />
+    <ProjectReference Include="..\Implementation\GameServer\InterfaceGameServer.csproj" />
+    <ProjectReference Include="..\Implementation\HTMLSurface\InterfaceHTMLSurface.csproj" />
+    <ProjectReference Include="..\Implementation\HTTP\InterfaceHTTP.csproj" />
+    <ProjectReference Include="..\Implementation\Inventory\InterfaceInventory.csproj" />
+    <ProjectReference Include="..\Implementation\MatchmakingServers\InterfaceMatchmakingServers.csproj" />
+    <ProjectReference Include="..\Implementation\Matchmaking\InterfaceMatchmaking.csproj" />
+    <ProjectReference Include="..\Implementation\MusicRemote\InterfaceMusicRemote.csproj" />
+    <ProjectReference Include="..\Implementation\Music\InterfaceMusic.csproj" />
+    <ProjectReference Include="..\Implementation\Networking\InterfaceNetworking.csproj" />
+    <ProjectReference Include="..\Implementation\RemoteStorage\InterfaceRemoteStorage.csproj" />
+    <ProjectReference Include="..\Implementation\Screenshots\InterfaceScreenshots.csproj" />
+    <ProjectReference Include="..\Implementation\UGC\InterfaceUGC.csproj" />
+    <ProjectReference Include="..\Implementation\UnifiedMessages\InterfaceUnifiedMessages.csproj" />
+    <ProjectReference Include="..\Implementation\UserStats\InterfaceUserStats.csproj" />
+    <ProjectReference Include="..\Implementation\User\InterfaceUser.csproj" />
+    <ProjectReference Include="..\Implementation\Utils\InterfaceUtils.csproj" />
+    <ProjectReference Include="..\Implementation\Video\InterfaceVideo.csproj" />
   </ItemGroup>
 
 </Project>
