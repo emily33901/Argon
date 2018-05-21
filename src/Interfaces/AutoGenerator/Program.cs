@@ -197,7 +197,7 @@ namespace {0}
 
                 Console.WriteLine(new_file.ToString());
 
-                File.WriteAllText(String.Format("../../../InterfaceAutogen/{0}Delegates.cs", c.name), new_file.ToString());
+                File.WriteAllText(String.Format("../InterfaceAutogen/{0}Delegates.cs", c.name), new_file.ToString());
             }
         }
 
@@ -287,7 +287,7 @@ namespace {0}
 
                 Console.WriteLine(new_file.ToString());
 
-                File.WriteAllText(String.Format("../../../InterfaceAutogen/{0}Map.cs", c.name), new_file.ToString());
+                File.WriteAllText(String.Format("../InterfaceAutogen/{0}Map.cs", c.name), new_file.ToString());
             }
         }
 
