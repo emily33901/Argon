@@ -4,7 +4,7 @@ using System;
 namespace InterfaceMusicRemote
 {
     /// <summary>
-    /// Implements the map for all interface SteamMusicRemote001
+    /// Implements the map for interface SteamMusicRemote001
     /// </summary>
     [ArgonCore.Interface.Map(Name = "SteamMusicRemote001", Implements = "SteamMusicRemote")]
     public class SteamMusicRemote001_Map : ArgonCore.Interface.IBaseInterfaceMap

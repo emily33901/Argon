@@ -4,7 +4,7 @@ using System;
 namespace InterfaceUser
 {
     /// <summary>
-    /// Implements the map for all interface SteamUser019
+    /// Implements the map for interface SteamUser019
     /// </summary>
     [ArgonCore.Interface.Map(Name = "SteamUser019", Implements = "SteamUser")]
     public class SteamUser019_Map : ArgonCore.Interface.IBaseInterfaceMap

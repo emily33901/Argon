@@ -4,7 +4,7 @@ using System;
 namespace InterfaceApps
 {
     /// <summary>
-    /// Implements the map for all interface SteamApps008
+    /// Implements the map for interface SteamApps008
     /// </summary>
     [ArgonCore.Interface.Map(Name = "SteamApps008", Implements = "SteamApps")]
     public class SteamApps008_Map : ArgonCore.Interface.IBaseInterfaceMap

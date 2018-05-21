@@ -4,7 +4,7 @@ using System;
 namespace InterfaceMatchmaking
 {
     /// <summary>
-    /// Implements the map for all interface SteamMatchmaking009
+    /// Implements the map for interface SteamMatchmaking009
     /// </summary>
     [ArgonCore.Interface.Map(Name = "SteamMatchmaking009", Implements = "SteamMatchmaking")]
     public class SteamMatchmaking009_Map : ArgonCore.Interface.IBaseInterfaceMap

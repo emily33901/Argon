@@ -4,7 +4,7 @@ using System;
 namespace InterfaceGameServerStats
 {
     /// <summary>
-    /// Implements the map for all interface SteamGameServerStats001
+    /// Implements the map for interface SteamGameServerStats001
     /// </summary>
     [ArgonCore.Interface.Map(Name = "SteamGameServerStats001", Implements = "SteamGameServerStats")]
     public class SteamGameServerStats001_Map : ArgonCore.Interface.IBaseInterfaceMap

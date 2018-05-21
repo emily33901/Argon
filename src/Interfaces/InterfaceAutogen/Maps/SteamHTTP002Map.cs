@@ -4,7 +4,7 @@ using System;
 namespace InterfaceHTTP
 {
     /// <summary>
-    /// Implements the map for all interface SteamHTTP002
+    /// Implements the map for interface SteamHTTP002
     /// </summary>
     [ArgonCore.Interface.Map(Name = "SteamHTTP002", Implements = "SteamHTTP")]
     public class SteamHTTP002_Map : ArgonCore.Interface.IBaseInterfaceMap

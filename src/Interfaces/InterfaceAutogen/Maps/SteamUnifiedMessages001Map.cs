@@ -4,7 +4,7 @@ using System;
 namespace InterfaceUnifiedMessages
 {
     /// <summary>
-    /// Implements the map for all interface SteamUnifiedMessages001
+    /// Implements the map for interface SteamUnifiedMessages001
     /// </summary>
     [ArgonCore.Interface.Map(Name = "SteamUnifiedMessages001", Implements = "SteamUnifiedMessages")]
     public class SteamUnifiedMessages001_Map : ArgonCore.Interface.IBaseInterfaceMap

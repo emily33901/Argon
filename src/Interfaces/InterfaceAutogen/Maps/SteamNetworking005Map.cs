@@ -4,7 +4,7 @@ using System;
 namespace IntefaceNetworking
 {
     /// <summary>
-    /// Implements the map for all interface SteamNetworking005
+    /// Implements the map for interface SteamNetworking005
     /// </summary>
     [ArgonCore.Interface.Map(Name = "SteamNetworking005", Implements = "SteamNetworking")]
     public class SteamNetworking005_Map : ArgonCore.Interface.IBaseInterfaceMap

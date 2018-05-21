@@ -4,7 +4,7 @@ using System;
 namespace InterfaceVideo
 {
     /// <summary>
-    /// Implements the map for all interface SteamVideo002
+    /// Implements the map for interface SteamVideo002
     /// </summary>
     [ArgonCore.Interface.Map(Name = "SteamVideo002", Implements = "SteamVideo")]
     public class SteamVideo002_Map : ArgonCore.Interface.IBaseInterfaceMap
