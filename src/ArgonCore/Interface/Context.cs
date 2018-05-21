@@ -73,13 +73,6 @@ namespace ArgonCore.Interface
             return (new_context, (IBaseInterface)instance);
         }
 
-
-
-        public (IntPtr, IBaseInterface) CreateMap()
-        {
-            return (IntPtr.Zero, null);
-        }
-
         /// <summary>
         /// Get an interface implementation by its exported name
         /// </summary>

@@ -20,7 +20,8 @@ namespace ArgonCore.Interface
         {
             var all_methods = new List<MethodInfo>(t.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
-            // TODO: maybe it would just be better to look for all methods that have a delegate type and only use those
+            // Remove methods that we dont want to deal with
+            // This includes setters and getters for properties
             all_methods.RemoveAll(x => x.Name.StartsWith("get_") || x.Name.StartsWith("set_"));
 
             return all_methods;
