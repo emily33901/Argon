@@ -15,7 +15,25 @@ namespace ArgonHost
 
             Console.WriteLine("Server started...");
 
+            var running = true;
+
+            Thread t = new Thread(
+                () =>
+                {
+                    while (running)
+                    {
+                        Client.RunAllCallbacks();
+                    }
+
+                });
+
+            t.Start();
+
             Console.ReadLine();
+
+            running = false;
+
+            t.Join();
 
             ArgonCore.IPC.Server.CurrentPipe.Stop();
         }

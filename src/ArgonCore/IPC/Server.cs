@@ -12,10 +12,19 @@ namespace ArgonCore.IPC
 
     public class Server
     {
+        /// <summary>
+        /// Lock of for accessing pipe data
+        /// </summary>
         static private object client_lock = new System.Object();
 
+        /// <summary>
+        /// Current pipe allocated by the server
+        /// </summary>
         static public ServerPipe CurrentPipe { get; set; }
 
+        /// <summary>
+        /// Create the server pipe and start the connection
+        /// </summary>
         public static void AllocatePipe()
         {
             CurrentPipe = new ServerPipe("argon_pipe_server");
@@ -28,6 +37,11 @@ namespace ArgonCore.IPC
         }
 
         // TODO: these functions should not block the ipc thread
+        /// <summary>
+        /// Handles messages that are sent by clients by dispatching functions and then sending the results back
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="message"></param>
         private static void OnClientMessage(NamedPipeConnection<SerializedFunction, SerializedResult> connection, SerializedFunction message)
         {
             lock(client_lock)
@@ -73,6 +87,10 @@ namespace ArgonCore.IPC
             }
         }
 
+        /// <summary>
+        /// Handles client disconnection
+        /// </summary>
+        /// <param name="connection"></param>
         private static void OnClientDisconnected(NamedPipeConnection<SerializedFunction, SerializedResult> connection)
         {
             Console.WriteLine("Client disconnected [{0}]...", connection.Id);
@@ -80,6 +98,10 @@ namespace ArgonCore.IPC
             // TODO: remove client
         }
 
+        /// <summary>
+        /// Handles client connection
+        /// </summary>
+        /// <param name="connection"></param>
         private static void OnClientConnected(NamedPipeConnection<SerializedFunction, SerializedResult> connection)
         {
             lock (client_lock)

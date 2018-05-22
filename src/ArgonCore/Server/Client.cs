@@ -12,7 +12,10 @@ namespace ArgonCore.Server
     /// </summary>
     public class Client
     {
-        public static Dictionary<uint, Client> ActiveClients { get; private set; }
+        public static object active_client_lock = new object();
+        static Dictionary<uint, Client> ActiveClients { get; set; } = new Dictionary<uint, Client>();
+
+        public Queue<ArgonCore.Client.InternalCallbackMsg> PendingCallbacks { get; set; } = new Queue<ArgonCore.Client.InternalCallbackMsg>();
 
         // Used for internal handling of clients
         // This is set by the IPC by connection id
@@ -53,18 +56,21 @@ namespace ArgonCore.Server
 
                 // Setup our packet handler for all packets
                 SteamClient.AddHandler(new PacketHandler(this));
+
+                // Subscribe to some important callbacks
+                CallbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnect);
+                CallbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnect);
             }
+
+            // Automatically try to connect...
+            Connect();
         }
 
         public static void CreateNewClient(uint id)
         {
-            if (ActiveClients == null)
-            {
-                ActiveClients = new Dictionary<uint, Client>();
-            }
-
             var c = new Client(id);
-            ActiveClients[id] = c;
+            lock (active_client_lock)
+                ActiveClients[id] = c;
         }
 
         public IBaseInterface CreateInterface(string name)
@@ -104,7 +110,19 @@ namespace ArgonCore.Server
 
         public void RunCallbacks()
         {
+            // Dont wait indefinitely for new callbacks
             CallbackManager.RunWaitCallbacks(TimeSpan.FromSeconds(1));
+        }
+
+        public static void RunAllCallbacks()
+        {
+            lock (active_client_lock)
+            {
+                foreach (var c in ActiveClients.Values)
+                {
+                    c.RunCallbacks();
+                }
+            }
         }
 
         // Static event handlers
@@ -142,7 +160,16 @@ namespace ArgonCore.Server
             // TODO: handle special server related functions
             switch (name)
             {
-                case "CreateInterface": return CreateInterface((string)args[0]).InterfaceId;
+                case "CreateInterface": { return CreateInterface((string)args[0]).InterfaceId; }
+                case "NextCallback":
+                    {
+                        if (PendingCallbacks.Count > 0)
+                        {
+                            return PendingCallbacks.Dequeue();
+                        }
+
+                        return null;
+                    }
                 default:
                     Log.WriteLine("client", "Method \"{0}\" is not defined for Interface -1", name);
                     break;

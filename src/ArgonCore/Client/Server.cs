@@ -17,5 +17,17 @@ namespace ArgonCore.Client
 
             return IPC.Client.CallSerializedFunction<int>(f);
         }
+
+        public static InternalCallbackMsg NextCallback()
+        {
+            var f = new IPC.SerializedFunction
+            {
+                InterfaceId = -1,
+                Name = "NextCallback",
+                Args = new object[] { },
+            };
+
+            return IPC.Client.CallSerializedFunction<InternalCallbackMsg>(f);
+        }
     }
 }

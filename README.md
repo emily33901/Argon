@@ -11,8 +11,15 @@ It primarily uses C# and alot of interoperability helpers to expose code.
 The `steamclient` project bootstraps the `ArgonCore` project and then through the `steamclient` C api users will interact with `Argon` in the same way they did with the default `steamclient`.
 
 ## Longer overview:
-`Argon` is programmed primarily in C# as it not only provides easy interoperability with SteamKit2 (Which deals with alot of the `steamclient` backend) but also easy serialization and IPC functionality which would be difficult to implement with other languages.
+`Argon` is programmed primarily in C# as it not only provides easy interoperability with SteamKit2 (Which deals with alot of the `steamclient` backend) 
+but also easy serialization and IPC functionality which would be difficult to implement with other languages.
 
-The downside of this is that `steamclient` is a native dll, and is loaded into processes as such. In order to deal with this there is a `.net core` bootstrapper that loads `ArgonCore` into the process and provides the native C dll api to the whoever loaded the dll. `ArgonCore` then also needs to export native vtables to the process that called it. This is done using methods in `Interface.Loader` and `Interface.Context` along with the `AutoGenerator` project that deals with the creation of delegate types for these interfaces.
+The downside of this is that `steamclient` is a native dll, and is loaded into processes as such. 
+In order to deal with this there is a `.net core` bootstrapper that loads `ArgonCore` into the process and provides the native C dll api to the whoever loaded the dll. 
+`ArgonCore` then also needs to export native vtables to the process that called it. 
+This is done using methods in `Interface.Loader` and `Interface.Context` along with the `AutoGenerator` project that deals with the creation of delegate types for these interfaces.
 
-`steamclient` uses a single host instance of itself acting as a central server for all of steam's jobs. This allows steam to coordinate between games that use the `steam_api`, the steam UI and overlay. The native `steamclient` does this using IPC and serialized functions. This has been mimicked in `Argon` through the use of `NamedPipes` and function maps (which area also generated with the autogenerator).
+`steamclient` uses a single host instance of itself acting as a central server for all of steam's jobs. 
+This allows steam to coordinate between games that use the `steam_api`, the steam UI and overlay. 
+The native `steamclient` does this using IPC and serialized functions. 
+This has been mimicked in `Argon` through the use of `NamedPipes` and function maps (which area also generated with the autogenerator).

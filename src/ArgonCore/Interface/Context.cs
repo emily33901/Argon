@@ -8,11 +8,22 @@ namespace ArgonCore.Interface
 {
     class Context
     {
+        /// <summary>
+        /// Create an instance based on this implementation
+        /// </summary>
+        /// <param name="impl"></param>
+        /// <returns></returns>
         public static object CreateInterfaceInstance(Plugin.InterfaceImpl impl)
         {
             return Activator.CreateInstance(impl.this_type);
         }
 
+        /// <summary>
+        /// Create a new implementation context based on the delegate types and implementation
+        /// </summary>
+        /// <param name="iface"></param>
+        /// <param name="impl"></param>
+        /// <returns></returns>
         private static (IntPtr, IBaseInterface) Create(Plugin.InterfaceDelegates iface, Plugin.InterfaceImpl impl)
         {
             var instance = CreateInterfaceInstance(impl);
@@ -119,6 +130,11 @@ namespace ArgonCore.Interface
             return null;
         }
 
+        /// <summary>
+        /// Find a map implementation for the interface name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static Plugin.InterfaceMap FindInterfaceMap(string name)
         {
             Loader.Load();
@@ -137,6 +153,11 @@ namespace ArgonCore.Interface
             return null;
         }
 
+        /// <summary>
+        /// Find an implementation
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static Plugin.InterfaceImpl FindImpl(string name)
         {
             var impl = FindInterfaceImpl(name);
@@ -150,6 +171,11 @@ namespace ArgonCore.Interface
             return impl;
         }
 
+        /// <summary>
+        /// Find a map
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static Plugin.InterfaceMap FindMap(string name)
         {
             var map = FindInterfaceMap(name);
@@ -162,6 +188,12 @@ namespace ArgonCore.Interface
             return map;
         }
 
+        /// <summary>
+        /// Create an interface instance and context and whether to try and create a map
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="try_create_map"></param>
+        /// <returns></returns>
         public static (IntPtr, IBaseInterface, bool) CreateInterface(string name, bool try_create_map = false)
         {
             // Ensure that we are loaded before trying to query loaded plugins

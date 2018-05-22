@@ -48,7 +48,7 @@ namespace DelegateGenerator
 
         static string GetCorrectTypeName(Type t)
         {
-            var original_name = t.Name;
+            var original_name = t.FullName;
             var new_name = original_name;
 
             if (t.IsByRef)
@@ -72,6 +72,9 @@ namespace DelegateGenerator
                     break;
                 case "System.Boolean":
                     new_name = "bool";
+                    break;
+                case "System.IntPtr":
+                    new_name = "IntPtr";
                     break;
             }
 
