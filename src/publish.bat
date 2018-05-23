@@ -5,6 +5,6 @@ pushd "%~dp0\Testbed\PublishTest"
 popd
 
 pushd "%~dp0"
-	copy "TestBed\CppTestBed\bin\Debug\CppTestBed.exe" "bin\CppTestBed.exe"
-	copy "steamclient\bin\Debug\steamclient.dll" "bin\steamclient.dll"
+	copy "cxx\bin\debug\testbed.exe" "bin\cpptestbed.exe"
+	copy "cxx\bin\debug\steamclient.dll" "bin\steamclient.dll"
 popd
