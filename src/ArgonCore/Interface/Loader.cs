@@ -62,7 +62,9 @@ namespace ArgonCore.Interface
         {
             var assemblies = new List<Assembly>();
 
-            var filenames = Directory.EnumerateFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Interface*.dll");
+            var wildcard_search = "Interface*" + Platform.AssemblyExtension();
+
+            var filenames = Directory.EnumerateFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), wildcard_search);
 
             foreach (var f in filenames)
             {

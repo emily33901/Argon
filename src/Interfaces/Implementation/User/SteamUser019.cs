@@ -8,6 +8,12 @@ namespace InterfaceUser
     [Impl(Name = "SteamUser019", Implements = "SteamUser", ServerMapped = true)]
     public class SteamUser019 : IBaseInterface
     {
+        public User u { get; set; }
+        public SteamUser019()
+        {
+            u = new User();
+        }
+
         public IntPtr GetHSteamUser()
         {
             Console.WriteLine("GetHSteamUser");

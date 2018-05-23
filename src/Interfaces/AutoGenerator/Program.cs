@@ -94,7 +94,13 @@ namespace DelegateGenerator
                     {
                         var impl_attribute = type.GetCustomAttribute<ArgonCore.Interface.ImplAttribute>();
 
-                        var this_class = new FunctionClassDefinition { name = impl_attribute.Name, implements = impl_attribute.Implements, containing_namespace = type.Namespace, server_mapped = impl_attribute.ServerMapped };
+                        var this_class = new FunctionClassDefinition
+                        {
+                            name = impl_attribute.Name,
+                            implements = impl_attribute.Implements,
+                            containing_namespace = type.Namespace,
+                            server_mapped = impl_attribute.ServerMapped
+                        };
                         var methods = ArgonCore.Interface.Loader.InterfaceMethodsForType(type);
 
                         var new_functions = new List<FunctionClassDefinition.FunctionDefinition>();
