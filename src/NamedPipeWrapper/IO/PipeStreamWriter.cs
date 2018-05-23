@@ -91,6 +91,9 @@ namespace NamedPipeWrapper.IO
         /// <exception cref="IOException">The pipe is broken or another I/O error occurred.</exception>
         public void WaitForPipeDrain()
         {
+#if __UNIX__
+                Console.WriteLine("Call to WaitForDrain WILL fail!");
+#endif
             BaseStream.WaitForPipeDrain();
         }
     }

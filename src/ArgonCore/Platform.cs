@@ -22,11 +22,7 @@ namespace ArgonCore
 
         public static string AssemblyExtension()
         {
-            if (IsLinux()) return ".so";
-            if (IsWindows()) return ".dll";
-            if (IsOSX()) return ".dylib";
-
-            throw new Exception("Unknown platform...");
+            return ".dll";
         }
     }
 }

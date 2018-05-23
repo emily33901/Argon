@@ -173,12 +173,14 @@ namespace NamedPipeWrapper
                 handshakePipe = PipeServerFactory.CreateAndConnectPipe(pipeName);
                 var handshakeWrapper = new PipeStreamWrapper<string, string>(handshakePipe);
                 handshakeWrapper.WriteObject(connectionPipeName);
-                handshakeWrapper.WaitForPipeDrain();
-                handshakeWrapper.Close();
 
                 // Wait for the client to connect to the data pipe
                 dataPipe = PipeServerFactory.CreatePipe(connectionPipeName);
                 dataPipe.WaitForConnection();
+
+                // Client has now connected (Which means that they found our data pipe)
+                // We can now close the handshake pipe
+                handshakeWrapper.Close();
 
                 // Add the client's connection to the list of connections
                 connection = ConnectionFactory.CreateConnection<TRead, TWrite>(dataPipe);

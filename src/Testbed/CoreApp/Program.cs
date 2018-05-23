@@ -29,13 +29,11 @@ namespace testbed
             Console.WriteLine("Creating user interface map...");
             dynamic steam_user = c.CreateMapContext("SteamUser019");
 
-            Console.WriteLine("Calling TestMeme2()");
-            var r = steam_user.TestMeme2(new int[] { 10, 20, 30, 40 });
-            Console.WriteLine("TestMeme2 returns {0}", r);
+            var huser = steam_user.GetHSteamUser();
 
             var msg = Client.GetCallback();
 
-            if(msg == null)
+            if (msg == null)
             {
                 Console.WriteLine("callback is null!");
             }

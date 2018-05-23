@@ -150,11 +150,13 @@ namespace DelegateGenerator
 
         static void Main(string[] args)
         {
+            Console.WriteLine("Finding classes...");
             FindClasses();
 
+            Console.WriteLine("Writing Files...");
             WriteFiles();
 
-            Console.ReadLine();
+            Console.WriteLine("Done!");
         }
 
         static void WriteDelegates()
