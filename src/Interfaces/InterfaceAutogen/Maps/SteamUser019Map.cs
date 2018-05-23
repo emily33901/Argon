@@ -9,7 +9,7 @@ namespace InterfaceUser
     [ArgonCore.Interface.Map(Name = "SteamUser019", Implements = "SteamUser")]
     public class SteamUser019_Map : ArgonCore.Interface.IBaseInterfaceMap
     {
-        public IntPtr GetHSteamUser()
+        public IntPtr GetHSteamUser(IntPtr _)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -19,7 +19,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<IntPtr>(sf);
         }
-        public bool LoggedOn()
+        public bool LoggedOn(IntPtr _)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -29,7 +29,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<bool>(sf);
         }
-        public System.UInt64 GetSteamID()
+        public System.UInt64 GetSteamID(IntPtr _)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -39,7 +39,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<System.UInt64>(sf);
         }
-        public int InitiateGameConnection(IntPtr blob, uint blob_count, System.UInt64 gameserver_id, uint server_ip, System.UInt16 server_port, bool secure)
+        public int InitiateGameConnection(IntPtr _, IntPtr blob, uint blob_count, System.UInt64 gameserver_id, uint server_ip, System.UInt16 server_port, bool secure)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -49,7 +49,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<int>(sf);
         }
-        public void TerminateGameConnection(uint server_ip, System.UInt16 server_port)
+        public void TerminateGameConnection(IntPtr _, uint server_ip, System.UInt16 server_port)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -59,7 +59,7 @@ namespace InterfaceUser
             };
             ArgonCore.IPC.Client.CallSerializedFunction(sf);
         }
-        public void TrackAppUsageEvent(System.UInt64 game_id, int usage_event, string extra_info)
+        public void TrackAppUsageEvent(IntPtr _, System.UInt64 game_id, int usage_event, string extra_info)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -69,7 +69,7 @@ namespace InterfaceUser
             };
             ArgonCore.IPC.Client.CallSerializedFunction(sf);
         }
-        public bool GetUserDataFolder(string buffer, int count)
+        public bool GetUserDataFolder(IntPtr _, string buffer, int count)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -79,7 +79,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<bool>(sf);
         }
-        public void StartVoiceRecording()
+        public void StartVoiceRecording(IntPtr _)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -89,7 +89,7 @@ namespace InterfaceUser
             };
             ArgonCore.IPC.Client.CallSerializedFunction(sf);
         }
-        public void StopVoiceRecording()
+        public void StopVoiceRecording(IntPtr _)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -99,7 +99,7 @@ namespace InterfaceUser
             };
             ArgonCore.IPC.Client.CallSerializedFunction(sf);
         }
-        public uint GetAvailableVoice(System.UInt32[] compressed_data, System.UInt32[] uncompressed, uint desired_sample_rate)
+        public uint GetAvailableVoice(IntPtr _, System.UInt32[] compressed_data, System.UInt32[] uncompressed, uint desired_sample_rate)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -109,7 +109,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<uint>(sf);
         }
-        public int GetVoice(bool want_compressed, IntPtr dest_buffer, uint dest_buffer_size, ref System.UInt32 compressed_bytes_written, bool wants_uncompressed, IntPtr uncompressed_dest, uint uncompressed_buffer_size, ref System.UInt32 bytes_written, uint uncompressed_desired_samplerate)
+        public int GetVoice(IntPtr _, bool want_compressed, IntPtr dest_buffer, uint dest_buffer_size, ref System.UInt32 compressed_bytes_written, bool wants_uncompressed, IntPtr uncompressed_dest, uint uncompressed_buffer_size, ref System.UInt32 bytes_written, uint uncompressed_desired_samplerate)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -119,7 +119,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<int>(sf);
         }
-        public int DecompressVoice(IntPtr compressed, uint compressed_size, IntPtr dest_buffer, uint dest_size, ref System.UInt32 bytes_written, uint sample_rate)
+        public int DecompressVoice(IntPtr _, IntPtr compressed, uint compressed_size, IntPtr dest_buffer, uint dest_size, ref System.UInt32 bytes_written, uint sample_rate)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -129,7 +129,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<int>(sf);
         }
-        public uint GetOptimalSampleRate()
+        public uint GetOptimalSampleRate(IntPtr _)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -139,7 +139,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<uint>(sf);
         }
-        public uint GetAuthSessionTicket(IntPtr ticket, uint ticket_size, ref System.UInt32 ticket_written)
+        public uint GetAuthSessionTicket(IntPtr _, IntPtr ticket, uint ticket_size, ref System.UInt32 ticket_written)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -149,7 +149,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<uint>(sf);
         }
-        public uint BeginAuthSession(IntPtr ticket, uint ticket_size, System.UInt64 steamid)
+        public uint BeginAuthSession(IntPtr _, IntPtr ticket, uint ticket_size, System.UInt64 steamid)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -159,7 +159,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<uint>(sf);
         }
-        public void EndAuthSession(System.UInt64 steam_id)
+        public void EndAuthSession(IntPtr _, System.UInt64 steam_id)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -169,7 +169,7 @@ namespace InterfaceUser
             };
             ArgonCore.IPC.Client.CallSerializedFunction(sf);
         }
-        public void CancelAuthTicket(uint ticket_handle)
+        public void CancelAuthTicket(IntPtr _, uint ticket_handle)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -179,7 +179,7 @@ namespace InterfaceUser
             };
             ArgonCore.IPC.Client.CallSerializedFunction(sf);
         }
-        public uint UserHasLicenseForApp(System.UInt64 steamID, uint appID)
+        public uint UserHasLicenseForApp(IntPtr _, System.UInt64 steamID, uint appID)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -189,7 +189,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<uint>(sf);
         }
-        public void AdvertiseGame(System.UInt64 game_server_id, uint server_ip, System.UInt16 server_port)
+        public void AdvertiseGame(IntPtr _, System.UInt64 game_server_id, uint server_ip, System.UInt16 server_port)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -199,7 +199,7 @@ namespace InterfaceUser
             };
             ArgonCore.IPC.Client.CallSerializedFunction(sf);
         }
-        public uint RequestEncryptedAppTicket(IntPtr data_to_include, uint data_size)
+        public uint RequestEncryptedAppTicket(IntPtr _, IntPtr data_to_include, uint data_size)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -209,7 +209,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<uint>(sf);
         }
-        public int GetGameBadgeLevel(int seris, bool foil)
+        public int GetGameBadgeLevel(IntPtr _, int seris, bool foil)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -219,7 +219,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<int>(sf);
         }
-        public int GetSteamLevel()
+        public int GetSteamLevel(IntPtr _)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -229,7 +229,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<int>(sf);
         }
-        public uint RequestStoreAuthURL(string redirect_url)
+        public uint RequestStoreAuthURL(IntPtr _, string redirect_url)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -239,7 +239,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<uint>(sf);
         }
-        public bool IsPhoneVerified()
+        public bool IsPhoneVerified(IntPtr _)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -249,7 +249,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<bool>(sf);
         }
-        public bool IsTwoFactorEnabled()
+        public bool IsTwoFactorEnabled(IntPtr _)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -259,7 +259,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<bool>(sf);
         }
-        public bool IsPhoneIdentifying()
+        public bool IsPhoneIdentifying(IntPtr _)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
@@ -269,7 +269,7 @@ namespace InterfaceUser
             };
             return ArgonCore.IPC.Client.CallSerializedFunction<bool>(sf);
         }
-        public bool IsPhoneRequiringVerification()
+        public bool IsPhoneRequiringVerification(IntPtr _)
         {
             var sf = new ArgonCore.IPC.SerializedFunction
             {
