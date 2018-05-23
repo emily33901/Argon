@@ -61,7 +61,6 @@ namespace ArgonCore.Interface
             //   3
             //   ...
 
-            // TODO: Warn if not x86
             var ptr_size = Marshal.SizeOf(typeof(IntPtr));
 
             // Allocate enough space for the new pointers in local memory
@@ -214,6 +213,12 @@ namespace ArgonCore.Interface
                 is_map = false;
 
                 impl = FindImpl(name);
+            }
+
+            if (impl == null)
+            {
+                Console.WriteLine("Ubable to find map or impl for interface {0}", name);
+                return (IntPtr.Zero, null, false);
             }
 
             var iface = FindInterfaceDelegates(impl.implements);

@@ -64,7 +64,7 @@ namespace ArgonCore.Client
         /// </summary>
         /// <param name="name"></param>
         /// <returns>New instance created</returns>
-        public object CreateMapContext(string name)
+        public object CreateMapInstance(string name)
         {
             var instance = Context.CreateInterfaceInstance(Context.FindInterfaceMap(name));
 
@@ -82,6 +82,8 @@ namespace ArgonCore.Client
         {
             // Always try to make a map
             var (context, iface, is_map) = Interface.Context.CreateInterface(name, true);
+
+            if (context == IntPtr.Zero) return IntPtr.Zero;
 
             iface.ClientId = (int)Id;
             iface.InterfaceId = -1;
@@ -106,6 +108,8 @@ namespace ArgonCore.Client
             // In most cases none of these should be mapped (With the exception of ISteamUtils)
 
             var (context, iface, is_map) = Context.CreateInterface(name, true);
+
+            if (context == IntPtr.Zero) return IntPtr.Zero;
 
             iface.ClientId = -1;
             iface.InterfaceId = -1;
