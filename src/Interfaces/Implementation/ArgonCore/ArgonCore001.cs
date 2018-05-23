@@ -15,8 +15,9 @@ namespace InterfaceArgonCore
         /// Linked to <see cref="Client.CreateInterfaceNoUser(string)"/>
         /// </summary>
         /// <param name="name"></param>
-        public IntPtr CreateInterface(string name)
+        public IntPtr CreateInterface(IntPtr _, string name)
         {
+            Console.WriteLine("ArgonCore001.CreateInterface({0})", name);
             return Client.CreateInterfaceNoUser(name);
         }
 
@@ -26,7 +27,7 @@ namespace InterfaceArgonCore
         /// <param name="pipe"></param>
         /// <param name="c"></param>
         /// <returns>Whether there is a new callback</returns>
-        public bool GetCallback(uint pipe, ref CallbackMsg c)
+        public bool GetCallback(IntPtr _, uint pipe, ref CallbackMsg c)
         {
             var new_callback = Client.GetCallback();
 
@@ -41,7 +42,7 @@ namespace InterfaceArgonCore
         /// Frees the last callback to this pipe
         /// </summary>
         /// <param name="c"></param>
-        public void FreeLastCallback(ref CallbackMsg c)
+        public void FreeLastCallback(IntPtr _, ref CallbackMsg c)
         {
             Client.FreeCallback();
         }
