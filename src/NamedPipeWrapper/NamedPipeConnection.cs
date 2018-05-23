@@ -182,12 +182,16 @@ namespace NamedPipeWrapper
                     //while (_writeQueue.Count > 0)
                     {
                         _streamWrapper.WriteObject(_writeQueue.Take());
-                        _streamWrapper.WaitForPipeDrain();
+
+                        // TODO:
+                        // In the original code we waited for the pipe to be read here
+                        // HOWEVER: since we also need to target UNIX platforms - we cannot do this
                     }
                 }
-                catch
+                catch (Exception e)
                 {
                     //we must igonre exception, otherwise, the namepipe wrapper will stop work.
+                    Console.WriteLine("Exception in WritePipe(): \"\"", e.Message);
                 }
             }
 

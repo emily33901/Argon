@@ -107,17 +107,6 @@ namespace NamedPipeWrapper.IO
         }
 
         /// <summary>
-        ///     Waits for the other end of the pipe to read all sent bytes.
-        /// </summary>
-        /// <exception cref="ObjectDisposedException">The pipe is closed.</exception>
-        /// <exception cref="NotSupportedException">The pipe does not support write operations.</exception>
-        /// <exception cref="IOException">The pipe is broken or another I/O error occurred.</exception>
-        public void WaitForPipeDrain()
-        {
-            _writer.WaitForPipeDrain();
-        }
-
-        /// <summary>
         ///     Closes the current stream and releases any resources (such as sockets and file handles) associated with the current stream.
         /// </summary>
         public void Close()
