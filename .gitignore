@@ -544,3 +544,8 @@ $RECYCLE.BIN/
 **/secrets.json
 **/.vs*/
 **/.vs*
+premake/
+gdb.txt
+core
+compile_commands.json
+.cquery_cached_index
