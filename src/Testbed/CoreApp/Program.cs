@@ -27,7 +27,7 @@ namespace testbed
             Client c = new Client();
 
             Console.WriteLine("Creating user interface map...");
-            dynamic steam_user = c.CreateMapContext("SteamUser019");
+            dynamic steam_user = c.CreateMapInstance("SteamUser019");
 
             var huser = steam_user.GetHSteamUser();
 
