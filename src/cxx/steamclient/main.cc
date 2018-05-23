@@ -232,7 +232,9 @@ void load_runtime() {
 
     if (!clr_handle) {
         printf("Unable to find libcoreclr.so\n");
+#ifndef _MSC_VER
         printf("Error:\n%s\n", dlerror());
+#endif
         return;
     }
 
