@@ -1,0 +1,25 @@
+[
+          {
+            "directory": "/home/josh/src/Argon/src/cxx/premake",
+            "file": "/home/josh/src/Argon/src/cxx/steamclient/ArgonInterface.cc",
+            "command": "cc -MMD -MP -DDEBUG -D_DEBUG -I/home/josh/src/Argon/src/cxx/steamclient -m32 -O0 -fPIC -g -std=c++17 -g3 -o /home/josh/src/Argon/src/cxx/premake/obj/x32/debug/steamclient/ArgonInterface.o -MF /home/josh/src/Argon/src/cxx/premake/obj/x32/debug/steamclient/ArgonInterface.d -c /home/josh/src/Argon/src/cxx/steamclient/ArgonInterface.cc"
+          }
+,
+          {
+            "directory": "/home/josh/src/Argon/src/cxx/premake",
+            "file": "/home/josh/src/Argon/src/cxx/steamclient/SteamClientExports.cc",
+            "command": "cc -MMD -MP -DDEBUG -D_DEBUG -I/home/josh/src/Argon/src/cxx/steamclient -m32 -O0 -fPIC -g -std=c++17 -g3 -o /home/josh/src/Argon/src/cxx/premake/obj/x32/debug/steamclient/SteamClientExports.o -MF /home/josh/src/Argon/src/cxx/premake/obj/x32/debug/steamclient/SteamClientExports.d -c /home/josh/src/Argon/src/cxx/steamclient/SteamClientExports.cc"
+          }
+,
+          {
+            "directory": "/home/josh/src/Argon/src/cxx/premake",
+            "file": "/home/josh/src/Argon/src/cxx/steamclient/main.cc",
+            "command": "cc -MMD -MP -DDEBUG -D_DEBUG -I/home/josh/src/Argon/src/cxx/steamclient -m32 -O0 -fPIC -g -std=c++17 -g3 -o /home/josh/src/Argon/src/cxx/premake/obj/x32/debug/steamclient/main.o -MF /home/josh/src/Argon/src/cxx/premake/obj/x32/debug/steamclient/main.d -c /home/josh/src/Argon/src/cxx/steamclient/main.cc"
+          }
+,
+          {
+            "directory": "/home/josh/src/Argon/src/cxx/premake",
+            "file": "/home/josh/src/Argon/src/cxx/testbed/CppTestBed.cc",
+            "command": "cc -MMD -MP -DDEBUG -D_DEBUG -I/home/josh/src/Argon/src/cxx/testbed -m32 -O0 -g -std=c++17 -g3 -o /home/josh/src/Argon/src/cxx/premake/obj/x32/debug/testbed/CppTestBed.o -MF /home/josh/src/Argon/src/cxx/premake/obj/x32/debug/testbed/CppTestBed.d -c /home/josh/src/Argon/src/cxx/testbed/CppTestBed.cc"
+          }
+]
