@@ -27,9 +27,19 @@ namespace InterfaceArgonCore
         /// <param name="pipe"></param>
         /// <param name="c"></param>
         /// <returns>Whether there is a new callback</returns>
-        public bool GetCallback(IntPtr _, uint pipe, ref CallbackMsg c)
+        public bool GetCallback(IntPtr _, ref CallbackMsg c)
         {
+            Console.WriteLine("GetCallback");
             var new_callback = Client.GetCallback();
+
+            if (new_callback == null)
+            {
+                Console.WriteLine("New callback is null!");
+            }
+            else
+            {
+                Console.WriteLine("Callback_id is {0}", new_callback.Value.callback_id);
+            }
 
             if (new_callback == null) return false;
 
@@ -42,7 +52,7 @@ namespace InterfaceArgonCore
         /// Frees the last callback to this pipe
         /// </summary>
         /// <param name="c"></param>
-        public void FreeLastCallback(IntPtr _, ref CallbackMsg c)
+        public void FreeLastCallback(IntPtr _)
         {
             Client.FreeCallback();
         }

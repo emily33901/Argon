@@ -8,22 +8,22 @@ namespace InterfaceUser
     [Impl(Name = "SteamUser019", Implements = "SteamUser", ServerMapped = true)]
     public class SteamUser019 : IBaseInterface
     {
-        public User u { get; set; }
+        public User u;
         public SteamUser019()
         {
-            u = new User();
+            u = new User(this);
         }
 
-        public IntPtr GetHSteamUser()
+        public uint GetHSteamUser()
         {
             Console.WriteLine("GetHSteamUser");
-            return IntPtr.Zero;
+            return u.ClientId;
         }
 
         public bool LoggedOn()
         {
             Console.WriteLine("LoggedOn");
-            return false;
+            return u.LoggedOn();
         }
 
         public ulong GetSteamID()
