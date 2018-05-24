@@ -24,18 +24,30 @@ namespace testbed
 
         static void Main(string[] args)
         {
-            Client c = new Client();
+            var id = Client.CreateNewClient();
+
+            var c = Client.ActiveClients[id];
 
             Console.WriteLine("Creating user interface map...");
             dynamic steam_user = c.CreateMapInstance("SteamUser019");
 
-            var huser = steam_user.GetHSteamUser();
+            var huser = steam_user.GetHSteamUser(IntPtr.Zero);
 
-            var msg = Client.GetCallback();
+            Console.WriteLine("huser is {0}", huser);
 
-            if (msg == null)
+            while(!Console.KeyAvailable)
             {
-                Console.WriteLine("callback is null!");
+                var msg = Client.GetCallback();
+                if (msg == null)
+                {
+                    Console.WriteLine("callback is null!");
+                }
+                else
+                {
+                    Console.WriteLine("Message id: {0}", msg.Value.callback_id);
+                }
+
+                Thread.Sleep(1000);
             }
         }
     }
