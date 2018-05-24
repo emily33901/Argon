@@ -9,4 +9,3 @@ echo building...
 echo done.
 
 popd
-exit

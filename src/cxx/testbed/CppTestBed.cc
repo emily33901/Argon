@@ -5,6 +5,7 @@
 #include <Windows.h>
 #else
 #include <dlfcn.h>
+#include <unistd.h>
 using DWORD = unsigned int;
 #endif
 
@@ -128,7 +129,16 @@ public:
     virtual void *GetISteamVideo(HSteamUser hSteamuser, HSteamPipe hSteamPipe, const char *pchVersion) = 0;
 };
 
+struct CallbackMsg_t {
+    HSteamUser     m_hSteamUser;
+    int            m_iCallback;
+    unsigned char *m_pubParam;
+    int            m_cubParam;
+};
+
 using CreateInterfaceFn = void *(*)(const char *);
+using GetCallbackFn     = bool (*)(unsigned int pipe, CallbackMsg_t *callback);
+using FreeCallbackFn    = bool (*)(unsigned int pipe);
 
 int main(int argc, const char **argv) {
     if (argc == 1) return 0;
@@ -139,6 +149,8 @@ int main(int argc, const char **argv) {
     auto handle = LoadLibrary(path);
 
     auto create_interface_proc = (CreateInterfaceFn)GetProcAddress(handle, "CreateInterface");
+    auto get_next_callback     = (GetCallbackFn)GetProcAddress(handle, "Steam_BGetCallback");
+    auto free_last_callback    = (FreeCallbackFn)GetProcAddress(handle, "Steam_FreeLastCallback");
 #else
     auto handle = dlopen(path, RTLD_NOW);
 
@@ -149,23 +161,35 @@ int main(int argc, const char **argv) {
     }
 
     auto create_interface_proc = (CreateInterfaceFn)dlsym(handle, "CreateInterface");
+    auto get_next_callback     = (GetCallbackFn)dlsym(handle, "Steam_BGetCallback");
+    auto free_last_callback    = (FreeCallbackFn)dlsym(handle, "Steam_FreeLastCallback");
 #endif
 
     if (create_interface_proc != nullptr) {
         auto steam_client = (ISteamClient017 *)create_interface_proc("SteamClient017");
 
         if (steam_client != nullptr) {
-            auto pipe = steam_client->CreateSteamPipe();
-            pipe      = 100;
+            auto pipe_handle = steam_client->CreateSteamPipe();
+            auto user_handle = steam_client->CreateLocalUser(&pipe_handle, 4);
+            auto user        = steam_client->GetISteamUser(user_handle, pipe_handle, "SteamUser019");
 
-            auto result = steam_client->BReleaseSteamPipe(0);
-            printf("ReleaseSteamPipe returned %d (%s)\n", result, result ? "true" : "false");
+            if (user == nullptr) printf("Unable to get user!\n");
 
-            auto ipc_call_count = steam_client->GetIPCCallCount();
-            printf("GetIPCCallCount returned %d \n", ipc_call_count);
+            CallbackMsg_t msg;
 
-            auto user  = steam_client->CreateLocalUser(&pipe, 0);
-            auto video = steam_client->GetISteamVideo(0, 0, "meme");
+            while (true) {
+                while (get_next_callback(pipe_handle, &msg)) {
+                    printf("msg from user %lu: id: %d size: %u\n", msg.m_hSteamUser, msg.m_iCallback, msg.m_cubParam);
+
+                    free_last_callback(pipe_handle);
+                }
+#ifdef _MSC_VER
+                Sleep(1000);
+#else
+                sleep(1);
+#endif
+            }
+
         } else {
             printf("Unable to find SteamClient017\n");
         }
