@@ -73,6 +73,12 @@ namespace ArgonCore.Server
                 ActiveClients[id] = c;
         }
 
+        public static Client GetClient(uint id)
+        {
+            lock (active_client_lock)
+                return ActiveClients[id];
+        }
+
         public IBaseInterface CreateInterface(string name)
         {
             // Server never needs delegates or contexts becuase it is just managing instances

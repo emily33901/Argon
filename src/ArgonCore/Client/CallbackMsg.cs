@@ -5,6 +5,7 @@ using System.Text;
 
 namespace ArgonCore.Client
 {
+    [Serializable]
     public class InternalCallbackMsg
     {
         public uint user_id;

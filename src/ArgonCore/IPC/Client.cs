@@ -37,6 +37,8 @@ namespace ArgonCore.IPC
         /// </summary>
         public static void AllocatePipe()
         {
+            if (CurrentPipe != null) return;
+
             CurrentResults = new List<SerializedResult>();
             ResultSemaphores = new Dictionary<uint, Semaphore>();
 
