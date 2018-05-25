@@ -18,13 +18,13 @@ namespace InterfaceUser
         {
             Console.WriteLine("GetHSteamUser");
             // Make sure to return the handle not the id
-            return u.ClientId + 1;
+            return u.GetHandle();
         }
 
         public bool LoggedOn()
         {
             Console.WriteLine("LoggedOn");
-            return u.LoggedOn();
+            return u.GetLogonState() == User.LogonState.LoggedOn;
         }
 
         public ulong GetSteamID()

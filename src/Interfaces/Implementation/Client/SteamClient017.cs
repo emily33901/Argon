@@ -145,8 +145,7 @@ namespace InterfaceClient
         public void RunFrame(IntPtr _)
         {
             // Pipes automatically run ipc threads so...
-            // TODO: is this type of behaviour allowed or do applications EXPECT
-            // Callbacks to happen when runframe is called
+            // TODO: is this type of behaviour allowable?
             Console.WriteLine("RunFrame");
         }
 
