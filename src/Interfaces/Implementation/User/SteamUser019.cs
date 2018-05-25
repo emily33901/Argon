@@ -14,10 +14,11 @@ namespace InterfaceUser
             u = new User(this);
         }
 
-        public uint GetHSteamUser()
+        public int GetHSteamUser()
         {
             Console.WriteLine("GetHSteamUser");
-            return u.ClientId;
+            // Make sure to return the handle not the id
+            return u.ClientId + 1;
         }
 
         public bool LoggedOn()

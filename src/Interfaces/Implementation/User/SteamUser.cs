@@ -10,7 +10,7 @@ namespace InterfaceUser
     {
         IBaseInterface Parent { get; set; }
 
-        public uint ClientId { get { return (uint)Parent.ClientId;  } }
+        public int ClientId { get { return Parent.ClientId; } }
 
         public User(IBaseInterface parent)
         {
