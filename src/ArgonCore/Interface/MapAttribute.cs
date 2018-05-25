@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using ArgonCore.IPC;
+
 namespace ArgonCore.Interface
 {
     /// <summary>

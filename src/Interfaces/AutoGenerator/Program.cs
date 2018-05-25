@@ -61,14 +61,20 @@ namespace DelegateGenerator
                 case "System.Void":
                     new_name = "void";
                     break;
-                case "System.Int32":
-                    new_name = "int";
-                    break;
                 case "System.String":
                     new_name = "string";
                     break;
+                case "System.Int32":
+                    new_name = "int";
+                    break;
                 case "System.UInt32":
                     new_name = "uint";
+                    break;
+                case "System.Int64":
+                    new_name = "long";
+                    break;
+                case "System.UInt64":
+                    new_name = "ulong";
                     break;
                 case "System.Boolean":
                     new_name = "bool";
@@ -276,8 +282,9 @@ namespace {0}
                     new_file.AppendLine("        {");
 
                     // build the body of the function
-                    new_file.AppendLine("            var sf = new ArgonCore.IPC.SerializedFunction");
+                    new_file.AppendLine("            var f = new ArgonCore.IPC.SerializedFunction");
                     new_file.AppendLine("            {");
+                    new_file.AppendLine("               ClientId = ClientId,");
                     new_file.AppendLine("               InterfaceId = InterfaceId,");
                     new_file.AppendLine(
                         String.Format("               Name = \"{0}\",", f.name));
@@ -293,13 +300,13 @@ namespace {0}
                         new_file.Append("            ");
                     }
 
-                    new_file.AppendFormat("ArgonCore.IPC.Client.CallSerializedFunction");
+                    new_file.AppendFormat("ArgonCore.IPC.ClientPipe.CallSerializedFunction");
                     if (f.return_type != "void")
                     {
                         new_file.AppendFormat("<{0}>", f.return_type);
                     }
 
-                    new_file.AppendLine("(sf);");
+                    new_file.AppendLine("(PipeId, f);");
                     new_file.AppendLine("        }");
                 }
 

@@ -23,7 +23,7 @@ namespace ArgonCore.Server
         {
             client.Log.WriteLine("packet", "{0} [{1}]", packet.MsgType, (uint)packet.MsgType);
 
-            client.PendingCallbacks.Enqueue(new ArgonCore.Client.InternalCallbackMsg
+            ArgonCore.Server.Client.PendingCallbacks.Enqueue(new ArgonCore.Client.InternalCallbackMsg
             {
                 user_id = client.Id,
                 callback_id = (uint)packet.MsgType,

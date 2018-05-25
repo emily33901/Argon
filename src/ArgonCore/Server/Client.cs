@@ -13,15 +13,16 @@ namespace ArgonCore.Server
     public class Client
     {
         public static object active_client_lock = new object();
-        static Dictionary<uint, Client> ActiveClients { get; set; } = new Dictionary<uint, Client>();
+        static List<Client> ActiveClients { get; set; } = new List<Client>();
 
-        public Queue<ArgonCore.Client.InternalCallbackMsg> PendingCallbacks { get; set; } = new Queue<ArgonCore.Client.InternalCallbackMsg>();
+        public static Queue<ArgonCore.Client.InternalCallbackMsg> PendingCallbacks { get; set; } = new Queue<ArgonCore.Client.InternalCallbackMsg>();
 
         // Used for internal handling of clients
-        // This is set by the IPC by connection id
-        public uint Id { get; private set; }
+        public int Id { get; private set; }
 
         public List<IBaseInterface> interfaces;
+
+        public static List<IBaseInterface> NoUserInterface { get; set; } = new List<IBaseInterface>();
 
         // Steamkit helpers for this client
         public SteamClient SteamClient { get; private set; }
@@ -37,43 +38,48 @@ namespace ArgonCore.Server
         /// <summary>
         /// Create a new <see cref="Client"/> from the requested instance 
         /// </summary>
-        Client(uint id)
+        Client()
         {
             interfaces = new List<IBaseInterface>();
 
             Loader.Load();
 
-            Id = id;
-
-            Log = new Logger(Id);
-
+            lock (active_client_lock)
             {
-                // create our steamclient instance
-                SteamClient = new SteamClient();
+                ActiveClients.Add(this);
+                Id = ActiveClients.Count - 1;
 
-                // create the callback manager which will route callbacks to function calls
-                CallbackManager = new CallbackManager(SteamClient);
+                Log = new Logger(Id);
 
-                // Setup our packet handler for all packets
-                SteamClient.AddHandler(new PacketHandler(this));
+                {
+                    // create our steamclient instance
+                    SteamClient = new SteamClient();
 
-                // Subscribe to some important callbacks
-                CallbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnect);
-                CallbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnect);
+                    // create the callback manager which will route callbacks to function calls
+                    CallbackManager = new CallbackManager(SteamClient);
+
+                    // Setup our packet handler for all packets
+                    SteamClient.AddHandler(new PacketHandler(this));
+
+                    // Subscribe to some important callbacks
+                    CallbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnect);
+                    CallbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnect);
+                }
+
             }
 
             // Automatically try to connect...
             Connect();
         }
 
-        public static void CreateNewClient(uint id)
+        public static int CreateNewClient()
         {
-            var c = new Client(id);
-            lock (active_client_lock)
-                ActiveClients[id] = c;
+            var c = new Client();
+
+            return c.Id;
         }
 
-        public static Client GetClient(uint id)
+        public static Client GetClient(int id)
         {
             lock (active_client_lock)
                 return ActiveClients[id];
@@ -87,8 +93,19 @@ namespace ArgonCore.Server
             var instance = (IBaseInterface)Context.CreateInterfaceInstance(impl);
             interfaces.Add(instance);
 
-            instance.ClientId = (int)Id;
+            instance.ClientId = Id;
             instance.InterfaceId = interfaces.Count - 1;
+            instance.Implementation = impl;
+
+            return instance;
+        }
+
+        public static IBaseInterface CreateInterfaceNoUser(string name)
+        {
+            var impl = Context.FindImpl(name);
+            var instance = (IBaseInterface)Context.CreateInterfaceInstance(impl);
+            NoUserInterface.Add(instance);
+
             instance.Implementation = impl;
 
             return instance;
@@ -114,19 +131,19 @@ namespace ArgonCore.Server
             Running = false;
         }
 
-        public void RunCallbacks()
+        public void RunFrame()
         {
             // Dont wait indefinitely for new callbacks
             CallbackManager.RunWaitCallbacks(TimeSpan.FromSeconds(1));
         }
 
-        public static void RunAllCallbacks()
+        public static void RunAllFrames()
         {
             lock (active_client_lock)
             {
-                foreach (var c in ActiveClients.Values)
+                foreach (var c in ActiveClients)
                 {
-                    c.RunCallbacks();
+                    c.RunFrame();
                 }
             }
         }
@@ -184,8 +201,49 @@ namespace ArgonCore.Server
             return null;
         }
 
-        public static object CallSerializedFunction(uint client_id, int interface_id, string name, object[] args)
+        public static object CallSerializedFunction(int client_id, int interface_id, string name, object[] args)
         {
+
+            if (client_id == -1 && interface_id == -1)
+            {
+                // TODO: handle special server related functions
+                switch (name)
+                {
+                    case "CreateClient":
+                        {
+                            return CreateNewClient();
+                        }
+                    case "CreateInterface":
+                        {
+                            return CreateInterfaceNoUser((string)args[0]);
+                        }
+                    case "NextCallback":
+                        {
+                            if (PendingCallbacks.Count > 0)
+                            {
+                                return PendingCallbacks.Dequeue();
+                            }
+
+                            return null;
+                        }
+                }
+                return null;
+            }
+            else if (client_id == -1 && interface_id != -1)
+            {
+                var iface = NoUserInterface[interface_id];
+                var mi = iface.Implementation.methods.Find(x => x.Name == name);
+
+                if (mi != null)
+                {
+                    return mi.Invoke(NoUserInterface[interface_id], args);
+                }
+
+                Console.WriteLine("client Unable to find method \"{0}\" from interface \"{1}\"", name, iface.Implementation.name);
+
+                return null;
+            }
+
             return ActiveClients[client_id].CallSerializedFunction(interface_id, name, args);
         }
     }

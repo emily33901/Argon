@@ -10,65 +10,59 @@ namespace ArgonCore.Client
     public class Client
     {
         // Used for internal handling of clients
-        public static Dictionary<uint, Client> ActiveClients { get; set; } = new Dictionary<uint, Client>();
+        public static Dictionary<int, Client> ActiveClients { get; set; } = new Dictionary<int, Client>();
 
-        private static uint next_id = 0;
-        public uint Id { get; private set; }
+        public int Id { get; private set; }
 
         // Interfaces (or maps) that are allocated on the client
         public List<IBaseInterface> interfaces;
 
         // NoUser interfaces (or maps) that are allocated on the client
-        public static List<IBaseInterface> no_user_interfaces = new List<IBaseInterface>();
+        public static List<IBaseInterface> NoUserInterfaces { get; set; } = new List<IBaseInterface>();
 
         // Logging instance for this client
         public Logger Log { get; private set; }
 
-        public Client()
+        // The pipeid that this user is backed by
+        private int PipeId { get; set; }
+
+        Client()
         {
             interfaces = new List<IBaseInterface>();
 
             Loader.Load();
-
-            Id = next_id;
-            next_id += 1;
-
-            Log = new Logger(Id);
-
-            IPC.Client.AllocatePipe();
-
-            Log.WriteLine("client", "Waiting for pipe...");
-            IPC.Client.CurrentPipe.WaitForConnection();
-
         }
 
         /// <summary>
         /// Create a new client instance
         /// </summary>
         /// <returns>The id of this new client</returns>
-        public static uint CreateNewClient()
+        public static int CreateNewClient(int pipe_id)
         {
-            if (ActiveClients == null)
-            {
-                ActiveClients = new Dictionary<uint, Client>();
-            }
-
             var c = new Client();
-            ActiveClients[c.Id] = c;
 
-            return c.Id;
+            c.Id = Server.CreateClient(pipe_id);
+            c.Log = new Logger(c.Id);
+
+            ActiveClients[c.Id + 1] = c;
+
+            return c.Id + 1;
         }
 
         /// <summary>
-        /// Create a new instance (without creating a delelgat map) of an interface
+        /// Create a new instance (without creating a delelgate map) of an interface
         /// </summary>
         /// <param name="name"></param>
         /// <returns>New instance created</returns>
-        public object CreateMapInstance(string name)
+        public object CreateMapInstance(int pipe_id, string name)
         {
-            var instance = Context.CreateInterfaceInstance(Context.FindInterfaceMap(name));
+            var instance = (IBaseInterfaceMap)Context.CreateInterfaceInstance(Context.FindInterfaceMap(name));
 
-            var interface_id = Server.CreateInterface(name);
+            var interface_id = Server.CreateInterface(pipe_id, Id, name);
+
+            instance.InterfaceId = interface_id;
+            instance.ClientId = Id;
+            instance.PipeId = pipe_id;
 
             return instance;
         }
@@ -78,19 +72,23 @@ namespace ArgonCore.Client
         /// </summary>
         /// <param name="name"></param>
         /// <returns>New context created</returns>
-        public IntPtr CreateInterface(string name)
+        public IntPtr CreateInterface(int pipe_id, string name)
         {
             // Always try to make a map
             var (context, iface, is_map) = Interface.Context.CreateInterface(name, true);
 
             if (context == IntPtr.Zero) return IntPtr.Zero;
 
-            iface.ClientId = (int)Id;
+            iface.ClientId = Id;
             iface.InterfaceId = -1;
 
             if (is_map)
             {
-                iface.InterfaceId = Server.CreateInterface(name);
+                iface.InterfaceId = Server.CreateInterface(pipe_id, Id, name);
+
+                var map = (IBaseInterfaceMap)iface;
+
+                map.PipeId = pipe_id;
             }
 
             interfaces.Add(iface);
@@ -103,10 +101,9 @@ namespace ArgonCore.Client
         /// </summary>
         /// <param name="name"></param>
         /// <returns>New context created</returns>
-        public static IntPtr CreateInterfaceNoUser(string name)
+        public static IntPtr CreateInterfaceNoUser(int pipe_id, string name)
         {
             // In most cases none of these should be mapped (With the exception of ISteamUtils)
-
             var (context, iface, is_map) = Context.CreateInterface(name, true);
 
             if (context == IntPtr.Zero) return IntPtr.Zero;
@@ -116,20 +113,38 @@ namespace ArgonCore.Client
 
             if (is_map)
             {
-                iface.InterfaceId = Server.CreateInterface(name);
+                iface.InterfaceId = Server.CreateInterfaceNoUser(pipe_id, name);
+
+                var map = (IBaseInterfaceMap)iface;
+                map.PipeId = pipe_id;
             }
 
-            no_user_interfaces.Add(iface);
+            NoUserInterfaces.Add(iface);
 
             return context;
         }
 
-        private static IntPtr callback_alloc_handle;
+        public static IntPtr CreateInterfaceNoUserNoPipe(string name)
+        {
+            // None of these can possibly be maps!
+            var (context, iface, _) = Context.CreateInterface(name);
 
-        public static CallbackMsg? GetCallback()
+            if (context == IntPtr.Zero) return IntPtr.Zero;
+
+            iface.ClientId = -1;
+            iface.InterfaceId = -1;
+
+            NoUserInterfaces.Add(iface);
+
+            return context;
+        }
+
+        private static Dictionary<int, IntPtr> CallbackAllocHandles { get; set; } = new Dictionary<int, IntPtr>();
+
+        public static CallbackMsg? GetCallback(int pipe_id)
         {
             // Ask the server for the callback
-            var c = Server.NextCallback();
+            var c = Server.NextCallback(pipe_id);
 
             // No new callback from server
             if (c == default(InternalCallbackMsg))
@@ -137,32 +152,42 @@ namespace ArgonCore.Client
                 return null;
             }
 
-            if (callback_alloc_handle != IntPtr.Zero)
+            IntPtr current_value;
+            bool found = CallbackAllocHandles.TryGetValue(pipe_id, out current_value);
+
+            if (found && current_value != IntPtr.Zero)
             {
                 // This mimics the behaviour of the steam functions that do this
                 Console.WriteLine("Attempt to alloc new callback before old one has been freed");
 
                 // Free it for them...
-                FreeCallback();
+                FreeCallback(pipe_id);
             }
 
             // Allocate space for the data portion of the msg
-            callback_alloc_handle = Marshal.AllocHGlobal(c.data.Length);
-            Marshal.Copy(c.data, 0, callback_alloc_handle, c.data.Length);
+            CallbackAllocHandles[pipe_id] = Marshal.AllocHGlobal(c.data.Length);
+            Marshal.Copy(c.data, 0, CallbackAllocHandles[pipe_id], c.data.Length);
 
             return new CallbackMsg
             {
-                user_id = c.user_id,
+                // Make sure to convert from the server userid to the client userid
+                user_id = c.user_id + 1,
                 callback_id = c.callback_id,
-                data = callback_alloc_handle,
+                data = CallbackAllocHandles[pipe_id],
                 data_size = c.data.Length,
             };
         }
 
-        public static void FreeCallback()
+        public static void FreeCallback(int pipe_id)
         {
-            Marshal.FreeHGlobal(callback_alloc_handle);
-            callback_alloc_handle = IntPtr.Zero;
+            IntPtr current_value;
+            bool found = CallbackAllocHandles.TryGetValue(pipe_id, out current_value);
+
+            if (found)
+            {
+                Marshal.FreeHGlobal(current_value);
+                current_value = IntPtr.Zero;
+            }
         }
     }
 }

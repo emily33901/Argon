@@ -22,5 +22,6 @@ namespace ArgonCore.Interface
 
     public class IBaseInterfaceMap : IBaseInterface
     {
+        public int PipeId { get; set; }
     }
 }

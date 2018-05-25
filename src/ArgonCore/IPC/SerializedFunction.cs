@@ -12,6 +12,10 @@ namespace ArgonCore.IPC
     {
         public uint JobId { get; set; }
         public int InterfaceId { get; set; }
+
+        public int PipeId { get; set; }
+
+        public int ClientId { get; set; }
     }
 
     /// <summary>

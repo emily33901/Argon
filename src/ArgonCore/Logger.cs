@@ -8,13 +8,13 @@ namespace ArgonCore
 {
     public sealed class Logger
     {
-        private uint core_id;
+        private int core_id;
         private string file;
 
         private List<string> buffered = new List<string>();
         private object file_lock = new object();
 
-        public Logger(uint id)
+        public Logger(int id)
         {
             core_id = id;
             file = string.Format("log_user_{0}.log", core_id);

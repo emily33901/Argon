@@ -24,20 +24,22 @@ namespace testbed
 
         static void Main(string[] args)
         {
-            var id = Client.CreateNewClient();
+            var pipe_id = ArgonCore.IPC.ClientPipe.CreatePipe();
+
+            var id = Client.CreateNewClient(pipe_id);
 
             var c = Client.ActiveClients[id];
 
             Console.WriteLine("Creating user interface map...");
-            dynamic steam_user = c.CreateMapInstance("SteamUser019");
+            dynamic steam_user = c.CreateMapInstance(pipe_id, "SteamUser019");
 
             var huser = steam_user.GetHSteamUser(IntPtr.Zero);
 
             Console.WriteLine("huser is {0}", huser);
 
-            while(!Console.KeyAvailable)
+            while (!Console.KeyAvailable)
             {
-                var msg = Client.GetCallback();
+                var msg = Client.GetCallback(pipe_id);
                 if (msg == null)
                 {
                     Console.WriteLine("callback is null!");

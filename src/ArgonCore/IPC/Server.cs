@@ -44,7 +44,7 @@ namespace ArgonCore.IPC
         /// <param name="message"></param>
         private static void OnClientMessage(NamedPipeConnection<SerializedFunction, SerializedResult> connection, SerializedFunction message)
         {
-            lock(client_lock)
+            lock (client_lock)
             {
                 Console.WriteLine("Client message...");
 
@@ -69,15 +69,19 @@ namespace ArgonCore.IPC
 
                 try
                 {
-                    result = ArgonCore.Server.Client.CallSerializedFunction((uint)connection.Id, message.InterfaceId, message.Name, message.Args);
+                    result = ArgonCore.Server.Client.CallSerializedFunction(message.ClientId, message.InterfaceId, message.Name, message.Args);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("Error occured processing job {0}, \"{1}\"", message.JobId, e.Message);
                 }
 
+                Console.WriteLine("message.PipeId: {0}", message.PipeId);
+
                 var result_message = new SerializedResult
                 {
+                    PipeId = message.PipeId,
+                    ClientId = message.ClientId,
                     InterfaceId = message.InterfaceId,
                     JobId = message.JobId,
                     Result = result,
@@ -107,11 +111,8 @@ namespace ArgonCore.IPC
             lock (client_lock)
             {
                 // TODO: create new client
-                ArgonCore.Server.Client.CreateNewClient((uint)connection.Id);
-
                 Console.WriteLine("Client connected [{0}]...", connection.Id);
             }
-
         }
     }
 }

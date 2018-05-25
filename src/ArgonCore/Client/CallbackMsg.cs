@@ -8,7 +8,7 @@ namespace ArgonCore.Client
     [Serializable]
     public class InternalCallbackMsg
     {
-        public uint user_id;
+        public int user_id;
         public uint callback_id;
         public byte[] data;
     }
@@ -18,7 +18,7 @@ namespace ArgonCore.Client
     /// </summary>
     public struct CallbackMsg
     {
-        public uint user_id;
+        public int user_id;
         public uint callback_id;
         public IntPtr data;
         public int data_size;

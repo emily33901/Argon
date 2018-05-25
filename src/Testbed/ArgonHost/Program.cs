@@ -22,7 +22,7 @@ namespace ArgonHost
                 {
                     while (running)
                     {
-                        Client.RunAllCallbacks();
+                        Client.RunAllFrames();
                     }
 
                 });
