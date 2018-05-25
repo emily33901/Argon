@@ -10,12 +10,12 @@ namespace ArgonCore.Client
     public class Client
     {
         // Used for internal handling of clients
-        public static Dictionary<int, Client> ActiveClients { get; set; } = new Dictionary<int, Client>();
+        static Dictionary<int, Client> ActiveClients { get; set; } = new Dictionary<int, Client>();
 
         public int Id { get; private set; }
 
         // Interfaces (or maps) that are allocated on the client
-        public List<IBaseInterface> interfaces;
+        public List<IBaseInterface> Interfaces { get; private set; }
 
         // NoUser interfaces (or maps) that are allocated on the client
         public static List<IBaseInterface> NoUserInterfaces { get; set; } = new List<IBaseInterface>();
@@ -28,9 +28,14 @@ namespace ArgonCore.Client
 
         Client()
         {
-            interfaces = new List<IBaseInterface>();
+            Interfaces = new List<IBaseInterface>();
 
             Loader.Load();
+        }
+
+        public int GetHandle()
+        {
+            return Id + 1;
         }
 
         /// <summary>
@@ -39,14 +44,15 @@ namespace ArgonCore.Client
         /// <returns>The id of this new client</returns>
         public static int CreateNewClient(int pipe_id)
         {
-            var c = new Client();
-
-            c.Id = Server.CreateClient(pipe_id);
+            var c = new Client
+            {
+                Id = Server.CreateClient(pipe_id)
+            };
             c.Log = new Logger(c.Id);
 
-            ActiveClients[c.Id + 1] = c;
+            ActiveClients[c.Id] = c;
 
-            return c.Id + 1;
+            return c.GetHandle();
         }
 
         /// <summary>
@@ -91,7 +97,7 @@ namespace ArgonCore.Client
                 map.PipeId = pipe_id;
             }
 
-            interfaces.Add(iface);
+            Interfaces.Add(iface);
 
             return context;
         }
@@ -152,13 +158,12 @@ namespace ArgonCore.Client
                 return null;
             }
 
-            IntPtr current_value;
-            bool found = CallbackAllocHandles.TryGetValue(pipe_id, out current_value);
+            bool found = CallbackAllocHandles.TryGetValue(pipe_id, out IntPtr current_value);
 
             if (found && current_value != IntPtr.Zero)
             {
                 // This mimics the behaviour of the steam functions that do this
-                Console.WriteLine("Attempt to alloc new callback before old one has been freed");
+                Console.WriteLine("Attempt to alloc new callback before old one has been freed\nTHIS IS A PROGRAMMING ERROR");
 
                 // Free it for them...
                 FreeCallback(pipe_id);
@@ -171,6 +176,7 @@ namespace ArgonCore.Client
             return new CallbackMsg
             {
                 // Make sure to convert from the server userid to the client userid
+                // TODO: we should be very explicit about this
                 user_id = c.user_id + 1,
                 callback_id = c.callback_id,
                 data = CallbackAllocHandles[pipe_id],
@@ -180,8 +186,7 @@ namespace ArgonCore.Client
 
         public static void FreeCallback(int pipe_id)
         {
-            IntPtr current_value;
-            bool found = CallbackAllocHandles.TryGetValue(pipe_id, out current_value);
+            bool found = CallbackAllocHandles.TryGetValue(pipe_id, out IntPtr current_value);
 
             if (found)
             {

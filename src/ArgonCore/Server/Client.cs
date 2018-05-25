@@ -161,6 +161,9 @@ namespace ArgonCore.Server
             Log.WriteLine("client", "Disconnected");
 
             Connected = false;
+
+            // Attempt to reconnect straight away
+            Connect();
         }
 
         object CallSerializedFunction(int interface_id, string name, object[] args)

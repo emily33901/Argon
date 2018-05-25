@@ -14,39 +14,42 @@ namespace ArgonCore.IPC
     {
         public static List<ClientPipe> ActivePipes { get; set; } = new List<ClientPipe>();
 
-        public InternalClientPipe Pipe { get; private set; }
+        /// <summary>
+        /// Internal representation of the pipe used by this instance
+        /// </summary>
+        InternalClientPipe pipe;
 
         /// <summary>
         /// Results that are waiting for collection from the pipe
         /// </summary>
-        public List<SerializedResult> CurrentResults { get; private set; }
+        List<SerializedResult> current_results;
 
         /// <summary>
         /// Semaphores for results that are being waited on
         /// </summary>
-        public Dictionary<uint, Semaphore> ResultSemaphores { get; private set; }
+        Dictionary<uint, Semaphore> result_semaphores;
 
         /// <summary>
         /// The next job id for this pipe
         /// </summary>
-        static private uint NextJobId { get; set; }
+        uint NextJobId { get; set; }
 
         public int Id { get { return ActivePipes.IndexOf(this); } }
 
         ClientPipe()
         {
-            CurrentResults = new List<SerializedResult>();
-            ResultSemaphores = new Dictionary<uint, Semaphore>();
+            current_results = new List<SerializedResult>();
+            result_semaphores = new Dictionary<uint, Semaphore>();
 
-            Pipe = new InternalClientPipe("argon_pipe_server", ".");
+            pipe = new InternalClientPipe("argon_pipe_server", ".");
 
-            Pipe.Start();
-            Pipe.ServerMessage += OnServerMessage;
+            pipe.Start();
+            pipe.ServerMessage += OnServerMessage;
 
             ActivePipes.Add(this);
 
             Console.WriteLine("[pipe {0}] Waiting for connection...", Id);
-            Pipe.WaitForConnection();
+            pipe.WaitForConnection();
             Console.WriteLine("[pipe {0}] Connected...", Id);
         }
 
@@ -69,8 +72,8 @@ namespace ArgonCore.IPC
         {
             var pipe = ActivePipes[message.PipeId];
 
-            pipe.CurrentResults.Add(message);
-            var semaphore = pipe.ResultSemaphores[message.JobId];
+            pipe.current_results.Add(message);
+            var semaphore = pipe.result_semaphores[message.JobId];
             semaphore.Release();
         }
 
@@ -86,7 +89,7 @@ namespace ArgonCore.IPC
             f.JobId = job;
             f.PipeId = Id;
 
-            Pipe.PushMessage(f);
+            pipe.PushMessage(f);
 
             return;
         }
@@ -110,9 +113,9 @@ namespace ArgonCore.IPC
             f.JobId = job;
             f.PipeId = Id;
 
-            Pipe.PushMessage(f);
+            pipe.PushMessage(f);
 
-            ResultSemaphores.Add(job, new Semaphore(0, 1));
+            result_semaphores.Add(job, new Semaphore(0, 1));
 
             return WaitForResultForFunction<T>(f.JobId);
         }
@@ -131,12 +134,12 @@ namespace ArgonCore.IPC
         public T WaitForResultForFunction<T>(uint jobId)
         {
             // Wait for the semaphore and then remove it so gc collects it
-            var this_semaphore = ResultSemaphores[jobId];
+            var this_semaphore = result_semaphores[jobId];
             this_semaphore.WaitOne();
-            ResultSemaphores.Remove(jobId);
+            result_semaphores.Remove(jobId);
 
-            var found = CurrentResults.Find(x => x.JobId == jobId);
-            CurrentResults.Remove(found);
+            var found = current_results.Find(x => x.JobId == jobId);
+            current_results.Remove(found);
 
             if (found.Result == null) return default(T);
 
