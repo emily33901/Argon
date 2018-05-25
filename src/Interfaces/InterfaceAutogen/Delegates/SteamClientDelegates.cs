@@ -11,43 +11,43 @@ namespace InterfaceClient
     class SteamClient_Delegates
     {
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate uint CreateSteamPipeDelegate(IntPtr _);
+        public delegate int CreateSteamPipeDelegate(IntPtr _);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate bool ReleaseSteamPipeDelegate(IntPtr _, uint pipe);
+        public delegate bool ReleaseSteamPipeDelegate(IntPtr _, int pipe);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate uint ConnectToGlobalUserDelegate(IntPtr _, uint pipe);
+        public delegate int ConnectToGlobalUserDelegate(IntPtr _, int pipe);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate uint CreateLocalUserDelegate(IntPtr _, ref System.UInt32 user, uint account_type);
+        public delegate int CreateLocalUserDelegate(IntPtr _, ref System.Int32 pipe, uint account_type);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate void ReleaseUserDelegate(IntPtr _, uint user, uint pipe);
+        public delegate void ReleaseUserDelegate(IntPtr _, int user, int pipe);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamUserDelegate(IntPtr _, uint user, uint pipe, string version);
+        public delegate IntPtr GetSteamUserDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamGameServerDelegate(IntPtr _, uint user, uint pipe, string version);
+        public delegate IntPtr GetSteamGameServerDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate void SetLocalIPBindingDelegate(IntPtr _, uint ip, uint port);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamFriendsDelegate(IntPtr _, uint user, uint pipe, string version);
+        public delegate IntPtr GetSteamFriendsDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamUtilsDelegate(IntPtr _, uint pipe, string version);
+        public delegate IntPtr GetSteamUtilsDelegate(IntPtr _, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamMatchmakingDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamMatchmakingDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamMatchmakingServersDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamMatchmakingServersDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamGenericInterfaceDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamGenericInterfaceDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamUserStatsDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamUserStatsDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamGameServerStatsDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamGameServerStatsDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamAppsDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamAppsDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamNetworkingDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamNetworkingDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamRemoteStorageDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamRemoteStorageDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamScreenshotsDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamScreenshotsDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate void RunFrameDelegate(IntPtr _);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
@@ -57,21 +57,21 @@ namespace InterfaceClient
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate bool ShutdownIfAllPipesClosedDelegate(IntPtr _);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamHTTPDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamHTTPDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamUnifiedMessagesDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamUnifiedMessagesDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamControllerDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamControllerDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamUGCDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamUGCDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamAppListDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamAppListDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamMusicDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamMusicDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamMusicRemoteDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamMusicRemoteDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamHTMLSurfaceDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamHTMLSurfaceDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate void Set_SteamAPI_CPostAPIResultInProcessDelegate(IntPtr _, IntPtr function);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
@@ -79,8 +79,8 @@ namespace InterfaceClient
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate void Set_SteamAPI_CCheckCallbackRegisteredInProcessDelegate(IntPtr _, IntPtr function);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamInventoryDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamInventoryDelegate(IntPtr _, int user, int pipe, string version);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr GetSteamVideoDelegate(IntPtr _, uint user, IntPtr pipe, string version);
+        public delegate IntPtr GetSteamVideoDelegate(IntPtr _, int user, int pipe, string version);
     }
 }

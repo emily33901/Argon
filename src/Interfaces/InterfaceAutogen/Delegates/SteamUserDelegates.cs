@@ -11,17 +11,17 @@ namespace InterfaceUser
     class SteamUser_Delegates
     {
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate uint GetHSteamUserDelegate(IntPtr _);
+        public delegate int GetHSteamUserDelegate(IntPtr _);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate bool LoggedOnDelegate(IntPtr _);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate System.UInt64 GetSteamIDDelegate(IntPtr _);
+        public delegate ulong GetSteamIDDelegate(IntPtr _);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate int InitiateGameConnectionDelegate(IntPtr _, IntPtr blob, uint blob_count, System.UInt64 gameserver_id, uint server_ip, System.UInt16 server_port, bool secure);
+        public delegate int InitiateGameConnectionDelegate(IntPtr _, IntPtr blob, uint blob_count, ulong gameserver_id, uint server_ip, System.UInt16 server_port, bool secure);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate void TerminateGameConnectionDelegate(IntPtr _, uint server_ip, System.UInt16 server_port);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate void TrackAppUsageEventDelegate(IntPtr _, System.UInt64 game_id, int usage_event, string extra_info);
+        public delegate void TrackAppUsageEventDelegate(IntPtr _, ulong game_id, int usage_event, string extra_info);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate bool GetUserDataFolderDelegate(IntPtr _, string buffer, int count);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
@@ -39,15 +39,15 @@ namespace InterfaceUser
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate uint GetAuthSessionTicketDelegate(IntPtr _, IntPtr ticket, uint ticket_size, ref System.UInt32 ticket_written);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate uint BeginAuthSessionDelegate(IntPtr _, IntPtr ticket, uint ticket_size, System.UInt64 steamid);
+        public delegate uint BeginAuthSessionDelegate(IntPtr _, IntPtr ticket, uint ticket_size, ulong steamid);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate void EndAuthSessionDelegate(IntPtr _, System.UInt64 steam_id);
+        public delegate void EndAuthSessionDelegate(IntPtr _, ulong steam_id);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate void CancelAuthTicketDelegate(IntPtr _, uint ticket_handle);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate uint UserHasLicenseForAppDelegate(IntPtr _, System.UInt64 steamID, uint appID);
+        public delegate uint UserHasLicenseForAppDelegate(IntPtr _, ulong steamID, uint appID);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate void AdvertiseGameDelegate(IntPtr _, System.UInt64 game_server_id, uint server_ip, System.UInt16 server_port);
+        public delegate void AdvertiseGameDelegate(IntPtr _, ulong game_server_id, uint server_ip, System.UInt16 server_port);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate uint RequestEncryptedAppTicketDelegate(IntPtr _, IntPtr data_to_include, uint data_size);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]

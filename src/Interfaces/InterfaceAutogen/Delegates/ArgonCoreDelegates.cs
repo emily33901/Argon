@@ -11,10 +11,12 @@ namespace InterfaceArgonCore
     class ArgonCore_Delegates
     {
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate IntPtr CreateInterfaceDelegate(IntPtr _, string name);
+        public delegate IntPtr CreateInterfaceDelegate(IntPtr _, int pipe_id, string name);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate bool GetCallbackDelegate(IntPtr _, ref ArgonCore.Client.CallbackMsg c);
+        public delegate IntPtr CreateInterfaceNoPipeDelegate(IntPtr _, string name);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate void FreeLastCallbackDelegate(IntPtr _);
+        public delegate bool GetCallbackDelegate(IntPtr _, int pipe_id, ref ArgonCore.Client.CallbackMsg c);
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
+        public delegate void FreeLastCallbackDelegate(IntPtr _, int pipe_id);
     }
 }
