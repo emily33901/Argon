@@ -102,11 +102,9 @@ LABEL_23:
             // Create a buffer around the blob
             v39 = CUtlBuffer::CUtlBuffer(pBlob, cbMaxBlob);
 
-            // Do we already have an (old?) ticket allocated??
-            // This might not even be a ticket...
+            // Check whether we have a game connect token (see CBaseUser::CBaseUser or RealSendAuthList)
             if (*(_DWORD *)(this + 5420))
             {
-                // Get ticket instance
                 v19 = *(_DWORD *)(this + 5408);
                 v20 = CUtlMemoryBase::NumAllocated((CUtlMemoryBase *)&v39);
                 if (v20 - v41 < *(_DWORD *)(v19 + 16) + 4)
@@ -201,12 +199,15 @@ LABEL_23:
 
     // By the end of this section of code
     // The buffer will be as follows
-    // 1. unsigned int: Cookie size
-    // 2.       void *: Cookie[size]
+    // 1. unsigned int: GameConnectToken size
+    // 2.       void *: GameConnectToken[size]
     // 3. unsigned int: ticket size
     // 4.       void *: Ticket[size]
 
 LABEL_49:
+
+    // Checks if we have the game and then handles gc login + process tracking
+    // to perform the shutdown equivilent of these when the game process terminates
     if ((unsigned __int8)CUser::InternalUpdateClientGame(
             (CUser *)this,
             0,
@@ -226,7 +227,10 @@ LABEL_49:
             0,
             0,
             0))
+    {
+        // This gets the game to send our new updated games list to the server
         CUser::ScheduleSendGameList((CUser *)this);
+    }
     v31 = *(_DWORD *)((char *)&loc_58AC97 + this - 5805931);
     if (v31 < 2)
     {
@@ -235,6 +239,8 @@ LABEL_49:
     }
     else
     {
+        // Shift all of our tokens left by 1 becuase we used one
+        // And then decrement the total count
         CUtlMemoryBase::~CUtlMemoryBase(*(CUtlMemoryBase **)((char *)&loc_58AC8D + this - 5805933));
         CUtlVector<CConnectionToken, CUtlMemory<CConnectionToken>>::ShiftElementsLeft(
             (char *)&loc_58AC87 + this - 5805931,
