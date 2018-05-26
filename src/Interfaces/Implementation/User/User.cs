@@ -23,6 +23,7 @@ namespace InterfaceUser
         }
 
         SteamUser steam_user;
+        public EAccountFlags AccountFlags { get; private set; }
 
         IBaseInterface Parent { get; set; }
         int ClientId { get { return Parent.ClientId; } }
@@ -49,7 +50,7 @@ namespace InterfaceUser
                 return user_found;
             }
 
-            Console.WriteLine("Creating new User instance to match clientid {0} (pipe {1})", parent.ClientId);
+            Console.WriteLine("Creating new User instance to match clientid {0}", parent.ClientId);
 
             ActiveUsers[parent.ClientId] = new User(parent);
             return ActiveUsers[parent.ClientId];
@@ -137,7 +138,7 @@ namespace InterfaceUser
         {
             logon_state = LogonState.LoggedOff;
 
-            Log.WriteLine("user", "OnAccountLogonDenied: {0} / {1]", cb.Result, cb.ExtendedResult);
+            Log.WriteLine("user", "OnAccountLogonDenied: {0} / {1}", cb.Result, cb.ExtendedResult);
 
             switch (cb.Result)
             {
@@ -161,6 +162,8 @@ namespace InterfaceUser
             logon_needs = LogonNeeds.None;
 
             Log.WriteLine("user", "Logon succeeded!");
+
+            AccountFlags = cb.AccountFlags;
         }
 
         void OnLoggedOn(SteamUser.LoggedOnCallback cb)

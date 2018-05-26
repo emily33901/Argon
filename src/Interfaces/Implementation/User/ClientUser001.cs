@@ -10,13 +10,14 @@ namespace InterfaceUser
     {
         public User u;
 
-        ClientUser001()
+        public ClientUser001()
         {
             u = User.FindOrCreate(this);
         }
 
         public int GetHSteamUser()
         {
+            Console.WriteLine("> GetHSteamUser CID: {0} HANDLE: {1}", ClientId, u.GetHandle());
             return u.GetHandle();
         }
 
@@ -28,6 +29,7 @@ namespace InterfaceUser
             // This probably has something to do with anonymous login...
             // or when there is a loginkey that we can use
             Console.WriteLine("Logon(steamid) is not implemented");
+            u.LogonInternal();
         }
 
         public void LogOnWithPassword(string username, string password)
