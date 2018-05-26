@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using ArgonCore;
@@ -11,6 +12,8 @@ namespace InterfaceUser
 {
     public class User
     {
+        private static Dictionary<int, User> ActiveUsers { get; set; } = new Dictionary<int, User>();
+
         public enum LogonState
         {
             LoggedOff,
@@ -19,7 +22,7 @@ namespace InterfaceUser
             LoggedOn,
         }
 
-        SteamKit2.SteamUser steam_user;
+        SteamUser steam_user;
 
         IBaseInterface Parent { get; set; }
         int ClientId { get { return Parent.ClientId; } }
@@ -27,7 +30,7 @@ namespace InterfaceUser
 
         Logger Log { get { return Instance.Log; } }
 
-        public User(IBaseInterface parent)
+        private User(IBaseInterface parent)
         {
             Parent = parent;
 
@@ -38,6 +41,18 @@ namespace InterfaceUser
             Instance.CallbackManager.Subscribe<SteamUser.UpdateMachineAuthCallback>(cb => OnMachineAuth(cb));
 
             // TODO: we need to add a logonkey handler to allow for offline login
+        }
+        public static User FindOrCreate(IBaseInterface parent)
+        {
+            if (ActiveUsers.TryGetValue(parent.ClientId, out User user_found))
+            {
+                return user_found;
+            }
+
+            Console.WriteLine("Creating new User instance to match clientid {0} (pipe {1})", parent.ClientId);
+
+            ActiveUsers[parent.ClientId] = new User(parent);
+            return ActiveUsers[parent.ClientId];
         }
 
         LogonState logon_state;
@@ -179,6 +194,7 @@ namespace InterfaceUser
 
         public void LogonInternal()
         {
+            // TODO: wait for connect!
             if (Connected() == false) Instance.Connect();
 
             string sentry_name = string.Format("sentry_{0}.bin", username);
@@ -208,11 +224,26 @@ namespace InterfaceUser
             });
         }
 
+        public void SetLogonInformation(string new_username, string new_password)
+        {
+            username = new_username;
+            password = new_password;
+        }
+
+        public void ClearLogonInformation()
+        {
+            username = "";
+            password = "";
+            two_factor_code = "";
+            logon_needs = LogonNeeds.None;
+        }
+
         public void LogOnUsernamePassword(string new_username, string new_password)
         {
             logon_needs = LogonNeeds.None;
-            username = new_username;
-            password = new_password;
+            SetLogonInformation(new_username, new_password);
+
+            LogonInternal();
         }
 
         public void SetTwoFactor(string code)
@@ -231,6 +262,42 @@ namespace InterfaceUser
             {
                 Log.WriteLine("user", "SetTwoFactor called but nothing needed!");
             }
+        }
+
+        public byte[] InitiateGameConnection(int max_buffer, SteamID game_server_id, GameID game_id, uint server_ip, ushort server_port, bool secure)
+        {
+            // TODO: this is part of the old client authentication api and as such shouldnt really be called anymore...
+            Log.WriteLine("user", "InitiateGameConnection should no longer be called...");
+
+            if (!game_server_id.IsValid)
+            {
+                Log.WriteLine("user", "Invalid game server steam id passed to InitiateGameConnection");
+                return null;
+            }
+
+            // TODO: check whether server port / ip are valid
+
+            // Create the blob with a stream and writer
+            var buffer = new byte[max_buffer];
+            var writer = new BinaryWriter(new MemoryStream(buffer));
+
+            // TODO: write a real game connect token in here
+            if (false)
+            {
+
+            }
+            else
+            {
+                // Write out the placeholder token
+                writer.Write(4u);
+                writer.Write(0u);
+            }
+
+            // TODO: get an appownership ticket
+            uint ticket_size = 0;
+
+
+            return buffer;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace InterfaceUser
 
         ClientUser001()
         {
-            u = new User(this);
+            u = User.FindOrCreate(this);
         }
 
         public int GetHSteamUser()
@@ -25,6 +25,8 @@ namespace InterfaceUser
             // There is no real analogue of this directly in steamkit
             // so this will need to be reversed slightly further
 
+            // This probably has something to do with anonymous login...
+            // or when there is a loginkey that we can use
             Console.WriteLine("Logon(steamid) is not implemented");
         }
 
@@ -56,9 +58,9 @@ namespace InterfaceUser
             return u.GetLogonState() == User.LogonState.LoggedOn;
         }
 
-        public User.LogonState GetLogonState()
+        public uint GetLogonState()
         {
-            return u.GetLogonState();
+            return (uint)u.GetLogonState();
         }
 
         public bool BConnected()
@@ -137,12 +139,12 @@ namespace InterfaceUser
 
         public int InitiateGameConnection(IntPtr blob, uint blob_count, ulong gameserver_id, uint server_ip, ushort server_port, bool secure)
         {
-            // blob will get filled with the old appownership ticket + the new one
+            // blob will get filled with a game connect token + the app ownership ticket
             // look in reverse folder for more information on what steam does here
 
-            // It is possible that we can also just request a new appticket from the cm for every time this is called.
-            // This would allow us to probably bypass the need to check whether the tickets are valid against the various tests
-            // becuase we know that the cm will always return a valid key.
+            // because this is part of the old user connection handshake mechanism its unlikely that this will
+            // be called...
+
             return 0;
         }
 
@@ -154,6 +156,179 @@ namespace InterfaceUser
 
         public void TerminateGameConnection(uint server_ip, ushort server_port)
         {
+
+        }
+
+        public bool TerminateAppMuliStep(uint a, uint b)
+        {
+            return false;
+        }
+
+        public void SetSelfAsPrimaryChatDestination()
+        {
+
+        }
+
+        public bool IsPrimaryChatDestination()
+        {
+            return false;
+        }
+
+        public void RequestLegacyCDKey(uint appid)
+        {
+
+        }
+
+        public bool AckGuestPass(string passcode)
+        {
+            return false;
+        }
+
+        public bool RedeemGuestPass(string passcode)
+        {
+            return false;
+        }
+
+        public uint GuestPassToGiveCount()
+        {
+            return 0;
+        }
+
+        public uint GetGuestPassToRedeemCount()
+        {
+            return 0;
+        }
+
+        public bool GetGuestPassToGiveInfo(uint nPassIndex, ref uint pgidGuestPassID, ref uint pnPackageID, ref uint pRTime32Created, ref uint pRTime32Expiration, ref uint pRTime32Sent, ref uint pRTime32Redeemed, IntPtr pchRecipientAddress, int cRecipientAddressSize)
+        {
+            return false;
+        }
+        public bool GetGuestPassToRedeemInfo(uint nPassIndex, ref uint pgidGuestPassID, ref uint pnPackageID, ref uint pRTime32Created, ref uint pRTime32Expiration, ref uint pRTime32Sent, ref uint pRTime32Redeemed)
+        {
+            return false;
+        }
+        public bool GetGuestPassToRedeemSenderName(uint nPassIndex, IntPtr pchSenderName, int cSenderNameSize)
+        {
+            return false;
+        }
+
+        public uint GetNumAppsInGuestPassesToRedeem()
+        {
+            return 0;
+        }
+
+        public uint GetAppsInGuestPassesToRedeem(IntPtr app_array_to_fill, int max_fill)
+        {
+            return 0;
+        }
+
+        public uint GetCountUserNotifications()
+        {
+            return 0;
+        }
+
+        public uint GetCountUserNotification(uint type)
+        {
+            return 0;
+        }
+
+        public void RequestStoreAuthURL(string a)
+        {
+            // TODO: revese this
+        }
+
+        public void SetLanguage(string a)
+        {
+            // TODO: reverse this
+        }
+
+        public void TrackAppUsageEvent(ulong game_id, int usage_event, string extra_info)
+        {
+
+        }
+
+        public uint RaiseConnectionPriority(uint new_priority)
+        {
+            return 0;
+        }
+
+        public void ResetConnectionPriority()
+        {
+
+        }
+
+        public bool BHasCachedCredentials(string a)
+        {
+            return false;
+        }
+
+        public bool SetAccountNameForCachedCredentialLogin(string name, bool a)
+        {
+            return false;
+        }
+
+        public bool GetCurrentWebAuthToken(IntPtr out_string, int out_max)
+        {
+            return false;
+        }
+        public uint RequestWebAuthToken()
+        {
+            // Returns SteamApiCall
+            return 0;
+        }
+
+        public void SetLoginInformation(string username, string password, bool remember_password)
+        {
+            if (remember_password)
+            {
+                Console.WriteLine("SetLoginInformation: remember_password set but we cant!");
+            }
+            u.SetLogonInformation(username, password);
+        }
+
+        public void SetTwoFactorCode(string code)
+        {
+            u.SetTwoFactor(code);
+        }
+
+        public void ClearLoginInformation()
+        {
+            u.ClearLogonInformation();
+        }
+
+        public bool GetLanguage(IntPtr out_string, int out_max)
+        {
+            return false;
+        }
+
+        public bool BIsCyberCafe()
+        {
+            return false;
+        }
+
+        public bool BIsAcademicAccount()
+        {
+            return false;
+        }
+
+        public bool BIsPortal2EducationAccount()
+        {
+            return false;
+        }
+
+        public bool BIsAlienwareDemoAccount()
+        {
+            return false;
+        }
+
+        public void CreateAccount(string new_username, string new_password, string new_email)
+        {
+
+        }
+
+        public uint ResetPassword(string account_name, string old_password, string new_password, string code, string answer)
+        {
+            return 0;
         }
     }
 }
