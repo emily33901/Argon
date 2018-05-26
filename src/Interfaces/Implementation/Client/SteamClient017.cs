@@ -51,7 +51,7 @@ namespace InterfaceClient
         {
             try
             {
-                return Client.ActiveClients[user].CreateInterface(pipe, version);
+                return Client.GetClient(user).CreateInterface(pipe, version);
             }
             catch (Exception e)
             {

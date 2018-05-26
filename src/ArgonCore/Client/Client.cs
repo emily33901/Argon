@@ -55,6 +55,11 @@ namespace ArgonCore.Client
             return c.GetHandle();
         }
 
+        public static Client GetClient(int user_handle)
+        {
+            return ActiveClients[user_handle];
+        }
+
         /// <summary>
         /// Create a new instance (without creating a delelgate map) of an interface
         /// </summary>
