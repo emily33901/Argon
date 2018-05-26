@@ -24,18 +24,31 @@ namespace testbed
 
         static void Main(string[] args)
         {
-            var pipe_id = ArgonCore.IPC.ClientPipe.CreatePipe();
+            Secrets secrets;
+            try
+            {
+                secrets = JsonConvert.DeserializeObject<Secrets>(File.ReadAllText("..\\..\\..\\secrets.json"));
+            }
+            catch
+            {
+                secrets = JsonConvert.DeserializeObject<Secrets>(File.ReadAllText("secrets.json"));
+            }
 
+
+            var pipe_id = ArgonCore.IPC.ClientPipe.CreatePipe();
             var id = Client.CreateNewClient(pipe_id);
 
             var c = Client.GetClient(id);
 
+            // Get clientuser map
             Console.WriteLine("Creating user interface map...");
-            dynamic steam_user = c.CreateMapInstance(pipe_id, "SteamUser019");
+            dynamic steam_user = c.CreateMapInstance(pipe_id, "CLIENTUSER_INTERFACE_VERSION001");
 
             var huser = steam_user.GetHSteamUser(IntPtr.Zero);
-
             Console.WriteLine("huser is {0}", huser);
+
+            // Trigger a logon
+            steam_user.LogOnWithPassword(IntPtr.Zero, secrets.username, secrets.password);
 
             while (!Console.KeyAvailable)
             {
