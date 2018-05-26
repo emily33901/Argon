@@ -50,7 +50,7 @@ namespace ArgonCore.Client
             };
             c.Log = new Logger(c.Id);
 
-            ActiveClients[c.Id] = c;
+            ActiveClients[c.GetHandle()] = c;
 
             return c.GetHandle();
         }
