@@ -11,7 +11,7 @@ namespace InterfaceUser
         public User u;
         public SteamUser019()
         {
-            u = User.FindOrCreate(this);
+            u = User.FindOrCreate(ClientId);
         }
 
         public int GetHSteamUser()

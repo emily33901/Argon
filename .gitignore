@@ -549,5 +549,4 @@ gdb.txt
 core
 compile_commands.json
 .cquery_cached_index
-
 src/cxx/steam/

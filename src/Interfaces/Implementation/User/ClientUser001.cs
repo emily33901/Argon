@@ -8,17 +8,19 @@ namespace InterfaceUser
     [Impl(Name = "CLIENTUSER_INTERFACE_VERSION001", Implements = "ClientUser", ServerMapped = true)]
     public class ClientUser001 : IBaseInterface
     {
-        public User u;
+
+        // ClientId is assigned after the constructor is called so we need this
+        // So that we find the correct client
+        public User Instance { get { return User.FindOrCreate(ClientId); } }
 
         public ClientUser001()
         {
-            u = User.FindOrCreate(this);
         }
 
         public int GetHSteamUser()
         {
-            Console.WriteLine("> GetHSteamUser CID: {0} HANDLE: {1}", ClientId, u.GetHandle());
-            return u.GetHandle();
+            Console.WriteLine("> GetHSteamUser CID: {0} HANDLE: {1}", ClientId, Instance.GetHandle());
+            return Instance.GetHandle();
         }
 
         public void LogOn(ulong steamid)
@@ -29,12 +31,12 @@ namespace InterfaceUser
             // This probably has something to do with anonymous login...
             // or when there is a loginkey that we can use
             Console.WriteLine("Logon(steamid) is not implemented");
-            u.LogonInternal();
+            Instance.LogonInternal();
         }
 
         public void LogOnWithPassword(string username, string password)
         {
-            u.LogOnUsernamePassword(username, password);
+            Instance.LogOnUsernamePassword(username, password);
         }
 
         public void LogOnAndCreateNewSteamAccountIfNeeded()
@@ -57,27 +59,27 @@ namespace InterfaceUser
 
         public bool BLoggedOn()
         {
-            return u.GetLogonState() == User.LogonState.LoggedOn;
+            return Instance.GetLogonState() == User.LogonState.LoggedOn;
         }
 
         public uint GetLogonState()
         {
-            return (uint)u.GetLogonState();
+            return (uint)Instance.GetLogonState();
         }
 
         public bool BConnected()
         {
-            return u.Connected();
+            return Instance.Connected();
         }
 
         public bool BTryingToLogon()
         {
-            return u.GetLogonState() == User.LogonState.LoggingOn;
+            return Instance.GetLogonState() == User.LogonState.LoggingOn;
         }
 
         public ulong GetSteamId()
         {
-            return u.SteamId;
+            return Instance.SteamId;
         }
 
         // This should only be called on consoles...
@@ -86,12 +88,12 @@ namespace InterfaceUser
         public ulong GetConsoleSteamId()
         {
             Console.WriteLine("GetConsoleSteamId should never be called!");
-            return u.SteamId;
+            return Instance.SteamId;
         }
 
         public ulong GetClientInstanceId()
         {
-            return u.InstanceId;
+            return Instance.InstanceId;
         }
 
         public bool IsVACBanned(uint game)
@@ -285,17 +287,17 @@ namespace InterfaceUser
             {
                 Console.WriteLine("SetLoginInformation: remember_password set but we cant!");
             }
-            u.SetLogonInformation(username, password);
+            Instance.SetLogonInformation(username, password);
         }
 
         public void SetTwoFactorCode(string code)
         {
-            u.SetTwoFactor(code);
+            Instance.SetTwoFactor(code);
         }
 
         public void ClearLoginInformation()
         {
-            u.ClearLogonInformation();
+            Instance.ClearLogonInformation();
         }
 
         public bool GetLanguage(IntPtr out_string, int out_max)

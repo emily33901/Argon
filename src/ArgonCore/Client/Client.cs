@@ -196,7 +196,7 @@ namespace ArgonCore.Client
             if (found)
             {
                 Marshal.FreeHGlobal(current_value);
-                current_value = IntPtr.Zero;
+                CallbackAllocHandles.Remove(pipe_id);
             }
         }
     }

@@ -25,17 +25,15 @@ namespace InterfaceUser
         SteamUser steam_user;
         public EAccountFlags AccountFlags { get; private set; }
 
-        IBaseInterface Parent { get; set; }
-        int ClientId { get { return Parent.ClientId; } }
+        int ClientId { get; set; }
         Client Instance { get { return Client.GetClient(ClientId); } }
 
         Logger Log { get { return Instance.Log; } }
 
-        private User(IBaseInterface parent)
+        private User(int client_id)
         {
-            Parent = parent;
-
-            steam_user = Instance.SteamClient.GetHandler<SteamKit2.SteamUser>();
+            ClientId = client_id;
+            steam_user = Instance.SteamClient.GetHandler<SteamUser>();
 
             Instance.CallbackManager.Subscribe<SteamUser.LoggedOnCallback>(cb => OnLoggedOn(cb));
             Instance.CallbackManager.Subscribe<SteamUser.LoggedOffCallback>(cb => OnLoggedOff(cb));
@@ -43,17 +41,17 @@ namespace InterfaceUser
 
             // TODO: we need to add a logonkey handler to allow for offline login
         }
-        public static User FindOrCreate(IBaseInterface parent)
+        public static User FindOrCreate(int id)
         {
-            if (ActiveUsers.TryGetValue(parent.ClientId, out User user_found))
+            if (ActiveUsers.TryGetValue(id, out User user_found))
             {
                 return user_found;
             }
 
-            Console.WriteLine("Creating new User instance to match clientid {0}", parent.ClientId);
+            Console.WriteLine("Creating new User instance to match clientid {0}", id);
 
-            ActiveUsers[parent.ClientId] = new User(parent);
-            return ActiveUsers[parent.ClientId];
+            ActiveUsers[id] = new User(id);
+            return ActiveUsers[id];
         }
 
         LogonState logon_state;
