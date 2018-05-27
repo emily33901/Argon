@@ -28,7 +28,7 @@ namespace InterfaceClient
         public int ConnectToGlobalUser(IntPtr _, int pipe)
         {
             Console.WriteLine("ConnectToGlobalUser");
-            return 1;
+            return 0;
         }
 
         public int CreateLocalUser(IntPtr _, ref int pipe, uint account_type)
