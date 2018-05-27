@@ -5,7 +5,7 @@ cd "${0%/*}"
 
 echo building...
 cd premake/
-make x64_debug -j4
+make config=debug_x64 -j4
 
 echo done.
 exit
