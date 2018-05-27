@@ -12,6 +12,9 @@ namespace ArgonCore.Interface
     /// </summary>
     public class Loader
     {
+        static Logger Log { get; set; } = new Logger("Interface.Loader");
+
+
         private static bool loaded;
 
         public static List<Plugin> LoadedPlugins { get; private set; }
@@ -35,7 +38,7 @@ namespace ArgonCore.Interface
 
             if (has_attribute && !typeof(IBaseInterfaceMap).IsAssignableFrom(t))
             {
-                Console.WriteLine("Class {0} has InterfaceMapAttribute but does not inherit IBaseInterfaceMap! IGNORING!", t.Name);
+                Log.WriteLine("Class {0} has InterfaceMapAttribute but does not inherit IBaseInterfaceMap! IGNORING!", t.Name);
 
                 return false;
             }
@@ -51,7 +54,7 @@ namespace ArgonCore.Interface
             // we need to see whether we could assign an IBaseInterface object from it
             if (has_attribute && !typeof(IBaseInterface).IsAssignableFrom(t))
             {
-                Console.WriteLine("Class {0} has InterfaceImplAttribute but does not inherit IBaseInterface! IGNORING!", t.Name);
+                Log.WriteLine("Class {0} has InterfaceImplAttribute but does not inherit IBaseInterface! IGNORING!", t.Name);
                 return false;
             }
 
@@ -93,7 +96,7 @@ namespace ArgonCore.Interface
 
                         var new_interface = new Plugin.InterfaceDelegates { name = name };
 
-                        Console.WriteLine("Found interface delegates \"{0}\"", name);
+                        Log.WriteLine("Found interface delegates \"{0}\"", name);
 
                         var types = t.GetNestedTypes(BindingFlags.Public);
 
@@ -120,7 +123,7 @@ namespace ArgonCore.Interface
                             methods = InterfaceMethodsForType(t),
                         };
 
-                        Console.WriteLine("Found interface map \"{0}\"", name);
+                        Log.WriteLine("Found interface map \"{0}\"", name);
 
                         p.interface_maps.Add(new_interface_map);
                     }
@@ -138,7 +141,7 @@ namespace ArgonCore.Interface
                             methods = InterfaceMethodsForType(t)
                         };
 
-                        Console.WriteLine("Found interface impl \"{0}\"", name);
+                        Log.WriteLine("Found interface impl \"{0}\"", name);
 
                         p.interface_impls.Add(new_interface_impl);
                     }

@@ -33,7 +33,7 @@ namespace ArgonCore.Server
         public bool Connected { get; private set; }
 
         // Logging instance for this client
-        public Logger Log { get; private set; }
+        static Logger Log { get; set; } = new Logger("Server.Client");
 
         /// <summary>
         /// Create a new <see cref="Client"/> from the requested instance 
@@ -48,8 +48,6 @@ namespace ArgonCore.Server
             {
                 ActiveClients.Add(this);
                 Id = ActiveClients.Count - 1;
-
-                Log = new Logger(Id);
 
                 {
                     // create our steamclient instance
@@ -116,7 +114,7 @@ namespace ArgonCore.Server
         /// </summary>
         public void Connect()
         {
-            Log.WriteLine("client", "Attempting connection...");
+            Log.WriteLine("Attempting connection...");
             SteamClient.Connect();
             Running = true;
         }
@@ -126,7 +124,7 @@ namespace ArgonCore.Server
         /// </summary>
         public void Disconnect()
         {
-            Log.WriteLine("client", "Disconnecting...");
+            Log.WriteLine("Disconnecting...");
             SteamClient.Disconnect();
             Running = false;
         }
@@ -151,14 +149,14 @@ namespace ArgonCore.Server
         // Static event handlers
         public void OnConnect(SteamClient.ConnectedCallback cb)
         {
-            Log.WriteLine("client", "Connected [token: {0}]", SteamClient.SessionToken);
+            Log.WriteLine("Connected [token: {0}]", SteamClient.SessionToken);
 
             Connected = true;
         }
 
         public void OnDisconnect(SteamClient.DisconnectedCallback cb)
         {
-            Log.WriteLine("client", "Disconnected");
+            Log.WriteLine("Disconnected");
 
             Connected = false;
 
@@ -178,7 +176,7 @@ namespace ArgonCore.Server
                     return mi.Invoke(interfaces[interface_id], args);
                 }
 
-                Log.WriteLine("client", "Unable to find method \"{0}\" from interface \"{1}\"", name, iface.Implementation.name);
+                Log.WriteLine("Unable to find method \"{0}\" from interface \"{1}\"", name, iface.Implementation.name);
 
                 return null;
             }
@@ -197,7 +195,7 @@ namespace ArgonCore.Server
                         return null;
                     }
                 default:
-                    Log.WriteLine("client", "Method \"{0}\" is not defined for Interface -1", name);
+                    Log.WriteLine("Method \"{0}\" is not defined for Interface -1", name);
                     break;
             }
 
@@ -242,7 +240,7 @@ namespace ArgonCore.Server
                     return mi.Invoke(NoUserInterface[interface_id], args);
                 }
 
-                Console.WriteLine("client Unable to find method \"{0}\" from interface \"{1}\"", name, iface.Implementation.name);
+                Log.WriteLine("Unable to find method \"{0}\" from interface \"{1}\"", name, iface.Implementation.name);
 
                 return null;
             }

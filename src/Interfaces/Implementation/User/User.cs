@@ -28,7 +28,7 @@ namespace InterfaceUser
         int ClientId { get; set; }
         Client Instance { get { return Client.GetClient(ClientId); } }
 
-        Logger Log { get { return Instance.Log; } }
+        static Logger Log { get; set; } = new Logger("InterfaceUser.User");
 
         private User(int client_id)
         {
@@ -48,7 +48,7 @@ namespace InterfaceUser
                 return user_found;
             }
 
-            Console.WriteLine("Creating new User instance to match clientid {0}", id);
+            Log.WriteLine("Creating new User instance to match clientid {0}", id);
 
             ActiveUsers[id] = new User(id);
             return ActiveUsers[id];
@@ -91,7 +91,7 @@ namespace InterfaceUser
 
         void OnMachineAuth(SteamUser.UpdateMachineAuthCallback cb)
         {
-            Log.WriteLine("user", "Updating sentryfile...");
+            Log.WriteLine("Updating sentryfile...");
 
             string sentry_name = String.Format("sentry_{0}.bin", username);
 
@@ -129,26 +129,26 @@ namespace InterfaceUser
                 SentryFileHash = sentryHash,
             });
 
-            Log.WriteLine("user", "Finished writing SentryFile...");
+            Log.WriteLine("Finished writing SentryFile...");
         }
 
         void OnAccountLogonDenied(SteamUser.LoggedOnCallback cb)
         {
             logon_state = LogonState.LoggedOff;
 
-            Log.WriteLine("user", "OnAccountLogonDenied: {0} / {1}", cb.Result, cb.ExtendedResult);
+            Log.WriteLine("OnAccountLogonDenied: {0} / {1}", cb.Result, cb.ExtendedResult);
 
             switch (cb.Result)
             {
                 case EResult.AccountLoginDeniedNeedTwoFactor:
                     {
-                        Log.WriteLine("user", "Needs twofactor code...");
+                        Log.WriteLine("Needs twofactor code...");
                         logon_needs = LogonNeeds.TwoFactor;
                         return;
                     }
                 case EResult.AccountLogonDenied:
                     {
-                        Log.WriteLine("user", "Needs steamguard code...");
+                        Log.WriteLine("Needs steamguard code...");
                         logon_needs = LogonNeeds.SteamGuard;
                         return;
                     }
@@ -159,7 +159,7 @@ namespace InterfaceUser
             logon_state = LogonState.LoggedOn;
             logon_needs = LogonNeeds.None;
 
-            Log.WriteLine("user", "Logon succeeded!");
+            Log.WriteLine("Logon succeeded!");
 
             AccountFlags = cb.AccountFlags;
         }
@@ -182,7 +182,7 @@ namespace InterfaceUser
 
                 default:
                     {
-                        Log.WriteLine("user", "Unable to logon to Steam: {0} / {1}", cb.Result, cb.ExtendedResult);
+                        Log.WriteLine("Unable to logon to Steam: {0} / {1}", cb.Result, cb.ExtendedResult);
                         return;
                     }
             }
@@ -190,7 +190,7 @@ namespace InterfaceUser
 
         void OnLoggedOff(SteamUser.LoggedOffCallback cb)
         {
-            Log.WriteLine("user", "Logged off...");
+            Log.WriteLine("Logged off...");
         }
 
         public void LogonInternal()
@@ -261,18 +261,18 @@ namespace InterfaceUser
             }
             else
             {
-                Log.WriteLine("user", "SetTwoFactor called but nothing needed!");
+                Log.WriteLine("SetTwoFactor called but nothing needed!");
             }
         }
 
         public byte[] InitiateGameConnection(int max_buffer, SteamID game_server_id, GameID game_id, uint server_ip, ushort server_port, bool secure)
         {
             // TODO: this is part of the old client authentication api and as such shouldnt really be called anymore...
-            Log.WriteLine("user", "InitiateGameConnection should no longer be called...");
+            Log.WriteLine("InitiateGameConnection should no longer be called...");
 
             if (!game_server_id.IsValid)
             {
-                Log.WriteLine("user", "Invalid game server steam id passed to InitiateGameConnection");
+                Log.WriteLine("Invalid game server steam id passed to InitiateGameConnection");
                 return null;
             }
 

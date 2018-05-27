@@ -12,6 +12,8 @@ namespace ArgonCore.IPC
 
     public class ClientPipe
     {
+        static Logger Log { get; set; } = new Logger("IPC.ClientPipe");
+
         public static List<ClientPipe> ActivePipes { get; set; } = new List<ClientPipe>();
 
         /// <summary>
@@ -48,9 +50,9 @@ namespace ArgonCore.IPC
 
             ActivePipes.Add(this);
 
-            Console.WriteLine("[pipe {0}] Waiting for connection...", Id);
+            Log.WriteLine("[pipe {0}] Waiting for connection...", Id);
             pipe.WaitForConnection();
-            Console.WriteLine("[pipe {0}] Connected...", Id);
+            Log.WriteLine("[pipe {0}] Connected...", Id);
         }
 
         public static int CreatePipe()

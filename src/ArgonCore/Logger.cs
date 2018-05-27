@@ -6,23 +6,28 @@ using System.Text;
 
 namespace ArgonCore
 {
-    public sealed class Logger
+    public class Logger
     {
-        private int core_id;
-        private string file;
+        const string file = "argon_log.log";
 
-        private List<string> buffered = new List<string>();
-        private object file_lock = new object();
+        static List<string> buffered = new List<string>();
+        static object file_lock = new object();
 
-        public Logger(int id)
+        protected string section;
+
+        public Logger(string s)
         {
-            core_id = id;
-            file = string.Format("log_user_{0}.log", core_id);
+            section = s;
         }
 
-        public void WriteLine(string code_section, string format, params object[] args)
+        public virtual string FormatLogFormat(string format)
         {
-            var new_format = string.Format("[{0}] [{1}] {2}", core_id, code_section, format);
+            return String.Format("{0}:: {1}", section, format);
+        }
+
+        public void WriteLine(string format, params object[] args)
+        {
+            var new_format = FormatLogFormat(format);
             var formatted = string.Format(new_format, args);
             Console.WriteLine(formatted);
 
@@ -38,6 +43,21 @@ namespace ArgonCore
 
                 Monitor.Exit(file_lock);
             }
+        }
+    }
+
+    public class LoggerUid : Logger
+    {
+        int uid = 0;
+
+        public LoggerUid(string section, int id) : base(section)
+        {
+            uid = id;
+        }
+
+        public override string FormatLogFormat(string format)
+        {
+            return String.Format("{0}[{1}]:: {2}", section, uid, format);
         }
     }
 }

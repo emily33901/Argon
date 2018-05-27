@@ -21,7 +21,7 @@ namespace ArgonCore.Client
         public static List<IBaseInterface> NoUserInterfaces { get; set; } = new List<IBaseInterface>();
 
         // Logging instance for this client
-        public Logger Log { get; private set; }
+        static Logger Log { get; set; } = new Logger("Client.Client");
 
         // The pipeid that this user is backed by
         private int PipeId { get; set; }
@@ -48,7 +48,6 @@ namespace ArgonCore.Client
             {
                 Id = Server.CreateClient(pipe_id)
             };
-            c.Log = new Logger(c.Id);
 
             ActiveClients[c.GetHandle()] = c;
 
@@ -168,7 +167,7 @@ namespace ArgonCore.Client
             if (found && current_value != IntPtr.Zero)
             {
                 // This mimics the behaviour of the steam functions that do this
-                Console.WriteLine("Attempt to alloc new callback before old one has been freed\nTHIS IS A PROGRAMMING ERROR");
+                Log.WriteLine("Attempt to alloc new callback before old one has been freed\nTHIS IS A PROGRAMMING ERROR");
 
                 // Free it for them...
                 FreeCallback(pipe_id);

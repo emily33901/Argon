@@ -8,6 +8,8 @@ namespace ArgonCore.Interface
 {
     class Context
     {
+        static Logger Log { get; set; } = new Logger("Interface.Context");
+
         /// <summary>
         /// Create an instance based on this implementation
         /// </summary>
@@ -39,7 +41,7 @@ namespace ArgonCore.Interface
 
                 if (type == null)
                 {
-                    Console.WriteLine("Unable to find delegate for {0} in {1}! (maybe you need to regen autogen?)", mi.Name, iface.name);
+                    Log.WriteLine("Unable to find delegate for {0} in {1}! (maybe you need to regen autogen?)", mi.Name, iface.name);
                     return (IntPtr.Zero, null);
                 }
 
@@ -163,7 +165,7 @@ namespace ArgonCore.Interface
 
             if (impl == null)
             {
-                Console.WriteLine("Unable to find implementation for interface {0}", name);
+                Log.WriteLine("Unable to find implementation for interface {0}", name);
                 return null;
             }
 
@@ -181,7 +183,7 @@ namespace ArgonCore.Interface
 
             if (map == null)
             {
-                Console.WriteLine("Unable to find map for interface {0}", name);
+                Log.WriteLine("Unable to find map for interface {0}", name);
                 return null;
             }
             return map;
@@ -217,7 +219,7 @@ namespace ArgonCore.Interface
 
             if (impl == null)
             {
-                Console.WriteLine("Ubable to find map or impl for interface {0}", name);
+                Log.WriteLine("Ubable to find map or impl for interface {0}", name);
                 return (IntPtr.Zero, null, false);
             }
 
@@ -225,7 +227,7 @@ namespace ArgonCore.Interface
 
             if (iface == null)
             {
-                Console.WriteLine("Unable to find delegates for interface that implements {0}", impl.implements);
+                Log.WriteLine("Unable to find delegates for interface that implements {0}", impl.implements);
                 return (IntPtr.Zero, null, false);
             }
 

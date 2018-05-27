@@ -12,6 +12,7 @@ namespace ArgonCore.Server
     /// </summary>
     public class PacketHandler : ClientMsgHandler
     {
+        public static Logger Log { get; set; } = new Logger("PacketHandler");
         public Client client;
 
         public PacketHandler(Client c)
@@ -21,9 +22,9 @@ namespace ArgonCore.Server
 
         public override void HandleMsg(IPacketMsg packet)
         {
-            client.Log.WriteLine("packet", "{0} [{1}]", packet.MsgType, (uint)packet.MsgType);
+            Log.WriteLine("{0} [{1}]", packet.MsgType, (uint)packet.MsgType);
 
-            ArgonCore.Server.Client.PendingCallbacks.Enqueue(new ArgonCore.Client.InternalCallbackMsg
+            Server.Client.PendingCallbacks.Enqueue(new ArgonCore.Client.InternalCallbackMsg
             {
                 user_id = client.Id,
                 callback_id = (uint)packet.MsgType,
