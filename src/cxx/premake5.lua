@@ -24,7 +24,6 @@ workspace "workspace"
     filter {"system:windows"}
         toolset "msc-v141"
         cppdialect "C++17"
-        buildoptions{ "--driver-mode=cl" } -- for compile commands
     filter {"system:linux"}
         toolset "clang" -- prefer clang over gcc
         buildoptions "-std=c++17"
