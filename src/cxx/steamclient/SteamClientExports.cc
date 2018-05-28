@@ -133,13 +133,13 @@ public:
 #include <stdio.h>
 
 EXPORT void *STEAM_CALL CreateInterface(const char *name) {
-    return argon->create_interface(name);
+    return argon->create_interface_no_pipe(name);
 }
 
 ISteamClient *       client = nullptr;
 static ISteamClient *steam_client() {
     if (client == nullptr) {
-        client = (ISteamClient *)argon->create_interface("SteamClient017");
+        client = (ISteamClient *)argon->create_interface_no_pipe("SteamClient017");
     }
 
     return client;
