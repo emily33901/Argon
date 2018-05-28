@@ -9,7 +9,7 @@ namespace ArgonCore.Client
 {
     public class Client
     {
-        // Used for internal handling of clients
+        // Used for internal handling of clients, maps clients HANDLES to their instance
         static Dictionary<int, Client> ActiveClients { get; set; } = new Dictionary<int, Client>();
 
         public int Id { get; private set; }

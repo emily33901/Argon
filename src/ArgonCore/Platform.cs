@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace ArgonCore
 {
-    static class Platform
+    public static class Platform
     {
         public static bool IsWindows()
         {
@@ -23,6 +23,12 @@ namespace ArgonCore
         public static string AssemblyExtension()
         {
             return ".dll";
+        }
+
+        public static DateTime LoadTime { get; set; } = DateTime.Now;
+        public static int MSTime()
+        {
+            return (DateTime.Now - LoadTime).Milliseconds;
         }
     }
 }

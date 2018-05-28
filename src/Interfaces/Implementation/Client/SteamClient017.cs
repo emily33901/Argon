@@ -25,6 +25,13 @@ namespace InterfaceClient
         }
 
         // TODO: Deal with global users
+        // In theory as a result of our user model any process can connect
+        // to any user that they wish too, they just need to know which one
+        // is the "global user". 
+
+        // (This can be implemented as a handle1 = global user)
+        // or we could provide a method by which a user can choose a user to connect too...
+        // TODO: Deal with global users
         public int ConnectToGlobalUser(IntPtr _, int pipe)
         {
             Console.WriteLine("ConnectToGlobalUser");

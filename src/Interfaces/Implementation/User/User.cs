@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Security.Cryptography;
 using ArgonCore;
+using ArgonCore.Extensions;
 using ArgonCore.Interface;
 using ArgonCore.Server;
 
 using SteamKit2;
+using SteamKit2.Internal;
 
 namespace InterfaceUser
 {
@@ -23,7 +26,9 @@ namespace InterfaceUser
         }
 
         SteamUser steam_user;
+        SteamApps steam_apps;
         public EAccountFlags AccountFlags { get; private set; }
+        public IPAddress public_ip;
 
         int ClientId { get; set; }
         Client Instance { get { return Client.GetClient(ClientId); } }
@@ -34,11 +39,13 @@ namespace InterfaceUser
         {
             ClientId = client_id;
             steam_user = Instance.SteamClient.GetHandler<SteamUser>();
+            steam_apps = Instance.SteamClient.GetHandler<SteamApps>();
 
             Instance.CallbackManager.Subscribe<SteamUser.LoggedOnCallback>(cb => OnLoggedOn(cb));
             Instance.CallbackManager.Subscribe<SteamUser.LoggedOffCallback>(cb => OnLoggedOff(cb));
             Instance.CallbackManager.Subscribe<SteamUser.UpdateMachineAuthCallback>(cb => OnMachineAuth(cb));
-
+            Instance.CallbackManager.Subscribe<SteamApps.AppOwnershipTicketCallback>(cb => OnAppOwnershipTicketCallback(cb));
+            Instance.CallbackManager.Subscribe<SteamApps.GameConnectTokensCallback>(cb => OnGameConnectTokens(cb));
             // TODO: we need to add a logonkey handler to allow for offline login
         }
         public static User FindOrCreate(int id)
@@ -136,7 +143,7 @@ namespace InterfaceUser
         {
             logon_state = LogonState.LoggedOff;
 
-            Log.WriteLine("OnAccountLogonDenied: {0} / {1}", cb.Result, cb.ExtendedResult);
+            Log.WriteLine("OnAccountLogonDenied: {0}", cb.Result.ExtendedString());
 
             switch (cb.Result)
             {
@@ -162,6 +169,7 @@ namespace InterfaceUser
             Log.WriteLine("Logon succeeded!");
 
             AccountFlags = cb.AccountFlags;
+            public_ip = cb.PublicIP;
         }
 
         void OnLoggedOn(SteamUser.LoggedOnCallback cb)
@@ -182,7 +190,7 @@ namespace InterfaceUser
 
                 default:
                     {
-                        Log.WriteLine("Unable to logon to Steam: {0} / {1}", cb.Result, cb.ExtendedResult);
+                        Log.WriteLine("Unable to logon to Steam: {0}", cb.Result.ExtendedString());
                         return;
                     }
             }
@@ -265,9 +273,78 @@ namespace InterfaceUser
             }
         }
 
+        // Per user store of all the apptickets collected
+        private Dictionary<uint, byte[]> ownership_ticket_store = new Dictionary<uint, byte[]>();
+        void OnAppOwnershipTicketCallback(SteamApps.AppOwnershipTicketCallback cb)
+        {
+            switch (cb.Result)
+            {
+                case EResult.OK:
+                    {
+                        Log.WriteLine("Got app ticket for {0} successfully", cb.AppID);
+                        ownership_ticket_store[cb.AppID] = cb.Ticket;
+                        return;
+                    }
+                default:
+                    {
+                        Log.WriteLine("GetAppOwnershipTicket for appid {0} failed {1}", cb.AppID, cb.Result.ExtendedString());
+                        return;
+                    }
+            }
+        }
+
+        public byte[] GetAppOwnershipTicket(uint app_id)
+        {
+            if (ownership_ticket_store.TryGetValue(app_id, out var result))
+            {
+                return result;
+            }
+            else
+            {
+                Log.WriteLine("Waiting for app ownership ticket...");
+
+                // Request an app ownership ticket from steam
+                var job = steam_apps.GetAppOwnershipTicket(app_id);
+
+                // Wait for the result
+                job.ToTask().Wait();
+
+                // Get the now stored ticket
+                return ownership_ticket_store[app_id];
+            }
+        }
+
+        public List<byte[]> game_connect_tokens = new List<byte[]>();
+        public void OnGameConnectTokens(SteamApps.GameConnectTokensCallback cb)
+        {
+            Log.WriteLine("OnGameConnectTokens");
+            foreach (var tok in cb.Tokens)
+                game_connect_tokens.Add(tok);
+
+            while (game_connect_tokens.Count > cb.TokensToKeep)
+                game_connect_tokens.RemoveAt(0);
+        }
+
+        public int RemainingGameConnectTokens()
+        {
+            return game_connect_tokens.Count;
+        }
+
+        public byte[] GetGameConnectToken()
+        {
+            var token = game_connect_tokens[0];
+            game_connect_tokens.RemoveAt(0);
+            return token;
+        }
+
+        public void WriteGameConnectTokenToStream(StreamWriter s)
+        {
+            s.Write(GetGameConnectToken());
+        }
+
+        // TODO: this is part of the old client authentication api and as such shouldnt really be called anymore...
         public byte[] InitiateGameConnection(int max_buffer, SteamID game_server_id, GameID game_id, uint server_ip, ushort server_port, bool secure)
         {
-            // TODO: this is part of the old client authentication api and as such shouldnt really be called anymore...
             Log.WriteLine("InitiateGameConnection should no longer be called...");
 
             if (!game_server_id.IsValid)
@@ -297,8 +374,67 @@ namespace InterfaceUser
             // TODO: get an appownership ticket
             uint ticket_size = 0;
 
-
             return buffer;
+        }
+
+        public List<AuthTicket> auth_ticket_store = new List<AuthTicket>();
+        public uint ticket_request_count = 0;
+        public uint auth_sequence = 1;
+        public AuthTicket GetAuthSessionTicket(uint app_id, int pipe)
+        {
+            Log.WriteLine("GetAuthSessionTicket for app_id {0}", app_id);
+            var ownership_ticket = GetAppOwnershipTicket(app_id);
+
+            var s = new MemoryStream();
+            var w = new BinaryWriter(s);
+
+            // Write the token into the ticket
+            var token = GetGameConnectToken();
+            w.Write(token.Length);
+            w.Write(token);
+
+            // Size of header
+            w.Write(0x18);
+
+            // This is all copied from what the steamclient method does
+            w.Write(1);
+            w.Write(2);
+
+            var ip_bytes = public_ip.GetAddressBytes();
+            Array.Reverse(ip_bytes);
+            w.Write(ip_bytes);
+
+            w.Write(Instance.SteamClient.LocalIP.GetAddressBytes());
+            w.Write(ArgonCore.Platform.MSTime());
+            w.Write(++ticket_request_count);
+
+            // Write the ownership ticket data in here
+            // We are just going to assume that our tickets are 100% correct...
+            w.Write(ownership_ticket);
+
+            var ticket_msg = new CMsgAuthTicket()
+            {
+                gameid = app_id,
+                h_steam_pipe = (uint)pipe,
+                ticket_crc = BitConverter.ToUInt32(CryptoHelper.CRCHash(s.GetBuffer()), 0),
+            };
+
+            // Update the authlist and send it to the server
+            var auth_list_msg = new ClientMsgProtobuf<CMsgClientAuthList>(EMsg.ClientAuthList);
+
+            auth_list_msg.Body.tokens_left = (uint)game_connect_tokens.Count;
+            auth_list_msg.Body.message_sequence = ++auth_sequence;
+            auth_list_msg.Body.app_ids.Add(app_id);
+            auth_list_msg.Body.tickets.Add(ticket_msg);
+
+            Instance.SteamClient.Send(auth_list_msg);
+
+            // Store the ticket and return the handle
+            auth_ticket_store.Add(new AuthTicket()
+            {
+                handle = (uint)auth_ticket_store.Count + 1,
+                ticket = s.GetBuffer(),
+            });
         }
     }
 }
