@@ -81,7 +81,7 @@ namespace InterfaceClient
 
         public string GetUniverseName(IntPtr _, uint universe)
         {
-            return "unknown";
+            return Enum.GetName(typeof(SteamKit2.EUniverse), universe);
         }
 
         public IntPtr GetClientFriends(IntPtr _, int user, int pipe, string version)
