@@ -12,7 +12,7 @@
 
 #include "native/native.hh"
 
-#include "ArgonInterface.hh"
+#include "argon_interface.hh"
 
 // some constants for where we expect to find argon
 // and the tpas that go with
