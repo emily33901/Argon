@@ -14,6 +14,8 @@ namespace ArgonCore.IPC
     {
         static Logger Log { get; set; } = new Logger("IPC.ClientPipe");
 
+        static uint TotalIPCCallCount { get; set; }
+
         public static List<ClientPipe> ActivePipes { get; set; } = new List<ClientPipe>();
 
         /// <summary>
@@ -79,6 +81,12 @@ namespace ArgonCore.IPC
             semaphore.Release();
         }
 
+        private void PushMessage(SerializedFunction f)
+        {
+            TotalIPCCallCount += 1;
+            pipe.PushMessage(f);
+        }
+
         /// <summary>
         /// Call a function over ipc using the respective function name and interface id and wait for the result
         /// </summary>
@@ -91,7 +99,7 @@ namespace ArgonCore.IPC
             f.JobId = job;
             f.PipeId = Id;
 
-            pipe.PushMessage(f);
+            PushMessage(f);
 
             return;
         }
@@ -115,7 +123,7 @@ namespace ArgonCore.IPC
             f.JobId = job;
             f.PipeId = Id;
 
-            pipe.PushMessage(f);
+            PushMessage(f);
 
             result_semaphores.Add(job, new Semaphore(0, 1));
 
@@ -148,6 +156,13 @@ namespace ArgonCore.IPC
             var result = (T)found.Result;
 
             return result;
+        }
+
+        public static uint GetIPCCallCount()
+        {
+            var total = TotalIPCCallCount;
+            TotalIPCCallCount = 0;
+            return total;
         }
     }
 }

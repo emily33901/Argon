@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 using System.Runtime.InteropServices;
 
 using ArgonCore.Interface;
@@ -22,9 +23,6 @@ namespace ArgonCore.Client
 
         // Logging instance for this client
         static Logger Log { get; set; } = new Logger("Client.Client");
-
-        // The pipeid that this user is backed by
-        private int PipeId { get; set; }
 
         Client()
         {
@@ -197,6 +195,65 @@ namespace ArgonCore.Client
                 Marshal.FreeHGlobal(current_value);
                 CallbackAllocHandles.Remove(pipe_id);
             }
+        }
+
+        static int TryFindAppIdInternal()
+        {
+            var steam_app_id = Environment.GetEnvironmentVariable("SteamAppId");
+
+            if (steam_app_id != null)
+            {
+                try
+                {
+                    return Int32.Parse(steam_app_id);
+                }
+                catch
+                {
+                    Log.WriteLine("SteamAppId not set.");
+                }
+            }
+
+            // Try and read steam_appid.txt
+            // steamclient does this in a number of ways...
+            // It will first check the local working directory for steam_appid.txt
+            // It will then check in the host apps directory for steam_appid.txt
+
+            // Otherwise it will just be an empty string
+
+            try
+            {
+                steam_app_id = File.ReadAllText("steam_appid.txt");
+                return Int32.Parse(steam_app_id);
+            }
+            catch
+            {
+                Log.WriteLine("steam_appid.txt not in current working directory.");
+            }
+
+            try
+            {
+                var main_exe = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+                var exe_path = Path.GetDirectoryName(main_exe);
+
+                steam_app_id = Path.Combine(exe_path, "steam_appid.txt");
+
+                return Int32.Parse(steam_app_id);
+            }
+            catch
+            {
+                Log.WriteLine("steam_appid.txt not found in root exe folder.");
+            }
+
+            return 0;
+        }
+
+        public static void TryFindAppId(int pipe_id)
+        {
+            var found = TryFindAppIdInternal();
+
+            if (found == 0) return;
+
+            Server.SetAppId(pipe_id, found);
         }
     }
 }

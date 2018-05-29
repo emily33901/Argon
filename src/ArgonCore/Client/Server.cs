@@ -71,5 +71,18 @@ namespace ArgonCore.Client
 
             return IPC.ClientPipe.CallSerializedFunction<InternalCallbackMsg>(pipe_id, f);
         }
+
+        public static void SetAppId(int pipe_id, int app_id)
+        {
+            var f = new IPC.SerializedFunction
+            {
+                ClientId = -1,
+                InterfaceId = -1,
+                Name = "SetAppId",
+                Args = new object[] { pipe_id, app_id },
+            };
+
+            IPC.ClientPipe.CallSerializedFunction(pipe_id, f);
+        }
     }
 }

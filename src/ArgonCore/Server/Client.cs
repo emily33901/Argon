@@ -17,6 +17,9 @@ namespace ArgonCore.Server
 
         public static Queue<ArgonCore.Client.InternalCallbackMsg> PendingCallbacks { get; set; } = new Queue<ArgonCore.Client.InternalCallbackMsg>();
 
+        // Lookup for pipeids to their appids
+        public static Dictionary<int, int> PipeAppId { get; set; } = new Dictionary<int, int>();
+
         // Used for internal handling of clients
         public int Id { get; private set; }
 
@@ -83,7 +86,7 @@ namespace ArgonCore.Server
                 return ActiveClients[id];
         }
 
-        public IBaseInterface CreateInterface(string name)
+        public IBaseInterface CreateInterface(int pipe_id, string name)
         {
             // Server never needs delegates or contexts becuase it is just managing instances
             // within C#
@@ -93,17 +96,19 @@ namespace ArgonCore.Server
 
             instance.ClientId = Id;
             instance.InterfaceId = interfaces.Count - 1;
+            instance.PipeId = pipe_id;
             instance.Implementation = impl;
 
             return instance;
         }
 
-        public static IBaseInterface CreateInterfaceNoUser(string name)
+        public static IBaseInterface CreateInterfaceNoUser(int pipe_id, string name)
         {
             var impl = Context.FindImpl(name);
             var instance = (IBaseInterface)Context.CreateInterfaceInstance(impl);
             NoUserInterface.Add(instance);
 
+            instance.PipeId = pipe_id;
             instance.Implementation = impl;
 
             return instance;
@@ -164,7 +169,7 @@ namespace ArgonCore.Server
             Connect();
         }
 
-        object CallSerializedFunction(int interface_id, string name, object[] args)
+        object CallSerializedFunction(int pipe_id, int interface_id, string name, object[] args)
         {
             if (interface_id != -1)
             {
@@ -184,7 +189,7 @@ namespace ArgonCore.Server
             // TODO: handle special server related functions
             switch (name)
             {
-                case "CreateInterface": { return CreateInterface((string)args[0]).InterfaceId; }
+                case "CreateInterface": { return CreateInterface(pipe_id, (string)args[0]).InterfaceId; }
                 case "NextCallback":
                     {
                         if (PendingCallbacks.Count > 0)
@@ -202,7 +207,7 @@ namespace ArgonCore.Server
             return null;
         }
 
-        public static object CallSerializedFunction(int client_id, int interface_id, string name, object[] args)
+        public static object CallSerializedFunction(int pipe_id, int client_id, int interface_id, string name, object[] args)
         {
 
             if (client_id == -1 && interface_id == -1)
@@ -216,7 +221,7 @@ namespace ArgonCore.Server
                         }
                     case "CreateInterface":
                         {
-                            return CreateInterfaceNoUser((string)args[0]);
+                            return CreateInterfaceNoUser(pipe_id, (string)args[0]).InterfaceId;
                         }
                     case "NextCallback":
                         {
@@ -225,6 +230,11 @@ namespace ArgonCore.Server
                                 return PendingCallbacks.Dequeue();
                             }
 
+                            return null;
+                        }
+                    case "SetAppId":
+                        {
+                            PipeAppId[pipe_id] = (int)args[0];
                             return null;
                         }
                 }
@@ -245,7 +255,7 @@ namespace ArgonCore.Server
                 return null;
             }
 
-            return ActiveClients[client_id].CallSerializedFunction(interface_id, name, args);
+            return ActiveClients[client_id].CallSerializedFunction(pipe_id, interface_id, name, args);
         }
     }
 }

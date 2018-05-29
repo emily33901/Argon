@@ -15,7 +15,11 @@ namespace InterfaceClient
         public int CreateSteamPipe(IntPtr _)
         {
             Console.WriteLine("CreateSteamPipe");
-            return ArgonCore.IPC.ClientPipe.CreatePipe();
+            var new_pipe = ArgonCore.IPC.ClientPipe.CreatePipe();
+
+            Client.TryFindAppId(new_pipe);
+
+            return new_pipe;
         }
 
         public bool ReleaseSteamPipe(IntPtr _, int pipe)
@@ -41,6 +45,8 @@ namespace InterfaceClient
         public int CreateLocalUser(IntPtr _, ref int pipe, uint account_type)
         {
             Console.WriteLine("CreateLocalUser {0} {1}", pipe, account_type);
+
+            if (pipe == 0) pipe = CreateSteamPipe(IntPtr.Zero);
 
             var user = Client.CreateNewClient(pipe);
 
@@ -158,9 +164,8 @@ namespace InterfaceClient
 
         public uint GetIPCCallCount(IntPtr _)
         {
-            // TODO: actually keep track of these in the future
             Console.WriteLine("GetIPCCallCount");
-            return 1;
+            return ArgonCore.IPC.ClientPipe.GetIPCCallCount();
         }
 
         public void SetWarningMessageHook(IntPtr _, IntPtr function)

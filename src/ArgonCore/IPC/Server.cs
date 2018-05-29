@@ -52,6 +52,7 @@ namespace ArgonCore.IPC
                 Console.WriteLine("\tClientId = {0}", connection.Id);
                 Console.WriteLine("\tJobId = {0}", message.JobId);
                 Console.WriteLine("\tInterfaceId = {0}", message.InterfaceId);
+                Console.WriteLine("\tPipeId = \"{0}\"", message.PipeId);
                 Console.WriteLine("\tName = \"{0}\"", message.Name);
 
                 if (message.Args == null)
@@ -69,7 +70,7 @@ namespace ArgonCore.IPC
 
                 try
                 {
-                    result = ArgonCore.Server.Client.CallSerializedFunction(message.ClientId, message.InterfaceId, message.Name, message.Args);
+                    result = ArgonCore.Server.Client.CallSerializedFunction(message.PipeId, message.ClientId, message.InterfaceId, message.Name, message.Args);
                 }
                 catch (Exception e)
                 {
