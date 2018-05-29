@@ -3,6 +3,8 @@
 using ArgonCore;
 using ArgonCore.Interface;
 
+using System.Runtime.InteropServices;
+
 namespace InterfaceUser
 {
     [Impl(Name = "SteamUser019", Implements = "SteamUser", ServerMapped = true)]
@@ -92,10 +94,25 @@ namespace InterfaceUser
             return 0;
         }
 
-        public uint GetAuthSessionTicket(IntPtr ticket, uint ticket_size, ref uint ticket_written)
+        public int GetAuthSessionTicket(IntPtr ticket, uint ticket_size, ref int ticket_written)
         {
             Console.WriteLine("GetAuthSessionTicket");
-            return 0;
+
+            var app_id = User.GetAppIdForPipe(PipeId);
+
+            var new_ticket = u.GetAuthTicket(u.GetAuthSessionTicket(app_id, PipeId));
+
+            if (new_ticket.ticket.Length > ticket_size)
+            {
+                Console.WriteLine("AuthTicket length is bigger than buffer allocated for it!");
+                return -1; // Invalid ticket
+            }
+
+            // Write the ticket out
+            Marshal.Copy(new_ticket.ticket, 0, ticket, new_ticket.ticket.Length);
+            ticket_written = new_ticket.ticket.Length;
+
+            return new_ticket.handle;
         }
 
         public uint BeginAuthSession(IntPtr ticket, uint ticket_size, ulong steamid)
@@ -109,9 +126,17 @@ namespace InterfaceUser
             Console.WriteLine("EndAuthSession");
         }
 
-        public void CancelAuthTicket(uint ticket_handle)
+        public void CancelAuthTicket(int ticket_handle)
         {
             Console.WriteLine("CancelAuthTicket");
+
+            var ticket = u.GetAuthTicket(ticket_handle);
+
+            if (ticket.cancelled == true)
+                Console.WriteLine("CancelAuthTicket attempt made on already cancelled ticket??");
+
+            ticket.cancelled = true;
+            u.SendClientAuthList();
         }
 
         public uint UserHasLicenseForApp(ulong steamID, uint appID)
