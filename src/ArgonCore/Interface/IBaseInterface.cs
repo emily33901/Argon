@@ -17,6 +17,8 @@ namespace ArgonCore.Interface
 
         public int InterfaceId { get; set; }
 
+        public int PipeId { get; set; }
+
         public Plugin.InterfaceImpl Implementation { get; set; }
     }
 
