@@ -14,6 +14,7 @@ int __cdecl CUser::BaseGetAuthTicket(int a1, CUtlBuffer *a2, int gameID)
         CUtlBuffer::PutUnsignedInt(a2, *((_DWORD *)v4 + 5));
         if (v5)
         {
+            // GetAppOwnershipTicketData
             v8 = *(void(__cdecl **)(int, int, int, int))(*(_DWORD *)a1 + 428);
             v6 = 0;
             if ((unsigned __int8)CUtlBuffer::CheckPut(a2, v5))
