@@ -7,7 +7,7 @@ using ArgonCore.Interface;
 namespace InterfaceClient
 {
     [Impl(Name = "CLIENTENGINE_INTERFACE_VERSION005", Implements = "ClientEngine", ServerMapped = false)]
-    class ClientEngine005
+    class ClientEngine005 : IBaseInterface
     {
         public int CreateClientPipe(IntPtr _)
         {
