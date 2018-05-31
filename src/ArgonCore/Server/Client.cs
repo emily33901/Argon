@@ -18,7 +18,7 @@ namespace ArgonCore.Server
         public static Queue<ArgonCore.Client.InternalCallbackMsg> PendingCallbacks { get; set; } = new Queue<ArgonCore.Client.InternalCallbackMsg>();
 
         // Lookup for pipeids to their appids
-        public static Dictionary<int, int> PipeAppId { get; set; } = new Dictionary<int, int>();
+        public Dictionary<int, int> PipeAppId { get; set; } = new Dictionary<int, int>();
 
         // Used for internal handling of clients
         public int Id { get; private set; }
@@ -199,6 +199,11 @@ namespace ArgonCore.Server
 
                         return null;
                     }
+                case "SetAppId":
+                    {
+                        PipeAppId[pipe_id] = (int)args[0];
+                        return null;
+                    }
                 default:
                     Log.WriteLine("Method \"{0}\" is not defined for Interface -1", name);
                     break;
@@ -230,11 +235,6 @@ namespace ArgonCore.Server
                                 return PendingCallbacks.Dequeue();
                             }
 
-                            return null;
-                        }
-                    case "SetAppId":
-                        {
-                            PipeAppId[pipe_id] = (int)args[0];
                             return null;
                         }
                 }

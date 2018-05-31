@@ -98,7 +98,7 @@ namespace InterfaceUser
         {
             Console.WriteLine("GetAuthSessionTicket");
 
-            var app_id = User.GetAppIdForPipe(PipeId);
+            var app_id = u.GetAppIdForPipe(PipeId);
 
             var new_ticket = u.GetAuthTicket(u.GetAuthSessionTicket(app_id, PipeId));
 
