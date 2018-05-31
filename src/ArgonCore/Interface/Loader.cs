@@ -14,7 +14,6 @@ namespace ArgonCore.Interface
     {
         static Logger Log { get; set; } = new Logger("Interface.Loader");
 
-
         private static bool loaded;
 
         public static List<Plugin> LoadedPlugins { get; private set; }

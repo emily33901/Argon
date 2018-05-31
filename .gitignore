@@ -541,7 +541,9 @@ $RECYCLE.BIN/
 
 # End of https://www.gitignore.io/api/linux,emacs,csharp,windows,visualstudio,visualstudiocode
 
-**/secrets.json
+#### Argon specific
+
+secrets.json
 **/.vs*/
 **/.vs*
 premake/
@@ -550,3 +552,4 @@ core
 compile_commands.json
 .cquery_cached_index
 src/cxx/steam/
+sentry_*.bin

@@ -47,7 +47,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
                       LPVOID  lpReserved) {
     switch (ul_reason_for_call) {
     case DLL_PROCESS_ATTACH:
-        // TODO: ideally this should be a creatprocess call but with regards to CppTestBed this cant be done.
+        // TODO: ideally this should be a createprocess call but with regards to CppTestBed this cant be done.
         //CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&on_attach, 0, 0, NULL);
         on_attach(nullptr);
     case DLL_THREAD_ATTACH:

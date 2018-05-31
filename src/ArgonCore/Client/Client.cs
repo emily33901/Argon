@@ -47,6 +47,8 @@ namespace ArgonCore.Client
                 Id = Server.CreateClient(pipe_id)
             };
 
+            TryFindAppId(pipe_id);
+
             ActiveClients[c.GetHandle()] = c;
 
             return c.GetHandle();
@@ -209,9 +211,11 @@ namespace ArgonCore.Client
                 }
                 catch
                 {
-                    Log.WriteLine("SteamAppId not set.");
                 }
             }
+
+            Log.WriteLine("SteamAppId not set.");
+
 
             // Try and read steam_appid.txt
             // steamclient does this in a number of ways...
@@ -234,6 +238,7 @@ namespace ArgonCore.Client
             {
                 var main_exe = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
                 var exe_path = Path.GetDirectoryName(main_exe);
+                Log.WriteLine("note: exe_path: '{0}'", exe_path);
 
                 steam_app_id = Path.Combine(exe_path, "steam_appid.txt");
 
@@ -252,6 +257,8 @@ namespace ArgonCore.Client
             var found = TryFindAppIdInternal();
 
             if (found == 0) return;
+
+            Log.WriteLine("Found appid {0}", found);
 
             Server.SetAppId(pipe_id, found);
         }
