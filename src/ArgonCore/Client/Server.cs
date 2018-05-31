@@ -79,7 +79,7 @@ namespace ArgonCore.Client
                 ClientId = -1,
                 InterfaceId = -1,
                 Name = "SetAppId",
-                Args = new object[] { pipe_id, app_id },
+                Args = new object[] { app_id },
             };
 
             IPC.ClientPipe.CallSerializedFunction(pipe_id, f);
