@@ -13,7 +13,7 @@ using SteamKit2.Internal;
 
 namespace InterfaceUser
 {
-    public class User
+    public class User : ClientTied<User>
     {
         private static Dictionary<int, User> ActiveUsers { get; set; } = new Dictionary<int, User>();
 
@@ -30,14 +30,8 @@ namespace InterfaceUser
         public EAccountFlags AccountFlags { get; private set; }
         public IPAddress public_ip;
 
-        int ClientId { get; set; }
-        Client Instance { get { return Client.GetClient(ClientId); } }
-
-        static Logger Log { get; set; } = new Logger("InterfaceUser.User");
-
-        private User(int client_id)
+        public User()
         {
-            ClientId = client_id;
             steam_user = Instance.SteamClient.GetHandler<SteamUser>();
             steam_apps = Instance.SteamClient.GetHandler<SteamApps>();
 
@@ -47,18 +41,6 @@ namespace InterfaceUser
             Instance.CallbackManager.Subscribe<SteamApps.AppOwnershipTicketCallback>(cb => OnAppOwnershipTicketCallback(cb));
             Instance.CallbackManager.Subscribe<SteamApps.GameConnectTokensCallback>(cb => OnGameConnectTokens(cb));
             // TODO: we need to add a logonkey handler to allow for offline login
-        }
-        public static User FindOrCreate(int id)
-        {
-            if (ActiveUsers.TryGetValue(id, out User user_found))
-            {
-                return user_found;
-            }
-
-            Log.WriteLine("Creating new User instance to match clientid {0}", id);
-
-            ActiveUsers[id] = new User(id);
-            return ActiveUsers[id];
         }
 
         LogonState logon_state;

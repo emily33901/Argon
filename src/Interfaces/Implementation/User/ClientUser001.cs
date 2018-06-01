@@ -334,5 +334,25 @@ namespace InterfaceUser
         {
             return 0;
         }
+
+        public void ValidatePasswordResetCodeAndSendSms(string a, string b)
+        {
+
+        }
+
+        public void TrackNatTraversalStat(IntPtr stat_out)
+        {
+
+        }
+
+        public void TrackSteamUsageEvent(uint usage_event, string extra, uint a)
+        {
+
+        }
+
+        public void TrackSteamGuiUsage(string a)
+        {
+
+        }
     }
 }
