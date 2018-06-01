@@ -100,8 +100,6 @@ namespace ArgonCore.IPC
             f.PipeId = Id;
 
             PushMessage(f);
-
-            return;
         }
         public static void CallSerializedFunction(int id, SerializedFunction f)
         {
@@ -139,16 +137,16 @@ namespace ArgonCore.IPC
         /// Waits for a job to complete and returns the result
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="jobId"></param>
+        /// <param name="job_id"></param>
         /// <returns></returns>
-        public T WaitForResultForFunction<T>(uint jobId)
+        public T WaitForResultForFunction<T>(uint job_id)
         {
             // Wait for the semaphore and then remove it so gc collects it
-            var this_semaphore = result_semaphores[jobId];
+            var this_semaphore = result_semaphores[job_id];
             this_semaphore.WaitOne();
-            result_semaphores.Remove(jobId);
+            result_semaphores.Remove(job_id);
 
-            var found = current_results.Find(x => x.JobId == jobId);
+            var found = current_results.Find(x => x.JobId == job_id);
             current_results.Remove(found);
 
             if (found.Result == null) return default(T);

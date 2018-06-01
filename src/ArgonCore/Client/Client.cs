@@ -157,10 +157,7 @@ namespace ArgonCore.Client
             var c = Server.NextCallback(pipe_id);
 
             // No new callback from server
-            if (c == default(InternalCallbackMsg))
-            {
-                return null;
-            }
+            if (c == default(InternalCallbackMsg)) return null;
 
             bool found = CallbackAllocHandles.TryGetValue(pipe_id, out IntPtr current_value);
 

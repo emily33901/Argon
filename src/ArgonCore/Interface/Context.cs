@@ -202,7 +202,7 @@ namespace ArgonCore.Interface
 
             Plugin.InterfaceImpl impl = null;
 
-            bool is_map = try_create_map;
+            var is_map = try_create_map;
 
             if (try_create_map)
             {
