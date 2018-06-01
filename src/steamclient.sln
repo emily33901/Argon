@@ -71,6 +71,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterfaceVideo", "Interface
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Implementations", "Implementations", "{14137E61-A5F0-4E03-A38E-6DB7B52572DF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterfaceFriends", "Interfaces\Implementation\Friends\InterfaceFriends.csproj", "{06D82753-E272-466C-9284-9355F7584E7B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -441,6 +443,18 @@ Global
 		{630A759E-13E3-4B17-82AC-01B233EAA2A0}.Release|x64.Build.0 = Release|Any CPU
 		{630A759E-13E3-4B17-82AC-01B233EAA2A0}.Release|x86.ActiveCfg = Release|Any CPU
 		{630A759E-13E3-4B17-82AC-01B233EAA2A0}.Release|x86.Build.0 = Release|Any CPU
+		{06D82753-E272-466C-9284-9355F7584E7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06D82753-E272-466C-9284-9355F7584E7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06D82753-E272-466C-9284-9355F7584E7B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{06D82753-E272-466C-9284-9355F7584E7B}.Debug|x64.Build.0 = Debug|Any CPU
+		{06D82753-E272-466C-9284-9355F7584E7B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{06D82753-E272-466C-9284-9355F7584E7B}.Debug|x86.Build.0 = Debug|Any CPU
+		{06D82753-E272-466C-9284-9355F7584E7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06D82753-E272-466C-9284-9355F7584E7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06D82753-E272-466C-9284-9355F7584E7B}.Release|x64.ActiveCfg = Release|Any CPU
+		{06D82753-E272-466C-9284-9355F7584E7B}.Release|x64.Build.0 = Release|Any CPU
+		{06D82753-E272-466C-9284-9355F7584E7B}.Release|x86.ActiveCfg = Release|Any CPU
+		{06D82753-E272-466C-9284-9355F7584E7B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -475,6 +489,7 @@ Global
 		{E1B42445-2337-440A-A822-979416FFB858} = {14137E61-A5F0-4E03-A38E-6DB7B52572DF}
 		{630A759E-13E3-4B17-82AC-01B233EAA2A0} = {14137E61-A5F0-4E03-A38E-6DB7B52572DF}
 		{14137E61-A5F0-4E03-A38E-6DB7B52572DF} = {ED290E8E-203A-40B2-9310-41D8AEA9BDBE}
+		{06D82753-E272-466C-9284-9355F7584E7B} = {14137E61-A5F0-4E03-A38E-6DB7B52572DF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {21A550EC-64CC-4912-901E-FAB5DA27287A}
