@@ -12,6 +12,7 @@
     <ProjectReference Include="..\Implementation\ArgonCore\InterfaceArgonCore.csproj" />
     <ProjectReference Include="..\Implementation\Client\InterfaceClient.csproj" />
     <ProjectReference Include="..\Implementation\Controller\InterfaceController.csproj" />
+    <ProjectReference Include="..\Implementation\Friends\InterfaceFriends.csproj" />
     <ProjectReference Include="..\Implementation\GameServerStats\InterfaceGameServerStats.csproj" />
     <ProjectReference Include="..\Implementation\GameServer\InterfaceGameServer.csproj" />
     <ProjectReference Include="..\Implementation\HTMLSurface\InterfaceHTMLSurface.csproj" />
