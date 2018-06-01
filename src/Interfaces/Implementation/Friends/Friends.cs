@@ -5,9 +5,9 @@ using ArgonCore.Interface;
 
 namespace InterfaceFriends
 {
-    class Friends
+    class Friends : ClientTied<Friends>
     {
-        Friends()
+        public Friends()
         {
 
         } 

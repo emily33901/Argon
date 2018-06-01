@@ -12,12 +12,12 @@ namespace InterfaceFriends
 
         public SteamFriends001()
         {
-            f = new Friends();
+            f = Friends.FindOrCreate(ClientId);
         }
 
         public string GetPersonaName()
         {
-
+            return "";
         }
     }
 }
