@@ -5,6 +5,7 @@ namespace InterfaceUser
 {
     public class AuthTicket
     {
+        public bool is_server_ticket = false;
         public int app_id;
         public int pipe_id;
         public uint crc32;

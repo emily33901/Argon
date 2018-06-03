@@ -414,18 +414,7 @@ namespace InterfaceUser
                     w.Write(ArgonCore.Platform.MSTime());
                     w.Write(++ticket_request_count);
 
-                    // Write the ownership ticket data in here
-                    // We are just going to assume that our tickets are 100% correct...
-                    w.Write(ownership_ticket);
-
                     var ticket_crc = BitConverter.ToUInt32(CryptoHelper.CRCHash(s.GetBuffer()), 0);
-
-                    var ticket_msg = new CMsgAuthTicket()
-                    {
-                        gameid = (uint)app_id,
-                        h_steam_pipe = (uint)pipe,
-                        ticket_crc = ticket_crc,
-                    };
 
                     auth_ticket_store.Add(new AuthTicket()
                     {
@@ -439,9 +428,46 @@ namespace InterfaceUser
 
                     // Resend the auth list with our new ticket
                     SendClientAuthList();
-
-                    return auth_ticket_store.Count;
                 }
+
+                // Create the ticket that will actually be sent to the server
+
+
+                using (var s2 = new MemoryStream())
+                {
+                    using (var w = new BinaryWriter(s2))
+                    {
+                        var size = 8 + s.Length + 4 + ownership_ticket.Length;
+
+                        w.Write((ushort)size);
+
+                        w.Write(steam_user.SteamID.ConvertToUInt64());
+
+                        w.Write(s.GetBuffer());
+
+                        // Write the ownership ticket data in here
+                        // We are just going to assume that our tickets are 100% correct...
+                        w.Write(ownership_ticket.Length);
+                        w.Write(ownership_ticket);
+
+                        var ticket_crc = BitConverter.ToUInt32(CryptoHelper.CRCHash(s.GetBuffer()), 0);
+
+                        auth_ticket_store.Add(new AuthTicket()
+                        {
+                            is_server_ticket = true,
+                            app_id = app_id,
+                            pipe_id = pipe,
+                            crc32 = ticket_crc,
+                            handle = auth_ticket_store.Count + 1,
+                            ticket = s.GetBuffer(),
+                            cancelled = false,
+                        });
+
+                        return auth_ticket_store.Count;
+                    }
+                }
+
+
             }
         }
 
@@ -452,7 +478,7 @@ namespace InterfaceUser
             // Add all our non-cancelled tickets to this auth list
             foreach (var ticket in auth_ticket_store)
             {
-                if (ticket.cancelled) continue;
+                if (ticket.cancelled || ticket.is_server_ticket) continue;
 
                 auth_list_msg.Body.tickets.Add(new CMsgAuthTicket()
                 {
