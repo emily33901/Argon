@@ -43,7 +43,7 @@ namespace InterfaceFriends
         {
             f.RemoveFriend(new SteamKit2.SteamID(steam_id));
 
-            return false;
+            return true;
         }
 
         public bool HasFriend(ulong steam_id)
@@ -171,7 +171,6 @@ namespace InterfaceFriends
         public bool GetFriendGamePlayed(ulong steam_id, ref ulong game_id, ref uint server_ip, ref ushort server_port)
         {
             var id = new SteamKit2.SteamID(steam_id);
-
             game_id = f.GamePlayed(id);
 
             return true;
