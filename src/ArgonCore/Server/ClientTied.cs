@@ -18,7 +18,7 @@ namespace ArgonCore
                 return found;
             }
 
-            Log.WriteLine("Creating new instance for id {0}", id);
+            Log.WriteLine("Creating new instance of {1} for id {0}", id, typeof(T).Name);
 
             Active[id] = new T();
 
