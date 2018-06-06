@@ -190,15 +190,6 @@ namespace ArgonCore.Server
             switch (name)
             {
                 case "CreateInterface": { return CreateInterface(pipe_id, (string)args[0]).InterfaceId; }
-                case "NextCallback":
-                    {
-                        if (PendingCallbacks.Count > 0)
-                        {
-                            return PendingCallbacks.Dequeue();
-                        }
-
-                        return null;
-                    }
                 case "SetAppId":
                     {
                         PipeAppId[pipe_id] = (int)args[0];
