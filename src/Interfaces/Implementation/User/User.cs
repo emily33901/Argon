@@ -40,6 +40,7 @@ namespace InterfaceUser
             Instance.CallbackManager.Subscribe<SteamUser.UpdateMachineAuthCallback>(cb => OnMachineAuth(cb));
             Instance.CallbackManager.Subscribe<SteamApps.AppOwnershipTicketCallback>(cb => OnAppOwnershipTicketCallback(cb));
             Instance.CallbackManager.Subscribe<SteamApps.GameConnectTokensCallback>(cb => OnGameConnectTokens(cb));
+            Instance.CallbackManager.Subscribe<SteamUser.LoginKeyCallback>(cb => OnLoginKeyCallback(cb));
             // TODO: we need to add a logonkey handler to allow for offline login
         }
 
@@ -255,6 +256,14 @@ namespace InterfaceUser
             }
         }
 
+        void OnLoginKeyCallback(SteamUser.LoginKeyCallback cb)
+        {
+            var loginkeyack = new ClientMsgProtobuf<CMsgClientNewLoginKeyAccepted(EMsg.ClientNewLoginKeyAccepted);
+            loginkeyack.Body.unique_id = cb.UniqueID;
+
+            Instance.SteamClient.Send(loginkeyack);
+        }
+
         public int GetAppIdForPipe(int pipe_id)
         {
             if (Instance.PipeAppId.TryGetValue(pipe_id, out var app_id))
@@ -466,8 +475,6 @@ namespace InterfaceUser
                         return auth_ticket_store.Count;
                     }
                 }
-
-
             }
         }
 
