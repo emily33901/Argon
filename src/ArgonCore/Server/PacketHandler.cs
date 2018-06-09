@@ -22,7 +22,7 @@ namespace ArgonCore.Server
 
         public override void HandleMsg(IPacketMsg packet)
         {
-            Log.WriteLine("{0} [{1}] [{2]}] -> [{3}]", packet.MsgType, (uint)packet.MsgType, packet.SourceJobID, packet.TargetJobID);
+            Log.WriteLine("{0} [{1}] [{2}] -> [{3}]", packet.MsgType, (uint)packet.MsgType, packet.SourceJobID, packet.TargetJobID);
 
             Server.Client.PendingCallbacks.Enqueue(new ArgonCore.Client.InternalCallbackMsg
             {
