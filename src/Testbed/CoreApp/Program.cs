@@ -67,7 +67,7 @@ namespace testbed
                     callback = Client.GetCallback(pipe_id);
                     if (callback == null)
                     {
-                        Console.WriteLine("callback is null!");
+                        //Console.WriteLine("callback is null!");
                     }
                     else
                     {
@@ -78,7 +78,7 @@ namespace testbed
                 } while (callback != null);
 
 
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
             }
         }
     }
