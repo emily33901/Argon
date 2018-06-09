@@ -41,7 +41,6 @@ namespace InterfaceUser
             Instance.CallbackManager.Subscribe<SteamApps.AppOwnershipTicketCallback>(cb => OnAppOwnershipTicketCallback(cb));
             Instance.CallbackManager.Subscribe<SteamApps.GameConnectTokensCallback>(cb => OnGameConnectTokens(cb));
             Instance.CallbackManager.Subscribe<SteamUser.LoginKeyCallback>(cb => OnLoginKeyCallback(cb));
-            // TODO: we need to add a logonkey handler to allow for offline login
         }
 
         LogonState logon_state;
@@ -258,10 +257,10 @@ namespace InterfaceUser
 
         void OnLoginKeyCallback(SteamUser.LoginKeyCallback cb)
         {
-            var loginkeyack = new ClientMsgProtobuf<CMsgClientNewLoginKeyAccepted(EMsg.ClientNewLoginKeyAccepted);
-            loginkeyack.Body.unique_id = cb.UniqueID;
+            var login_key_ack = new ClientMsgProtobuf<CMsgClientNewLoginKeyAccepted>(EMsg.ClientNewLoginKeyAccepted);
+            login_key_ack.Body.unique_id = cb.UniqueID;
 
-            Instance.SteamClient.Send(loginkeyack);
+            Instance.SteamClient.Send(login_key_ack);
         }
 
         public int GetAppIdForPipe(int pipe_id)
@@ -356,33 +355,31 @@ namespace InterfaceUser
 
             // TODO: check whether server port / ip are valid
 
-            // Create the blob with a stream and writer
-            var s = new MemoryStream();
-            var w = new BinaryWriter(s);
+            var b = new ArgonCore.Util.Buffer();
 
             // TODO: write a real game connect token in here
             if (game_connect_tokens.Count > 0)
             {
                 var token = GetGameConnectToken();
-                w.Write(token.Length);
-                w.Write(token);
+                b.Write(token.Length);
+                b.Write(token);
             }
             else
             {
                 // Write out the placeholder token
-                w.Write(4u);
-                w.Write(0u);
+                b.Write(4u);
+                b.Write(0u);
             }
 
             var ownership_ticket = GetAppOwnershipTicket(game_id.AppID);
 
-            w.Write(ownership_ticket.Length);
-            w.Write(ownership_ticket);
+            b.Write(ownership_ticket.Length);
+            b.Write(ownership_ticket);
 
             // TODO: look at InternalUpdateClientGame and see whether there is anything else important
             // That needs to go here
 
-            return s.GetBuffer();
+            return b.GetBuffer();
         }
 
         List<AuthTicket> auth_ticket_store = new List<AuthTicket>();
@@ -398,84 +395,75 @@ namespace InterfaceUser
             Log.WriteLine("GetAuthSessionTicket for app_id {0}", app_id);
             var ownership_ticket = GetAppOwnershipTicket((uint)app_id);
 
-            using (var s = new MemoryStream())
+            var client_ticket_buffer = new ArgonCore.Util.Buffer();
+
+            // Write the token into the ticket
+            var token = GetGameConnectToken();
+            client_ticket_buffer.Write(token.Length);
+            client_ticket_buffer.Write(token);
+
+            // Size of header
+            client_ticket_buffer.Write(0x18);
+
+            // This is all copied from what the steamclient method does
+            client_ticket_buffer.Write(1);
+            client_ticket_buffer.Write(2);
+
+            var ip_bytes = public_ip.GetAddressBytes();
+            Array.Reverse(ip_bytes);
+            client_ticket_buffer.Write(ip_bytes);
+
+            client_ticket_buffer.Write(Instance.SteamClient.LocalIP.GetAddressBytes());
+            client_ticket_buffer.Write(ArgonCore.Platform.MSTime());
+            client_ticket_buffer.Write(++ticket_request_count);
+
+            var client_ticket_crc = BitConverter.ToUInt32(CryptoHelper.CRCHash(client_ticket_buffer.GetBuffer()), 0);
+
+            auth_ticket_store.Add(new AuthTicket()
             {
-                using (var w = new BinaryWriter(s))
-                {
+                app_id = app_id,
+                pipe_id = pipe,
+                crc32 = client_ticket_crc,
+                handle = auth_ticket_store.Count + 1,
+                ticket = client_ticket_buffer.GetBuffer(),
+                cancelled = false,
+            });
 
-                    // Write the token into the ticket
-                    var token = GetGameConnectToken();
-                    w.Write(token.Length);
-                    w.Write(token);
-
-                    // Size of header
-                    w.Write(0x18);
-
-                    // This is all copied from what the steamclient method does
-                    w.Write(1);
-                    w.Write(2);
-
-                    var ip_bytes = public_ip.GetAddressBytes();
-                    Array.Reverse(ip_bytes);
-                    w.Write(ip_bytes);
-
-                    w.Write(Instance.SteamClient.LocalIP.GetAddressBytes());
-                    w.Write(ArgonCore.Platform.MSTime());
-                    w.Write(++ticket_request_count);
-
-                    var ticket_crc = BitConverter.ToUInt32(CryptoHelper.CRCHash(s.GetBuffer()), 0);
-
-                    auth_ticket_store.Add(new AuthTicket()
-                    {
-                        app_id = app_id,
-                        pipe_id = pipe,
-                        crc32 = ticket_crc,
-                        handle = auth_ticket_store.Count + 1,
-                        ticket = s.GetBuffer(),
-                        cancelled = false,
-                    });
-
-                    // Resend the auth list with our new ticket
-                    SendClientAuthList();
-                }
-
-                // Create the ticket that will actually be sent to the server
+            // Resend the auth list with our new ticket
+            SendClientAuthList();
 
 
-                using (var s2 = new MemoryStream())
-                {
-                    using (var w = new BinaryWriter(s2))
-                    {
-                        var size = 8 + s.Length + 4 + ownership_ticket.Length;
+            // Create the ticket that will actually be sent to the server
 
-                        w.Write((ushort)size);
+            var server_ticket_buffer = new ArgonCore.Util.Buffer();
 
-                        w.Write(steam_user.SteamID.ConvertToUInt64());
+            var size = 8 + client_ticket_buffer.GetBuffer().Length + 4 + ownership_ticket.Length;
 
-                        w.Write(s.GetBuffer());
+            server_ticket_buffer.Write((ushort)size);
 
-                        // Write the ownership ticket data in here
-                        // We are just going to assume that our tickets are 100% correct...
-                        w.Write(ownership_ticket.Length);
-                        w.Write(ownership_ticket);
+            server_ticket_buffer.Write(steam_user.SteamID.ConvertToUInt64());
 
-                        var ticket_crc = BitConverter.ToUInt32(CryptoHelper.CRCHash(s.GetBuffer()), 0);
+            server_ticket_buffer.Write(client_ticket_buffer.GetBuffer());
 
-                        auth_ticket_store.Add(new AuthTicket()
-                        {
-                            is_server_ticket = true,
-                            app_id = app_id,
-                            pipe_id = pipe,
-                            crc32 = ticket_crc,
-                            handle = auth_ticket_store.Count + 1,
-                            ticket = s.GetBuffer(),
-                            cancelled = false,
-                        });
+            // Write the ownership ticket data in here
+            // We are just going to assume that our tickets are 100% correct...
+            server_ticket_buffer.Write(ownership_ticket.Length);
+            server_ticket_buffer.Write(ownership_ticket);
 
-                        return auth_ticket_store.Count;
-                    }
-                }
-            }
+            var server_ticket_crc = BitConverter.ToUInt32(CryptoHelper.CRCHash(server_ticket_buffer.GetBuffer()), 0);
+
+            auth_ticket_store.Add(new AuthTicket()
+            {
+                is_server_ticket = true,
+                app_id = app_id,
+                pipe_id = pipe,
+                crc32 = server_ticket_crc,
+                handle = auth_ticket_store.Count + 1,
+                ticket = server_ticket_buffer.GetBuffer(),
+                cancelled = false,
+            });
+
+            return auth_ticket_store.Count;
         }
 
         public void SendClientAuthList()
