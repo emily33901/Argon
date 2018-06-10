@@ -59,8 +59,12 @@ namespace InterfaceUtils
             return 255;
         }
 
-        public uint GetAppId()
+        public int GetAppId()
         {
+            if (Client.PipeAppId.TryGetValue(PipeId, out var v))
+            {
+                return v;
+            }
             return 0;
         }
 
