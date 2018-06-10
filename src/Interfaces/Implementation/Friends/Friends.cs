@@ -33,6 +33,13 @@ namespace InterfaceFriends
         }
 
         public string GetLocalName() => steam_friends.GetPersonaName();
+
+        public int SetLocalName(string name)
+        {
+            return AsyncCallManager.RegisterAsyncJob(
+                steam_friends.SetPersonaName(name), 347, ClientId);
+        }
+
         public EPersonaState GetLocalState() => steam_friends.GetPersonaState();
         public void SetLocalState(EPersonaState state) => steam_friends.SetPersonaState(state);
 
@@ -102,5 +109,10 @@ namespace InterfaceFriends
 
             return null;
         }
+
+        public int GetClanCount() => steam_friends.GetClanCount();
+        public SteamID GetClanByIndex(int index) => steam_friends.GetClanByIndex(index);
+        public string GetClanName(SteamID clan) => steam_friends.GetClanName(clan);
+        public string GetClanTag(SteamID clan) => GetClanName(clan);
     }
 }
