@@ -265,7 +265,7 @@ namespace InterfaceUser
 
         public int GetAppIdForPipe(int pipe_id)
         {
-            if (Instance.PipeAppId.TryGetValue(pipe_id, out var app_id))
+            if (Client.PipeAppId.TryGetValue(pipe_id, out var app_id))
             {
                 return app_id;
             }

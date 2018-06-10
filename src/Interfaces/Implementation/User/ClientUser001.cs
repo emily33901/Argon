@@ -354,5 +354,10 @@ namespace InterfaceUser
         {
 
         }
+
+        public void SetComputerInUse()
+        {
+
+        }
     }
 }
