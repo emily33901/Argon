@@ -44,15 +44,18 @@ namespace ArgonCore.IPC
         /// <param name="message"></param>
         private static void OnClientMessage(NamedPipeConnection<SerializedFunction, SerializedResult> connection, SerializedFunction message)
         {
+            // The pipeId that comes in from the message is the clients unique pipe id,
+            // But that is not unique on the server, so we use the connections id.
+
             lock (client_lock)
             {
                 Console.WriteLine("Client message...");
 
                 Console.WriteLine("{");
-                Console.WriteLine("\tClientId = {0}", connection.Id);
+                Console.WriteLine("\tClientId = {0}", message.ClientId);
                 Console.WriteLine("\tJobId = {0}", message.JobId);
                 Console.WriteLine("\tInterfaceId = {0}", message.InterfaceId);
-                Console.WriteLine("\tPipeId = \"{0}\"", message.PipeId);
+                Console.WriteLine("\tPipeId = \"{0}\"", connection.Id);
                 Console.WriteLine("\tName = \"{0}\"", message.Name);
 
                 if (message.Args == null)
@@ -70,14 +73,12 @@ namespace ArgonCore.IPC
 
                 try
                 {
-                    result = ArgonCore.Server.Client.CallSerializedFunction(message.PipeId, message.ClientId, message.InterfaceId, message.Name, message.Args);
+                    result = ArgonCore.Server.Client.CallSerializedFunction(connection.Id, message.ClientId, message.InterfaceId, message.Name, message.Args);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("Error occured processing job {0}, \"{1}\"", message.JobId, e.Message);
                 }
-
-                Console.WriteLine("message.PipeId: {0}", message.PipeId);
 
                 var result_message = new SerializedResult
                 {

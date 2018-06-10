@@ -18,7 +18,8 @@ namespace ArgonCore.Server
         public static Queue<ArgonCore.Client.InternalCallbackMsg> PendingCallbacks { get; set; } = new Queue<ArgonCore.Client.InternalCallbackMsg>();
 
         // Lookup for pipeids to their appids
-        public Dictionary<int, int> PipeAppId { get; set; } = new Dictionary<int, int>();
+        // This maps the real serverside pipeid to its appid
+        public static Dictionary<int, int> PipeAppId { get; set; } = new Dictionary<int, int>();
 
         // Used for internal handling of clients
         public int Id { get; private set; }
@@ -205,6 +206,7 @@ namespace ArgonCore.Server
 
         public static object CallSerializedFunction(int pipe_id, int client_id, int interface_id, string name, object[] args)
         {
+            // The pipeid that comes in here is the real unique pipe_id, the message PipeId is the clientside unique pipeid
 
             if (client_id == -1 && interface_id == -1)
             {
