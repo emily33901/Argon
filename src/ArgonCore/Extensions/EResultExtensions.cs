@@ -8,7 +8,7 @@ namespace ArgonCore.Extensions
     {
         public static string ExtendedString(this EResult result)
         {
-            return String.Format("EResult.{0}", result);
+            return String.Format("EResult.{0} [{1}]", result, (uint)result);
         }
     }
 }
