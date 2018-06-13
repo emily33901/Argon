@@ -15,14 +15,14 @@ namespace InterfaceUtils
     {
         static Logger Log { get; set; } = new Logger("SteamUtils");
 
-        public uint GetSecondsSinceAppActive()
+        public int GetSecondsSinceAppActive()
         {
-            return 1;
+            return ArgonCore.Platform.MSTime() * 1000;
         }
 
-        public uint GetSecondsSinceComputerActive()
+        public int GetSecondsSinceComputerActive()
         {
-            return 1;
+            return ArgonCore.Platform.MSTime() * 1000;
         }
 
         public uint GetConnectedUniverse()
@@ -31,7 +31,7 @@ namespace InterfaceUtils
         }
         public long GetServerRealTime()
         {
-            return ((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds();
+            return ArgonCore.Platform.MSTime() * 1000;
         }
 
         public string GetIPCountry()
@@ -105,7 +105,7 @@ namespace InterfaceUtils
 
         public void RunFrame()
         {
-
+            Log.WriteLine("RunFrame should not be called...");
         }
 
         public uint GetIPCCallCount()
