@@ -13,16 +13,21 @@ namespace InterfaceUtils
     [Impl(Name = "SteamUtils009", Implements = "SteamUtils", ServerMapped = true)]
     public class SteamUtils009 : IBaseInterface
     {
-        static Logger Log { get; set; } = new Logger("SteamUtils");
+        Utils u;
+
+        public SteamUtils009()
+        {
+            u = new Utils();
+        }
 
         public int GetSecondsSinceAppActive()
         {
-            return ArgonCore.Platform.MSTime() * 1000;
+            return u.GetComputerTime();
         }
 
         public int GetSecondsSinceComputerActive()
         {
-            return ArgonCore.Platform.MSTime() * 1000;
+            return u.GetComputerTime();
         }
 
         public uint GetConnectedUniverse()
@@ -31,7 +36,7 @@ namespace InterfaceUtils
         }
         public long GetServerRealTime()
         {
-            return ArgonCore.Platform.MSTime() * 1000;
+            return u.GetComputerTime();
         }
 
         public string GetIPCountry()
@@ -75,37 +80,24 @@ namespace InterfaceUtils
 
         public bool IsAPICallCompleted(int handle, ref bool failed)
         {
-            failed = false;
-            return AsyncCallManager.IsCallFinished(handle);
+            return failed = u.APICalledFinished(handle);
         }
 
         public int GetAPICallFailureReason(int handle)
         {
-            // TODO: we should probably add something to accurately reflect this...
-            return -1;
+            return u.APICallFailureReason(handle);
         }
 
         public bool GetAPICallResult(int handle, IntPtr callback, int callback_size, int callback_expected, ref bool failed)
         {
-            failed = false;
+            failed = !u.APICallResult(handle, callback, callback_size, callback_expected);
 
-            var result = AsyncCallManager.GetCallResult(handle);
-
-            if (result == null) return false;
-
-            if (callback_size != result.Length)
-            {
-                Log.WriteLine("callback_size != result.Length for callback {0}", callback_expected);
-            }
-
-            Marshal.Copy(result, 0, callback, callback_size);
-
-            return true;
+            return !failed;
         }
 
         public void RunFrame()
         {
-            Log.WriteLine("RunFrame should not be called...");
+            u.RunFrame();
         }
 
         public uint GetIPCCallCount()
@@ -150,7 +142,7 @@ namespace InterfaceUtils
 
         public string GetSteamUILanguage()
         {
-            return "E N G L I S H";
+            return u.GetUILanguage();
         }
 
         public bool IsSteamRunningInVR()

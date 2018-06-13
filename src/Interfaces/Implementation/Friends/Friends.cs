@@ -114,5 +114,6 @@ namespace InterfaceFriends
         public SteamID GetClanByIndex(int index) => steam_friends.GetClanByIndex(index);
         public string GetClanName(SteamID clan) => steam_friends.GetClanName(clan);
         public string GetClanTag(SteamID clan) => GetClanName(clan);
+        
     }
 }

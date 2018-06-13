@@ -56,7 +56,6 @@ namespace ArgonCore
 
             return null;
         }
-
         public static bool IsCallFinished(int handle)
         {
             lock (call_id_lock)
@@ -68,7 +67,6 @@ namespace ArgonCore
             }
 
         }
-
         public static byte[] GetCallResult(int handle)
         {
             lock (call_id_lock)
@@ -79,6 +77,18 @@ namespace ArgonCore
                 }
 
                 return null;
+            }
+        }
+        public static bool IsHandleValid(int handle)
+        {
+            lock (call_id_lock)
+            {
+                if (registered_calls.TryGetValue(handle, out var _))
+                {
+                    return true;
+                }
+
+                return false;
             }
         }
     }

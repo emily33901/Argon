@@ -162,7 +162,9 @@ namespace ArgonCore.Server
 
         public void OnDisconnect(SteamClient.DisconnectedCallback cb)
         {
-            Log.WriteLine("Disconnected");
+            Log.WriteLine("Disconnected (User Initiated: {0})", cb.UserInitiated);
+
+            // SteamClientDisconnected_t packets are already sent...
 
             Connected = false;
 
