@@ -30,7 +30,7 @@ namespace InterfaceUser
         public EAccountFlags AccountFlags { get; private set; }
         public IPAddress public_ip;
 
-        public User()
+        public override void Init()
         {
             steam_user = Instance.SteamClient.GetHandler<SteamUser>();
             steam_apps = Instance.SteamClient.GetHandler<SteamApps>();

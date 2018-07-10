@@ -55,7 +55,10 @@ namespace InterfaceClient
 
         public void ReleaseUser(IntPtr _, int user, int pipe)
         {
-            // TODO: remove users
+            if (pipe == 0 || user == 0) return;
+
+            Client.ReleaseClient(user, pipe);
+
             Console.WriteLine("ReleaseUser");
             return;
         }

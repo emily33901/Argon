@@ -11,6 +11,9 @@ namespace ArgonCore
         protected int ClientId { get; private set; }
         protected Server.Client Instance { get { return Server.Client.GetClient(ClientId); } }
         protected static Logger Log { get; set; } = new Logger(typeof(T).FullName);
+
+        public virtual void Init() { }
+
         public static T FindOrCreate(int id)
         {
             if (Active.TryGetValue(id, out var found))
@@ -20,10 +23,12 @@ namespace ArgonCore
 
             Log.WriteLine("Creating new instance of {1} for id {0}", id, typeof(T).Name);
 
-            Active[id] = new T();
+            Active[id] = new T
+            {
+                ClientId = id
+            };
 
-            var ct = Active[id] as ClientTied<T>;
-            ct.ClientId = id;
+            Active[id].Init();
 
             return Active[id];
         }
