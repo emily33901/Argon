@@ -13,7 +13,8 @@ namespace ArgonCore.Server
     public class Client
     {
         public static object active_client_lock = new object();
-        static List<Client> ActiveClients { get; set; } = new List<Client>();
+        public static int next_client_id = 1;
+        static Dictionary<int, Client> ActiveClients { get; set; } = new Dictionary<int, Client>();
 
         public static Queue<ArgonCore.Client.InternalCallbackMsg> PendingCallbacks { get; set; } = new Queue<ArgonCore.Client.InternalCallbackMsg>();
 
@@ -50,28 +51,28 @@ namespace ArgonCore.Server
 
             lock (active_client_lock)
             {
-                ActiveClients.Add(this);
-                Id = ActiveClients.Count - 1;
+                ActiveClients[next_client_id] = this;
+                Id = next_client_id;
 
-                {
-                    // create our steamclient instance
-                    SteamClient = new SteamClient();
+                next_client_id += 1;
 
-                    // create the callback manager which will route callbacks to function calls
-                    CallbackManager = new CallbackManager(SteamClient);
 
-                    // Setup our packet handler for all packets
-                    SteamClient.AddHandler(new PacketHandler(this));
+                // create our steamclient instance
+                SteamClient = new SteamClient();
 
-                    // Subscribe to some important callbacks
-                    CallbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnect);
-                    CallbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnect);
-                }
+                // create the callback manager which will route callbacks to function calls
+                CallbackManager = new CallbackManager(SteamClient);
 
+                // Setup our packet handler for all packets
+                SteamClient.AddHandler(new PacketHandler(this));
+
+                // Subscribe to some important callbacks
+                CallbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnect);
+                CallbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnect);
+
+                // Automatically try to connect...
+                Connect();
             }
-
-            // Automatically try to connect...
-            Connect();
         }
 
         public static int CreateNewClient()
@@ -79,6 +80,16 @@ namespace ArgonCore.Server
             var c = new Client();
 
             return c.Id;
+        }
+
+        public void Release()
+        {
+            Disconnect();
+
+            lock (active_client_lock)
+            {
+                ActiveClients.Remove(Id);
+            }
         }
 
         public static Client GetClient(int id)
@@ -147,7 +158,7 @@ namespace ArgonCore.Server
             {
                 foreach (var c in ActiveClients)
                 {
-                    c.RunFrame();
+                    c.Value.RunFrame();
                 }
             }
         }
@@ -196,6 +207,11 @@ namespace ArgonCore.Server
                 case "SetAppId":
                     {
                         PipeAppId[pipe_id] = (int)args[0];
+                        return null;
+                    }
+                case "Release":
+                    {
+                        Release();
                         return null;
                     }
                 default:

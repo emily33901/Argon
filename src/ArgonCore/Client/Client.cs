@@ -10,7 +10,7 @@ namespace ArgonCore.Client
 {
     public class Client
     {
-        // Used for internal handling of clients, maps clients HANDLES to their instance
+        // Used for internal handling of clients, maps clients ids to their instance
         static Dictionary<int, Client> ActiveClients { get; set; } = new Dictionary<int, Client>();
 
         public int Id { get; private set; }
@@ -31,11 +31,6 @@ namespace ArgonCore.Client
             Loader.Load();
         }
 
-        public int GetHandle()
-        {
-            return Id + 1;
-        }
-
         /// <summary>
         /// Create a new client instance
         /// </summary>
@@ -49,14 +44,23 @@ namespace ArgonCore.Client
 
             TryFindAppId(pipe_id);
 
-            ActiveClients[c.GetHandle()] = c;
+            ActiveClients[c.Id] = c;
 
-            return c.GetHandle();
+            return c.Id;
         }
 
-        public static Client GetClient(int user_handle)
+        public static void ReleaseClient(int user, int pipe_id)
         {
-            return ActiveClients[user_handle];
+            if (ActiveClients.TryGetValue(user, out var c))
+            {
+                Server.ReleaseClient(pipe_id, c.Id);
+                ActiveClients.Remove(user);
+            }
+        }
+
+        public static Client GetClient(int id)
+        {
+            return ActiveClients[id];
         }
 
         /// <summary>
