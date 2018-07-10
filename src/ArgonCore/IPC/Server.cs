@@ -101,7 +101,10 @@ namespace ArgonCore.IPC
         {
             Console.WriteLine("Client disconnected [{0}]...", connection.Id);
 
-            // TODO: remove client
+            // Becuase clients arent tied to pipes they are tied to user handles
+            // there is nothing we can really do here...
+            // More pipes may be created that access a user handle that is still in use
+            // and other processes may also want to use some of that too...
         }
 
         /// <summary>

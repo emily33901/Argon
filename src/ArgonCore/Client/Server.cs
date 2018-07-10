@@ -10,13 +10,26 @@ namespace ArgonCore.Client
         {
             var f = new IPC.SerializedFunction
             {
-                InterfaceId = -1,
                 ClientId = -1,
+                InterfaceId = -1,
                 Name = "CreateClient",
                 Args = new object[] { },
             };
 
             return IPC.ClientPipe.CallSerializedFunction<int>(pipe_id, f);
+        }
+
+        public static void ReleaseClient(int pipe_id, int client_id)
+        {
+            var f = new IPC.SerializedFunction
+            {
+                ClientId = client_id,
+                InterfaceId = -1,
+                Name = "Release",
+                Args = new object[] { }
+            };
+
+            IPC.ClientPipe.CallSerializedFunction(pipe_id, f);
         }
 
         /// <summary>
