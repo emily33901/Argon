@@ -16,7 +16,7 @@ namespace InterfaceUtils
         }
         public int GetComputerTime()
         {
-            return Platform.MSTime();
+            return Platform.MilisecondTime();
         }
 
         public string GetUILanguage()

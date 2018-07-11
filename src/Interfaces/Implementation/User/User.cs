@@ -414,7 +414,7 @@ namespace InterfaceUser
             client_ticket_buffer.Write(ip_bytes);
 
             client_ticket_buffer.Write(Instance.SteamClient.LocalIP.GetAddressBytes());
-            client_ticket_buffer.Write(ArgonCore.Platform.MSTime());
+            client_ticket_buffer.Write(ArgonCore.Platform.MilisecondTime());
             client_ticket_buffer.Write(++ticket_request_count);
 
             var client_ticket_crc = BitConverter.ToUInt32(CryptoHelper.CRCHash(client_ticket_buffer.GetBuffer()), 0);

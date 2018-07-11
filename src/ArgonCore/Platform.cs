@@ -26,7 +26,7 @@ namespace ArgonCore
         }
 
         public static DateTime LoadTime { get; set; } = DateTime.Now;
-        public static int MSTime()
+        public static int MilisecondTime()
         {
             return (DateTime.Now - LoadTime).Milliseconds;
         }
