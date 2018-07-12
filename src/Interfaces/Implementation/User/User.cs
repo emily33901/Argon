@@ -57,7 +57,7 @@ namespace InterfaceUser
 
         public int GetHandle()
         {
-            return ClientId + 1;
+            return ClientId;
         }
 
         public ulong SteamId { get { return steam_user.SteamID.ConvertToUInt64(); } }
