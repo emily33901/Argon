@@ -18,59 +18,59 @@ namespace InterfaceUser
 
         public int GetHSteamUser()
         {
-            Console.WriteLine("GetHSteamUser");
+            u.Log.WriteLine("GetHSteamUser");
             // Make sure to return the handle not the id
             return u.GetHandle();
         }
 
         public bool LoggedOn()
         {
-            Console.WriteLine("LoggedOn");
+            u.Log.WriteLine("LoggedOn");
             return u.GetLogonState() == User.LogonState.LoggedOn;
         }
 
         public ulong GetSteamID()
         {
-            Console.WriteLine("GetSteamID");
+            u.Log.WriteLine("GetSteamID");
             return 0;
         }
 
         public int InitiateGameConnection(IntPtr blob, uint blob_count, ulong gameserver_id, uint server_ip, ushort server_port, bool secure)
         {
-            Console.WriteLine("InitiateGameConnection");
+            u.Log.WriteLine("InitiateGameConnection");
             return 0;
         }
 
         public void TerminateGameConnection(uint server_ip, ushort server_port)
         {
-            Console.WriteLine("TerminateGameConnection");
+            u.Log.WriteLine("TerminateGameConnection");
         }
 
         public void TrackAppUsageEvent(ulong game_id, int usage_event, string extra_info)
         {
-            Console.WriteLine("TrackAppUsageEvent");
+            u.Log.WriteLine("TrackAppUsageEvent");
         }
 
         public bool GetUserDataFolder(string buffer, int count)
         {
-            Console.WriteLine("GetUserDataFolder");
+            u.Log.WriteLine("GetUserDataFolder");
             return false;
         }
 
         public void StartVoiceRecording()
         {
-            Console.WriteLine("StartVoiceRecording");
+            u.Log.WriteLine("StartVoiceRecording");
         }
 
         public void StopVoiceRecording()
         {
-            Console.WriteLine("StopVoiceRecording");
+            u.Log.WriteLine("StopVoiceRecording");
 
         }
 
         public uint GetAvailableVoice(uint[] compressed_data, uint[] uncompressed, uint desired_sample_rate)
         {
-            Console.WriteLine("GetAvailableVoice");
+            u.Log.WriteLine("GetAvailableVoice");
             return 0;
         }
 
@@ -78,25 +78,25 @@ namespace InterfaceUser
                             bool wants_uncompressed, IntPtr uncompressed_dest, uint uncompressed_buffer_size,
                             ref uint bytes_written, uint uncompressed_desired_samplerate)
         {
-            Console.WriteLine("GetVoice");
+            u.Log.WriteLine("GetVoice");
             return 0;
         }
 
         public int DecompressVoice(IntPtr compressed, uint compressed_size, IntPtr dest_buffer, uint dest_size, ref uint bytes_written, uint sample_rate)
         {
-            Console.WriteLine("DecompressVoice");
+            u.Log.WriteLine("DecompressVoice");
             return 0;
         }
 
         public uint GetOptimalSampleRate()
         {
-            Console.WriteLine("GetOptimalSampleRate");
+            u.Log.WriteLine("GetOptimalSampleRate");
             return 0;
         }
 
         public int GetAuthSessionTicket(IntPtr ticket, uint ticket_size, ref int ticket_written)
         {
-            Console.WriteLine("GetAuthSessionTicket");
+            u.Log.WriteLine("GetAuthSessionTicket");
 
             var app_id = u.GetAppIdForPipe(PipeId);
 
@@ -104,7 +104,7 @@ namespace InterfaceUser
 
             if (new_ticket.ticket.Length > ticket_size)
             {
-                Console.WriteLine("AuthTicket length is bigger than buffer allocated for it!");
+                u.Log.WriteLine("AuthTicket length is bigger than buffer allocated for it!");
                 return -1; // Invalid ticket
             }
 
@@ -117,23 +117,23 @@ namespace InterfaceUser
 
         public uint BeginAuthSession(IntPtr ticket, uint ticket_size, ulong steamid)
         {
-            Console.WriteLine("BeginAuthSession");
+            u.Log.WriteLine("BeginAuthSession");
             return 0;
         }
 
         public void EndAuthSession(ulong steam_id)
         {
-            Console.WriteLine("EndAuthSession");
+            u.Log.WriteLine("EndAuthSession");
         }
 
         public void CancelAuthTicket(int ticket_handle)
         {
-            Console.WriteLine("CancelAuthTicket");
+            u.Log.WriteLine("CancelAuthTicket");
 
             var ticket = u.GetAuthTicket(ticket_handle);
 
             if (ticket.cancelled == true)
-                Console.WriteLine("CancelAuthTicket attempt made on already cancelled ticket??");
+                u.Log.WriteLine("CancelAuthTicket attempt made on already cancelled ticket??");
 
             ticket.cancelled = true;
             u.SendClientAuthList();
@@ -141,66 +141,66 @@ namespace InterfaceUser
 
         public uint UserHasLicenseForApp(ulong steamID, uint appID)
         {
-            Console.WriteLine("UserHasLicenseForApp");
+            u.Log.WriteLine("UserHasLicenseForApp");
             return 0;
         }
 
         bool IsBehindNAT()
         {
-            Console.WriteLine("IsBehindNAT");
+            u.Log.WriteLine("IsBehindNAT");
             return false;
         }
 
         public void AdvertiseGame(ulong game_server_id, uint server_ip, ushort server_port)
         {
-            Console.WriteLine("AdvertiseGame");
+            u.Log.WriteLine("AdvertiseGame");
         }
 
         public uint RequestEncryptedAppTicket(IntPtr data_to_include, uint data_size)
         {
-            Console.WriteLine("RequestEncryptedAppTicket");
+            u.Log.WriteLine("RequestEncryptedAppTicket");
             return 0;
         }
 
         public int GetGameBadgeLevel(int seris, bool foil)
         {
-            Console.WriteLine("GetGameBadgeLevel");
+            u.Log.WriteLine("GetGameBadgeLevel");
             return 0;
         }
 
         public int GetSteamLevel()
         {
-            Console.WriteLine("GetSteamLevel");
+            u.Log.WriteLine("GetSteamLevel");
             return 0;
         }
 
         public uint RequestStoreAuthURL(string redirect_url)
         {
-            Console.WriteLine("RequestStoreAuthURL");
+            u.Log.WriteLine("RequestStoreAuthURL");
             return 0;
         }
 
         public bool IsPhoneVerified()
         {
-            Console.WriteLine("IsPhoneVerified");
+            u.Log.WriteLine("IsPhoneVerified");
             return false;
         }
 
         public bool IsTwoFactorEnabled()
         {
-            Console.WriteLine("IsTwoFactorEnabled");
+            u.Log.WriteLine("IsTwoFactorEnabled");
             return false;
         }
 
         public bool IsPhoneIdentifying()
         {
-            Console.WriteLine("IsPhoneIdentifying");
+            u.Log.WriteLine("IsPhoneIdentifying");
             return false;
         }
 
         public bool IsPhoneRequiringVerification()
         {
-            Console.WriteLine("IsPhoneRequiringVerification");
+            u.Log.WriteLine("IsPhoneRequiringVerification");
             return false;
         }
     }

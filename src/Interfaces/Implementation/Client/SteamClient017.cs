@@ -33,7 +33,7 @@ namespace InterfaceClient
         // to any user that they wish too, they just need to know which one
         // is the "global user". 
 
-        // (This can be implemented as a handle1 = global user)
+        // (This can be implemented as a handle = global user)
         // or we could provide a method by which a user can choose a user to connect too...
         // TODO: Deal with global users
         public int ConnectToGlobalUser(IntPtr _, int pipe)
