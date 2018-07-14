@@ -25,7 +25,7 @@ namespace Client
 
         // Logging instance for this client
         static Logger ClientLog { get; set; } = new Logger("Client.Client");
-        protected Logger Log { get; set; } 
+        protected Logger Log { get; set; }
 
         Client()
         {
@@ -44,7 +44,7 @@ namespace Client
             {
                 Id = Server.CreateClient(pipe_id),
                 Log = new LoggerUid("Client.Client", pipe_id),
-        };
+            };
 
             TryFindAppId(pipe_id);
 
@@ -186,7 +186,7 @@ namespace Client
             {
                 // Make sure to convert from the server userid to the client userid
                 // TODO: we should be very explicit about this
-                user_id = c.user_id + 1,
+                user_id = c.user_id,
                 callback_id = c.callback_id,
                 data = CallbackAllocHandles[pipe_id],
                 data_size = c.data.Length,
