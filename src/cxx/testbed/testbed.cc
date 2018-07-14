@@ -18,7 +18,10 @@ using FreeCallbackFn    = bool (*)(unsigned int pipe);
 using ISteamClient017 = ISteamClient;
 
 int main(int argc, const char **argv) {
-    if (argc == 1) return 0;
+    if (argc == 1) {
+        printf("Missing args\n");
+        return 0;
+    }
 
     auto path = argv[1];
 

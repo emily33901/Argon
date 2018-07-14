@@ -73,10 +73,10 @@ EXPORT void STEAM_CALL Steam_TerminateGameConnection(HSteamUser user,
 
 // Callback related
 EXPORT bool STEAM_CALL Steam_BGetCallback(HSteamPipe pipe, void *callback) {
-    return argon->get_callback(callback);
+    return argon->get_callback(pipe, callback);
 }
 EXPORT void STEAM_CALL Steam_FreeLastCallback(HSteamPipe pipe) {
-    return argon->free_last_callback();
+    return argon->free_last_callback(pipe);
 }
 EXPORT void STEAM_CALL Steam_GetAPICallResult(HSteamPipe pipe, unsigned hSteamAPICall,
                                               void *pCallback, int cubCallback,
