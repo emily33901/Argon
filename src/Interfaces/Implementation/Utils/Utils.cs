@@ -6,6 +6,9 @@ using ArgonCore.Server;
 
 using SteamKit2;
 
+using Server;
+using ArgonCore;
+
 namespace InterfaceUtils
 {
     class Utils : ClientTied<Utils>

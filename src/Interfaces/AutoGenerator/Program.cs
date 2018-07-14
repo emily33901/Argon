@@ -224,7 +224,7 @@ namespace {0}
 
                 Console.WriteLine(new_file.ToString());
 
-                File.WriteAllText(String.Format("../InterfaceAutogen/Delegates/{0}Delegates.cs", c.name), new_file.ToString());
+                File.WriteAllText(String.Format("../InterfaceDelegates/{0}Delegates.cs", c.name), new_file.ToString());
             }
         }
 
@@ -302,7 +302,7 @@ namespace {0}
                         new_file.Append("            ");
                     }
 
-                    new_file.AppendFormat("ArgonCore.IPC.ClientPipe.CallSerializedFunction");
+                    new_file.AppendFormat("Client.ClientPipe.CallSerializedFunction");
                     if (f.return_type != "void")
                     {
                         new_file.AppendFormat("<{0}>", f.return_type);
@@ -316,7 +316,7 @@ namespace {0}
 
                 Console.WriteLine(new_file.ToString());
 
-                File.WriteAllText(String.Format("../InterfaceAutogen/Maps/{0}Map.cs", c.declared_name), new_file.ToString());
+                File.WriteAllText(String.Format("../InterfaceMaps/{0}Map.cs", c.declared_name), new_file.ToString());
             }
         }
 

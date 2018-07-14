@@ -6,9 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ArgonCore\ArgonCore.csproj" />
-    <ProjectReference Include="..\..\Interfaces\InterfaceAutogen\InterfaceAutogen.csproj" />
+    <ProjectReference Include="..\..\ArgonCore\Core.csproj" />
     <ProjectReference Include="..\..\Interfaces\Implementation\InterfaceImpl.csproj" />
+    <ProjectReference Include="..\..\Interfaces\InterfaceDelegates\InterfaceDelegates.csproj" />
+    <ProjectReference Include="..\..\Interfaces\InterfaceMaps\InterfaceMaps.csproj" />
+    <ProjectReference Include="..\..\Server\Server.csproj" />
   </ItemGroup>
 
 </Project>

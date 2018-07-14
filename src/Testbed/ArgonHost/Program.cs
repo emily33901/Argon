@@ -3,7 +3,7 @@
 using System.Threading;
 
 using ArgonCore;
-using ArgonCore.Server;
+using Server;
 
 namespace ArgonHost
 {
@@ -11,7 +11,7 @@ namespace ArgonHost
     {
         static void Main(string[] args)
         {
-            ArgonCore.IPC.Server.AllocatePipe();
+            ServerPipe.AllocatePipe();
 
             Console.WriteLine("Server started...");
 
@@ -22,7 +22,7 @@ namespace ArgonHost
                 {
                     while (running)
                     {
-                        Client.RunAllFrames();
+                        Server.Client.RunAllFrames();
                     }
 
                 });
@@ -35,7 +35,7 @@ namespace ArgonHost
 
             t.Join();
 
-            ArgonCore.IPC.Server.CurrentPipe.Stop();
+            ServerPipe.CurrentPipe.Stop();
         }
     }
 }

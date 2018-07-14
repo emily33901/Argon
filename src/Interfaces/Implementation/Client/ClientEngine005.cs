@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ArgonCore.Client;
+
+using Client;
+using ArgonCore;
 using ArgonCore.Interface;
 
 namespace InterfaceClient
@@ -9,36 +11,38 @@ namespace InterfaceClient
     [Impl(Name = "CLIENTENGINE_INTERFACE_VERSION005", Implements = "ClientEngine", ServerMapped = false)]
     class ClientEngine005 : IBaseInterface
     {
+        static Logger Log { get; set; } = new Logger("SteamClient.Engine005");
+
         public int CreateClientPipe(IntPtr _)
         {
-            Console.WriteLine("CreateClientPipe");
-            return ArgonCore.IPC.ClientPipe.CreatePipe();
+            Log.WriteLine("CreateClientPipe");
+            return ClientPipe.CreatePipe();
         }
 
         public bool ReleaseClientPipe(IntPtr _, int pipe)
         {
-            Console.WriteLine("WARNING: ReleaseClientPipe NOT IMPLEMENTED");
+            Log.WriteLine("WARNING: ReleaseClientPipe NOT IMPLEMENTED");
             return true;
         }
 
         public int CreateGlobalUser(IntPtr _, ref int pipe)
         {
-            Console.WriteLine("CreateGlobalUser");
+            Log.WriteLine("CreateGlobalUser");
             return 0;
         }
 
         // TODO: Deal with global users
         public int ConnectToGlobalUser(IntPtr _, int pipe)
         {
-            Console.WriteLine("ConnectToGlobalUser");
+            Log.WriteLine("ConnectToGlobalUser");
             return 0;
         }
 
         public int CreateLocalUser(IntPtr _, ref int pipe, uint account_type)
         {
-            Console.WriteLine("CreateLocalUser {0} {1}", pipe, account_type);
+            Log.WriteLine("CreateLocalUser {0} {1}", pipe, account_type);
 
-            var user = Client.CreateNewClient(pipe);
+            var user = Client.Client.CreateNewClient(pipe);
 
             return user;
         }
@@ -46,7 +50,7 @@ namespace InterfaceClient
         public void ReleaseUser(IntPtr _, int user, int pipe)
         {
             // TODO: remove users
-            Console.WriteLine("ReleaseUser");
+            Log.WriteLine("ReleaseUser");
             return;
         }
 
@@ -54,11 +58,11 @@ namespace InterfaceClient
         {
             try
             {
-                return Client.GetClient(user).CreateInterface(pipe, version);
+                return Client.Client.GetClient(user).CreateInterface(pipe, version);
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception in CreateInterface \"{0}\"", e.Message);
+                Log.WriteLine("Exception in CreateInterface \"{0}\"", e.Message);
                 return IntPtr.Zero;
             }
         }
@@ -75,7 +79,7 @@ namespace InterfaceClient
 
         public void SetLocalIPBinding(IntPtr _, uint ip, uint port)
         {
-            Console.WriteLine("SetLocalIPBinding");
+            Log.WriteLine("SetLocalIPBinding");
             return;
         }
 
@@ -86,43 +90,43 @@ namespace InterfaceClient
 
         public IntPtr GetClientFriends(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientFriends");
+            Log.WriteLine("GetClientFriends");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientUtils(IntPtr _, int pipe, string version)
         {
-            Console.WriteLine("GetClientUtils");
-            return Client.CreateInterfaceNoUser(pipe, version);
+            Log.WriteLine("GetClientUtils");
+            return Client.Client.CreateInterfaceNoUser(pipe, version);
         }
 
         public IntPtr GetClientBilling(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientBilling");
+            Log.WriteLine("GetClientBilling");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientMatchmaking(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientMatchmaking");
+            Log.WriteLine("GetClientMatchmaking");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientApps(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientApps");
+            Log.WriteLine("GetClientApps");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientMatchmakingServers(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientMatchmakingServers");
+            Log.WriteLine("GetClientMatchmakingServers");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientGameSearch(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientGameSearch");
+            Log.WriteLine("GetClientGameSearch");
             return CreateInterface(pipe, user, version);
         }
 
@@ -130,54 +134,54 @@ namespace InterfaceClient
         {
             // Pipes automatically run ipc threads so...
             // TODO: is this type of behaviour allowable?
-            Console.WriteLine("RunFrame");
+            Log.WriteLine("RunFrame");
         }
 
         public uint GetIPCCallCount(IntPtr _)
         {
             // TODO: actually keep track of these in the future
-            Console.WriteLine("GetIPCCallCount");
+            Log.WriteLine("GetIPCCallCount");
             return 1;
         }
 
         public IntPtr GetClientUserStats(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientUserStats");
+            Log.WriteLine("GetClientUserStats");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientGameServerStats(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientGameServerStats");
+            Log.WriteLine("GetClientGameServerStats");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientNetworking(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientNetworking");
+            Log.WriteLine("GetClientNetworking");
             return CreateInterface(pipe, user, version);
         }
         public IntPtr GetClientRemoteStorage(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientRemoteStorage");
+            Log.WriteLine("GetClientRemoteStorage");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientScreenshots(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientScreenshots");
+            Log.WriteLine("GetClientScreenshots");
             return CreateInterface(pipe, user, version);
         }
 
         public void SetWarningMessageHook(IntPtr _, IntPtr function)
         {
-            Console.WriteLine("SetWarningMessageHook");
+            Log.WriteLine("SetWarningMessageHook");
             return;
         }
 
         public IntPtr GetClientGameCoordinator(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientGameCoordinator");
+            Log.WriteLine("GetClientGameCoordinator");
             return CreateInterface(pipe, user, version);
         }
 
@@ -209,18 +213,18 @@ namespace InterfaceClient
 
         public IntPtr GetClientProductBuilder(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientProductBuilder");
+            Log.WriteLine("GetClientProductBuilder");
             return CreateInterface(pipe, user, version);
         }
         public IntPtr GetClientDepotBuilder(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientDepotBuilder");
+            Log.WriteLine("GetClientDepotBuilder");
             return CreateInterface(pipe, user, version);
         }
         public IntPtr GetClientNetworkDeviceManager(IntPtr _, int pipe, string version)
         {
-            Console.WriteLine("GetClientNetworkDeviceManager");
-            return Client.CreateInterfaceNoUser(pipe, version);
+            Log.WriteLine("GetClientNetworkDeviceManager");
+            return Client.Client.CreateInterfaceNoUser(pipe, version);
         }
 
         public void ConCommandInit(IntPtr _, IntPtr __)
@@ -229,12 +233,12 @@ namespace InterfaceClient
 
         public IntPtr GetClientAppManager(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientAppManager");
+            Log.WriteLine("GetClientAppManager");
             return CreateInterface(pipe, user, version);
         }
         public IntPtr GetClientConfigStore(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientConfigStore");
+            Log.WriteLine("GetClientConfigStore");
             return CreateInterface(pipe, user, version);
         }
 
@@ -245,13 +249,13 @@ namespace InterfaceClient
 
         public IntPtr GetClientGameStats(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientGameStats");
+            Log.WriteLine("GetClientGameStats");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientHTTP(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientHTTP");
+            Log.WriteLine("GetClientHTTP");
             return CreateInterface(pipe, user, version);
         }
 
@@ -262,103 +266,103 @@ namespace InterfaceClient
 
         public IntPtr GetClientAudio(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientAudio");
+            Log.WriteLine("GetClientAudio");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientMusic(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientMusic");
+            Log.WriteLine("GetClientMusic");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientUnifiedMessages(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientUnifiedMessages");
+            Log.WriteLine("GetClientUnifiedMessages");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientController(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientController");
+            Log.WriteLine("GetClientController");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientParentalSettings(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientParentalSettings");
+            Log.WriteLine("GetClientParentalSettings");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientStreamLauncher(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientStreamLauncher");
+            Log.WriteLine("GetClientStreamLauncher");
             return CreateInterface(pipe, user, version);
         }
         public IntPtr GetClientDeviceAuth(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientDeviceAuth");
+            Log.WriteLine("GetClientDeviceAuth");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientRemoteClientManager(IntPtr _, int pipe, string version)
         {
-            Console.WriteLine("GetClientRemoteClientManager");
-            return Client.CreateInterfaceNoUser(pipe, version);
+            Log.WriteLine("GetClientRemoteClientManager");
+            return Client.Client.CreateInterfaceNoUser(pipe, version);
         }
         public IntPtr GetClientStreamClient(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientStreamClient");
+            Log.WriteLine("GetClientStreamClient");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientShortcuts(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientShortcuts");
+            Log.WriteLine("GetClientShortcuts");
             return CreateInterface(pipe, user, version);
         }
         public IntPtr GetClientUGC(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientUGC");
+            Log.WriteLine("GetClientUGC");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientInventory(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientInventory");
+            Log.WriteLine("GetClientInventory");
             return CreateInterface(pipe, user, version);
         }
         public IntPtr GetClientVR(IntPtr _, int pipe, string version)
         {
-            Console.WriteLine("GetClientVR");
-            return Client.CreateInterfaceNoUser(pipe, version);
+            Log.WriteLine("GetClientVR");
+            return Client.Client.CreateInterfaceNoUser(pipe, version);
         }
 
         public IntPtr GetClientGameNotifications(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientGameNotifications");
+            Log.WriteLine("GetClientGameNotifications");
             return CreateInterface(pipe, user, version);
         }
         public IntPtr GetClientHTMLSurface(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientHTMLSurface");
+            Log.WriteLine("GetClientHTMLSurface");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientVideo(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientVideo");
+            Log.WriteLine("GetClientVideo");
             return CreateInterface(pipe, user, version);
         }
         public IntPtr GetClientControllerSerialized(IntPtr _, int pipe, string version)
         {
-            Console.WriteLine("GetClientControllerSerialized");
-            return Client.CreateInterfaceNoUser(pipe, version);
+            Log.WriteLine("GetClientControllerSerialized");
+            return Client.Client.CreateInterfaceNoUser(pipe, version);
         }
 
         public IntPtr GetClientAppDisableUpdate(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientAppDisableUpdate");
+            Log.WriteLine("GetClientAppDisableUpdate");
             return CreateInterface(pipe, user, version);
         }
 
@@ -369,25 +373,25 @@ namespace InterfaceClient
 
         public IntPtr GetClientBluetoothManager(IntPtr _, int pipe, string version)
         {
-            Console.WriteLine("GetClientAppDisableUpdate");
-            return Client.CreateInterfaceNoUser(pipe, version);
+            Log.WriteLine("GetClientAppDisableUpdate");
+            return Client.Client.CreateInterfaceNoUser(pipe, version);
         }
 
         public IntPtr GetClientSharedConnection(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientSharedConnection");
+            Log.WriteLine("GetClientSharedConnection");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientShader(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientShader");
+            Log.WriteLine("GetClientShader");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetClientNetworkingSocketsSerialized(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetClientNetworkingSocketsSerialized");
+            Log.WriteLine("GetClientNetworkingSocketsSerialized");
             return CreateInterface(pipe, user, version);
         }
 

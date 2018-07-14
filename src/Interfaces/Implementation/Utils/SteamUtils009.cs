@@ -2,7 +2,7 @@
 
 using ArgonCore;
 using ArgonCore.Interface;
-using ArgonCore.Server;
+using Server;
 
 using System.Runtime.InteropServices;
 
@@ -66,7 +66,7 @@ namespace InterfaceUtils
 
         public int GetAppId()
         {
-            if (Client.PipeAppId.TryGetValue(PipeId, out var v))
+            if (Server.Client.PipeAppId.TryGetValue(PipeId, out var v))
             {
                 return v;
             }

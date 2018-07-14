@@ -2,7 +2,6 @@
 
 using System.Runtime.InteropServices;
 
-using ArgonCore;
 using ArgonCore.Interface;
 
 namespace InterfaceFriends

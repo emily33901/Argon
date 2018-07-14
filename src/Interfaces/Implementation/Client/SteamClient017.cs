@@ -5,26 +5,29 @@ using System.Runtime.InteropServices;
 
 using NamedPipeWrapper;
 
-using ArgonCore.Client;
+using Client;
+using ArgonCore;
 
 namespace InterfaceClient
 {
     [ArgonCore.Interface.Impl(Name = "SteamClient017", Implements = "SteamClient", ServerMapped = false)]
     public class SteamClient017 : ArgonCore.Interface.IBaseInterface
     {
+        static Logger Log { get; set; } = new Logger("SteamClient.Client017");
+
         public int CreateSteamPipe(IntPtr _)
         {
-            Console.WriteLine("CreateSteamPipe");
-            var new_pipe = ArgonCore.IPC.ClientPipe.CreatePipe();
+            Log.WriteLine("CreateSteamPipe");
+            var new_pipe = ClientPipe.CreatePipe();
 
-            Client.TryFindAppId(new_pipe);
+            Client.Client.TryFindAppId(new_pipe);
 
             return new_pipe;
         }
 
         public bool ReleaseSteamPipe(IntPtr _, int pipe)
         {
-            Console.WriteLine("WARNING: ReleaseSteamPipe NOT IMPLEMENTED");
+            Log.WriteLine("WARNING: ReleaseSteamPipe NOT IMPLEMENTED");
             return true;
         }
 
@@ -38,17 +41,17 @@ namespace InterfaceClient
         // TODO: Deal with global users
         public int ConnectToGlobalUser(IntPtr _, int pipe)
         {
-            Console.WriteLine("ConnectToGlobalUser");
+            Log.WriteLine("ConnectToGlobalUser");
             return 0;
         }
 
         public int CreateLocalUser(IntPtr _, ref int pipe, uint account_type)
         {
-            Console.WriteLine("CreateLocalUser {0} {1}", pipe, account_type);
+            Log.WriteLine("CreateLocalUser {0} {1}", pipe, account_type);
 
             if (pipe == 0) pipe = CreateSteamPipe(IntPtr.Zero);
 
-            var user = Client.CreateNewClient(pipe);
+            var user = Client.Client.CreateNewClient(pipe);
 
             return user;
         }
@@ -57,9 +60,9 @@ namespace InterfaceClient
         {
             if (pipe == 0 || user == 0) return;
 
-            Client.ReleaseClient(user, pipe);
+            Client.Client.ReleaseClient(user, pipe);
 
-            Console.WriteLine("ReleaseUser");
+            Log.WriteLine("ReleaseUser");
             return;
         }
 
@@ -67,11 +70,11 @@ namespace InterfaceClient
         {
             try
             {
-                return Client.GetClient(user).CreateInterface(pipe, version);
+                return Client.Client.GetClient(user).CreateInterface(pipe, version);
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception in CreateInterface \"{0}\"", e.Message);
+                Log.WriteLine("Exception in CreateInterface \"{0}\"", e.Message);
                 return IntPtr.Zero;
             }
         }
@@ -88,73 +91,73 @@ namespace InterfaceClient
 
         public void SetLocalIPBinding(IntPtr _, uint ip, uint port)
         {
-            Console.WriteLine("SetLocalIPBinding");
+            Log.WriteLine("SetLocalIPBinding");
             return;
         }
 
         public IntPtr GetSteamFriends(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamFriends");
+            Log.WriteLine("GetSteamFriends");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetSteamUtils(IntPtr _, int pipe, string version)
         {
-            Console.WriteLine("GetSteamUtils");
-            return Client.CreateInterfaceNoUser(pipe, version);
+            Log.WriteLine("GetSteamUtils");
+            return Client.Client.CreateInterfaceNoUser(pipe, version);
         }
 
         public IntPtr GetSteamMatchmaking(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamMatchmaking");
+            Log.WriteLine("GetSteamMatchmaking");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetSteamMatchmakingServers(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamMatchmakingServers");
+            Log.WriteLine("GetSteamMatchmakingServers");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetSteamGenericInterface(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamGenericInterface");
+            Log.WriteLine("GetSteamGenericInterface");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetSteamUserStats(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamUserStats");
+            Log.WriteLine("GetSteamUserStats");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetSteamGameServerStats(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamGameServerStats");
+            Log.WriteLine("GetSteamGameServerStats");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetSteamApps(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamApps");
+            Log.WriteLine("GetSteamApps");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetSteamNetworking(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamNetworking");
+            Log.WriteLine("GetSteamNetworking");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetSteamRemoteStorage(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamRemoteStorage");
+            Log.WriteLine("GetSteamRemoteStorage");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetSteamScreenshots(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamScreenshots");
+            Log.WriteLine("GetSteamScreenshots");
             return CreateInterface(pipe, user, version);
         }
 
@@ -162,100 +165,100 @@ namespace InterfaceClient
         {
             // Pipes automatically run ipc threads so...
             // TODO: is this type of behaviour allowable?
-            Console.WriteLine("RunFrame");
+            Log.WriteLine("RunFrame");
         }
 
         public uint GetIPCCallCount(IntPtr _)
         {
-            Console.WriteLine("GetIPCCallCount");
-            return ArgonCore.IPC.ClientPipe.GetIPCCallCount();
+            Log.WriteLine("GetIPCCallCount");
+            return Client.ClientPipe.GetIPCCallCount();
         }
 
         public void SetWarningMessageHook(IntPtr _, IntPtr function)
         {
-            Console.WriteLine("SetWarningMessageHook");
+            Log.WriteLine("SetWarningMessageHook");
             return;
         }
 
         public bool ShutdownIfAllPipesClosed(IntPtr _)
         {
             // TODO: what does this actually do?
-            Console.WriteLine("ShutdownIfAllPipesClosed");
+            Log.WriteLine("ShutdownIfAllPipesClosed");
             return false;
         }
 
         public IntPtr GetSteamHTTP(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamHTTP");
+            Log.WriteLine("GetSteamHTTP");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetSteamUnifiedMessages(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamUnifiedMessages");
+            Log.WriteLine("GetSteamUnifiedMessages");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetSteamController(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamController");
+            Log.WriteLine("GetSteamController");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetSteamUGC(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamUGC");
+            Log.WriteLine("GetSteamUGC");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetSteamAppList(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamAppList");
+            Log.WriteLine("GetSteamAppList");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetSteamMusic(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamMusic");
+            Log.WriteLine("GetSteamMusic");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetSteamMusicRemote(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamMusicRemote");
+            Log.WriteLine("GetSteamMusicRemote");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetSteamHTMLSurface(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamHTMLSurface");
+            Log.WriteLine("GetSteamHTMLSurface");
             return CreateInterface(pipe, user, version);
         }
 
         public void Set_SteamAPI_CPostAPIResultInProcess(IntPtr _, IntPtr function)
         {
-            Console.WriteLine("Set_SteamAPI_CPostAPIResultInProcess");
+            Log.WriteLine("Set_SteamAPI_CPostAPIResultInProcess");
         }
 
         public void Remove_SteamAPI_CPostAPIResultInProcess(IntPtr _, IntPtr function)
         {
-            Console.WriteLine("Remove_SteamAPI_CPostAPIResultInProcess");
+            Log.WriteLine("Remove_SteamAPI_CPostAPIResultInProcess");
         }
 
         public void Set_SteamAPI_CCheckCallbackRegisteredInProcess(IntPtr _, IntPtr function)
         {
-            Console.WriteLine("Set_SteamAPI_CCheckCallbackRegisteredInProcess");
+            Log.WriteLine("Set_SteamAPI_CCheckCallbackRegisteredInProcess");
         }
 
         public IntPtr GetSteamInventory(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamInventory");
+            Log.WriteLine("GetSteamInventory");
             return CreateInterface(pipe, user, version);
         }
 
         public IntPtr GetSteamVideo(IntPtr _, int user, int pipe, string version)
         {
-            Console.WriteLine("GetSteamVideo");
+            Log.WriteLine("GetSteamVideo");
             return CreateInterface(pipe, user, version);
         }
     }

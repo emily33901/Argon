@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ArgonCore\Core.csproj" />
     <ProjectReference Include="..\..\Interfaces\Implementation\InterfaceImpl.csproj" />
-    <ProjectReference Include="..\..\ArgonCore\ArgonCore.csproj" />
   </ItemGroup>
 
 </Project>

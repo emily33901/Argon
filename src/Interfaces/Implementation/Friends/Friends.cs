@@ -2,8 +2,8 @@ using System;
 
 using System.Collections.Generic;
 
+using Server;
 using ArgonCore;
-using ArgonCore.Interface;
 
 using SteamKit2;
 

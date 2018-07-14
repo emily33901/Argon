@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Security.Cryptography;
-using ArgonCore;
+
+using Server;
 using ArgonCore.Extensions;
-using ArgonCore.Interface;
-using ArgonCore.Server;
 
 using SteamKit2;
 using SteamKit2.Internal;
@@ -265,7 +264,7 @@ namespace InterfaceUser
 
         public int GetAppIdForPipe(int pipe_id)
         {
-            if (Client.PipeAppId.TryGetValue(pipe_id, out var app_id))
+            if (Server.Client.PipeAppId.TryGetValue(pipe_id, out var app_id))
             {
                 return app_id;
             }

@@ -28,7 +28,7 @@ void on_attach(void *param) {
 
     // Attempt to get our ArgonCore interface from argon
     using RecieveArgonCore  = ArgonCore *(*)();
-    auto recieve_argon_core = (RecieveArgonCore)native_loader::create_delegate("ArgonCore", "ArgonCore.Export", "RecieveArgonCore");
+    auto recieve_argon_core = (RecieveArgonCore)native_loader::create_delegate("Client", "Client.Export", "RecieveArgonCore");
 
     if (recieve_argon_core == nullptr) {
         printf("Failed to create delegate to ArgonCore.Export.RecieveArgonCore. Arborting!\n");

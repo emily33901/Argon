@@ -1,6 +1,6 @@
 using System;
 
-using ArgonCore;
+using Server;
 using ArgonCore.Interface;
 
 namespace InterfaceUser

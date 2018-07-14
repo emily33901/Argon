@@ -5,7 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ArgonCore\ArgonCore.csproj" />
+    <ProjectReference Include="..\..\ArgonCore\Core.csproj" />
+    <ProjectReference Include="..\..\Client\Client.csproj" />
+    <ProjectReference Include="..\..\Server\Server.csproj" />
   </ItemGroup>
 
 </Project>

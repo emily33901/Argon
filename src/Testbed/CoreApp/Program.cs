@@ -8,7 +8,7 @@ using System.IO;
 
 using Newtonsoft.Json;
 using ArgonCore;
-using ArgonCore.Client;
+using Client;
 
 namespace testbed
 {
@@ -35,12 +35,12 @@ namespace testbed
             }
 
 
-            var pipe_id = ArgonCore.IPC.ClientPipe.CreatePipe();
-            var id = Client.CreateNewClient(pipe_id);
+            var pipe_id = ClientPipe.CreatePipe();
+            var id = Client.Client.CreateNewClient(pipe_id);
 
             Console.WriteLine("handle is {0}", id);
 
-            var c = Client.GetClient(id);
+            var c = Client.Client.GetClient(id);
 
             // Get clientuser map
             Console.WriteLine("Creating user interface map...");
@@ -60,11 +60,11 @@ namespace testbed
 
             while (!Console.KeyAvailable)
             {
-                CallbackMsg? callback;
+                ArgonCore.IPC.CallbackMsg? callback;
 
                 do
                 {
-                    callback = Client.GetCallback(pipe_id);
+                    callback = Client.Client.GetCallback(pipe_id);
                     if (callback == null)
                     {
                         //Console.WriteLine("callback is null!");
@@ -73,7 +73,7 @@ namespace testbed
                     {
                         Console.WriteLine("Message id: {0}", callback.Value.callback_id);
 
-                        Client.FreeCallback(pipe_id);
+                        Client.Client.FreeCallback(pipe_id);
                     }
                 } while (callback != null);
 
