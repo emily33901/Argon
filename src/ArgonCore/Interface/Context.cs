@@ -4,9 +4,12 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
+using ArgonCore;
+using ArgonCore.Interface;
+
 namespace ArgonCore.Interface
 {
-    class Context
+    public class Context
     {
         static Logger Log { get; set; } = new Logger("Interface.Context");
 
