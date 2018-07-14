@@ -5,8 +5,11 @@ using System.Text;
 
 using SteamKit2;
 
-namespace ArgonCore.Server
+using ArgonCore;
+
+namespace Server
 {
+
     /// <summary>
     /// Dispatches packets to the correct handlers
     /// </summary>
@@ -24,7 +27,7 @@ namespace ArgonCore.Server
         {
             Log.WriteLine("{0} [{1}] [{2}] -> [{3}]", packet.MsgType, (uint)packet.MsgType, packet.SourceJobID, packet.TargetJobID);
 
-            Server.Client.PendingCallbacks.Enqueue(new ArgonCore.Client.InternalCallbackMsg
+            Server.Client.PendingCallbacks.Enqueue(new ArgonCore.IPC.InternalCallbackMsg
             {
                 user_id = client.Id,
                 callback_id = (uint)packet.MsgType,
@@ -46,7 +49,7 @@ namespace ArgonCore.Server
                 result_buffer.Write(packet.GetData());
 
                 // TODO: Post callback to clients
-                Server.Client.PendingCallbacks.Enqueue(new ArgonCore.Client.InternalCallbackMsg
+                Server.Client.PendingCallbacks.Enqueue(new ArgonCore.IPC.InternalCallbackMsg
                 {
                     callback_id = 703,
                     user_id = -1,

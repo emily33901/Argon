@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
+using ArgonCore;
 using ArgonCore.Interface;
+using ArgonCore.IPC;
 using SteamKit2;
 
-namespace ArgonCore.Server
+namespace Server
 {
     /// <summary>
     /// Represents a client on the server
@@ -16,7 +18,7 @@ namespace ArgonCore.Server
         public static int next_client_id = 1;
         static Dictionary<int, Client> ActiveClients { get; set; } = new Dictionary<int, Client>();
 
-        public static Queue<ArgonCore.Client.InternalCallbackMsg> PendingCallbacks { get; set; } = new Queue<ArgonCore.Client.InternalCallbackMsg>();
+        public static Queue<InternalCallbackMsg> PendingCallbacks { get; set; } = new Queue<InternalCallbackMsg>();
 
         // Lookup for pipeids to their appids
         // This maps the real serverside pipeid to its appid

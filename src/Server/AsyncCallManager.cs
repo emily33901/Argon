@@ -5,12 +5,15 @@ using System.Runtime.InteropServices;
 
 using SteamKit2;
 
-using ArgonCore.Server;
-
-namespace ArgonCore
+namespace Server
 {
     public class AsyncCallManager
     {
+        // TODO: if we keep track of pipe_ids here then we should be able to correctly
+        // invalidate jobs that cannot possibly continue
+
+        // TODO: add a PostAsyncJobResult function...
+
         public class AsyncJobResult
         {
             public int job_id;

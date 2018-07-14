@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using ArgonCore;
 
-namespace ArgonCore
+namespace Server
 {
     public class ClientTied<T>
     where T : ClientTied<T>, new()
@@ -15,7 +15,7 @@ namespace ArgonCore
 
         // TODO: should both of these be merged? clientid can be got from the client
         // Quick reference to the client via the clientid
-        protected Server.Client Instance { get { return Server.Client.GetClient(ClientId); } }
+        protected Client Instance { get { return Client.GetClient(ClientId); } }
 
         // Logger for this tied instance
         protected static Logger LogClientTied { get; set; } = new Logger(typeof(T).FullName);

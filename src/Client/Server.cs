@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ArgonCore.Client
+using ArgonCore.IPC;
+
+namespace Client
 {
     class Server
     {
         public static int CreateClient(int pipe_id)
         {
-            var f = new IPC.SerializedFunction
+            var f = new SerializedFunction
             {
                 ClientId = -1,
                 InterfaceId = -1,
@@ -16,12 +18,12 @@ namespace ArgonCore.Client
                 Args = new object[] { },
             };
 
-            return IPC.ClientPipe.CallSerializedFunction<int>(pipe_id, f);
+            return ClientPipe.CallSerializedFunction<int>(pipe_id, f);
         }
 
         public static void ReleaseClient(int pipe_id, int client_id)
         {
-            var f = new IPC.SerializedFunction
+            var f = new SerializedFunction
             {
                 ClientId = client_id,
                 InterfaceId = -1,
@@ -29,7 +31,7 @@ namespace ArgonCore.Client
                 Args = new object[] { }
             };
 
-            IPC.ClientPipe.CallSerializedFunction(pipe_id, f);
+            ClientPipe.CallSerializedFunction(pipe_id, f);
         }
 
         /// <summary>
@@ -39,7 +41,7 @@ namespace ArgonCore.Client
         /// <returns>The interface id created</returns>
         public static int CreateInterfaceNoUser(int pipe_id, string name)
         {
-            var f = new IPC.SerializedFunction
+            var f = new SerializedFunction
             {
                 ClientId = -1,
                 InterfaceId = -1,
@@ -47,7 +49,7 @@ namespace ArgonCore.Client
                 Args = new object[] { name },
             };
 
-            return IPC.ClientPipe.CallSerializedFunction<int>(pipe_id, f);
+            return ClientPipe.CallSerializedFunction<int>(pipe_id, f);
         }
 
         /// <summary>
@@ -57,7 +59,7 @@ namespace ArgonCore.Client
         /// <returns>The interface id created</returns>
         public static int CreateInterface(int pipe_id, int client_id, string name)
         {
-            var f = new IPC.SerializedFunction
+            var f = new SerializedFunction
             {
                 ClientId = client_id,
                 InterfaceId = -1,
@@ -65,7 +67,7 @@ namespace ArgonCore.Client
                 Args = new object[] { name },
             };
 
-            return IPC.ClientPipe.CallSerializedFunction<int>(pipe_id, f);
+            return ClientPipe.CallSerializedFunction<int>(pipe_id, f);
         }
 
         /// <summary>
@@ -74,7 +76,7 @@ namespace ArgonCore.Client
         /// <returns>The next callback</returns>
         public static InternalCallbackMsg NextCallback(int pipe_id)
         {
-            var f = new IPC.SerializedFunction
+            var f = new SerializedFunction
             {
                 ClientId = -1,
                 InterfaceId = -1,
@@ -82,12 +84,12 @@ namespace ArgonCore.Client
                 Args = new object[] { },
             };
 
-            return IPC.ClientPipe.CallSerializedFunction<InternalCallbackMsg>(pipe_id, f);
+            return ClientPipe.CallSerializedFunction<InternalCallbackMsg>(pipe_id, f);
         }
 
         public static void SetAppId(int pipe_id, int app_id)
         {
-            var f = new IPC.SerializedFunction
+            var f = new SerializedFunction
             {
                 ClientId = -1,
                 InterfaceId = -1,
@@ -95,7 +97,7 @@ namespace ArgonCore.Client
                 Args = new object[] { app_id },
             };
 
-            IPC.ClientPipe.CallSerializedFunction(pipe_id, f);
+            ClientPipe.CallSerializedFunction(pipe_id, f);
         }
     }
 }

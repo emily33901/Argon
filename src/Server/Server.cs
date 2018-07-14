@@ -6,11 +6,11 @@ using System.Threading;
 using NamedPipeWrapper;
 using ArgonCore.IPC;
 
-namespace ArgonCore.IPC
+namespace Server
 {
-    using ServerPipe = Server<SerializedFunction, SerializedResult>;
+    using InternalServerPipe = Server<SerializedFunction, SerializedResult>;
 
-    public class Server
+    public class ServerPipe
     {
         /// <summary>
         /// Lock of for accessing pipe data
@@ -20,14 +20,14 @@ namespace ArgonCore.IPC
         /// <summary>
         /// Current pipe allocated by the server
         /// </summary>
-        static public ServerPipe CurrentPipe { get; set; }
+        static public InternalServerPipe CurrentPipe { get; set; }
 
         /// <summary>
         /// Create the server pipe and start the connection
         /// </summary>
         public static void AllocatePipe()
         {
-            CurrentPipe = new ServerPipe("argon_pipe_server");
+            CurrentPipe = new InternalServerPipe("argon_pipe_server");
 
             CurrentPipe.Start();
 
@@ -73,7 +73,7 @@ namespace ArgonCore.IPC
 
                 try
                 {
-                    result = ArgonCore.Server.Client.CallSerializedFunction(connection.Id, message.ClientId, message.InterfaceId, message.Name, message.Args);
+                    result = Client.CallSerializedFunction(connection.Id, message.ClientId, message.InterfaceId, message.Name, message.Args);
                 }
                 catch (Exception e)
                 {

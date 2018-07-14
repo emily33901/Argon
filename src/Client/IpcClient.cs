@@ -6,7 +6,9 @@ using System.Threading;
 using NamedPipeWrapper;
 using ArgonCore.IPC;
 
-namespace ArgonCore.IPC
+using ArgonCore;
+
+namespace Client
 {
     using InternalClientPipe = NamedPipeClient<SerializedResult, SerializedFunction>;
 

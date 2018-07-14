@@ -4,9 +4,11 @@ using System.Text;
 using System.IO;
 using System.Runtime.InteropServices;
 
+using ArgonCore;
 using ArgonCore.Interface;
+using ArgonCore.IPC;
 
-namespace ArgonCore.Client
+namespace Client
 {
     public class Client
     {
@@ -22,7 +24,8 @@ namespace ArgonCore.Client
         public static List<IBaseInterface> NoUserInterfaces { get; set; } = new List<IBaseInterface>();
 
         // Logging instance for this client
-        static Logger Log { get; set; } = new Logger("Client.Client");
+        static Logger ClientLog { get; set; } = new Logger("Client.Client");
+        protected Logger Log { get; set; } 
 
         Client()
         {
@@ -39,8 +42,9 @@ namespace ArgonCore.Client
         {
             var c = new Client
             {
-                Id = Server.CreateClient(pipe_id)
-            };
+                Id = Server.CreateClient(pipe_id),
+                Log = new LoggerUid("Client.Client", pipe_id),
+        };
 
             TryFindAppId(pipe_id);
 
@@ -89,7 +93,7 @@ namespace ArgonCore.Client
         public IntPtr CreateInterface(int pipe_id, string name)
         {
             // Always try to make a map
-            var (context, iface, is_map) = Interface.Context.CreateInterface(name, true);
+            var (context, iface, is_map) = Context.CreateInterface(name, true);
 
             if (context == IntPtr.Zero) return IntPtr.Zero;
 
@@ -168,7 +172,7 @@ namespace ArgonCore.Client
             if (found && current_value != IntPtr.Zero)
             {
                 // This mimics the behaviour of the steam functions that do this
-                Log.WriteLine("Attempt to alloc new callback before old one has been freed\nTHIS IS A PROGRAMMING ERROR");
+                ClientLog.WriteLine("Attempt to alloc new callback before old one has been freed\nTHIS IS A PROGRAMMING ERROR");
 
                 // Free it for them...
                 FreeCallback(pipe_id);
@@ -215,7 +219,7 @@ namespace ArgonCore.Client
                 }
             }
 
-            Log.WriteLine("SteamAppId not set.");
+            ClientLog.WriteLine("SteamAppId not set.");
 
 
             // Try and read steam_appid.txt
@@ -232,14 +236,14 @@ namespace ArgonCore.Client
             }
             catch
             {
-                Log.WriteLine("steam_appid.txt not in current working directory.");
+                ClientLog.WriteLine("steam_appid.txt not in current working directory.");
             }
 
             try
             {
                 var main_exe = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
                 var exe_path = Path.GetDirectoryName(main_exe);
-                Log.WriteLine("note: exe_path: '{0}'", exe_path);
+                ClientLog.WriteLine("note: exe_path: '{0}'", exe_path);
 
                 steam_app_id = Path.Combine(exe_path, "steam_appid.txt");
 
@@ -247,7 +251,7 @@ namespace ArgonCore.Client
             }
             catch
             {
-                Log.WriteLine("steam_appid.txt not found in root exe folder.");
+                ClientLog.WriteLine("steam_appid.txt not found in root exe folder.");
             }
 
             return 0;
@@ -259,7 +263,7 @@ namespace ArgonCore.Client
 
             if (found == 0) return;
 
-            Log.WriteLine("Found appid {0}", found);
+            ClientLog.WriteLine("Found appid {0}", found);
 
             Server.SetAppId(pipe_id, found);
         }
