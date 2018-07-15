@@ -1,4 +1,3 @@
-// dllmain.cpp : Defines the entry point for the DLL application.
 #ifdef _MSC_VER
 #include <Windows.h>
 #else
@@ -13,6 +12,10 @@
 #include "native/native.hh"
 
 #include "argon_interface.hh"
+
+// TODO: if we are compiling on x86 on linux we CANNOT use dotnet core
+// as it can only host in x64 processes
+// We will need to use mono instead...
 
 // some constants for where we expect to find argon
 // and the tpas that go with
@@ -53,6 +56,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:
+        on_detach();
         break;
     }
     return TRUE;

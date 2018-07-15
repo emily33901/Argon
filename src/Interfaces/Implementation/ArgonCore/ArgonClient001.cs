@@ -35,17 +35,7 @@ namespace InterfaceArgonCore
         /// <returns>Whether there is a new callback</returns>
         public bool GetCallback(IntPtr _, int pipe_id, ref CallbackMsg c)
         {
-            Console.WriteLine("ArgonCore001.GetCallback");
             var new_callback = Client.Client.GetCallback(pipe_id);
-
-            if (new_callback == null)
-            {
-                Console.WriteLine("New callback is null!");
-            }
-            else
-            {
-                Console.WriteLine("Callback_id is {0}", new_callback.Value.callback_id);
-            }
 
             if (new_callback == null) return false;
 
