@@ -207,6 +207,14 @@ namespace InterfaceUser
         {
             return false;
         }
+        public bool GetGuestPassToGiveOut(uint nPassIndex)
+        {
+            return false;
+        }
+        public bool GetGuestPassToRedeem(uint nPassIndex)
+        {
+            return false;
+        }
         public bool GetGuestPassToRedeemInfo(uint nPassIndex, ref uint pgidGuestPassID, ref uint pnPackageID, ref uint pRTime32Created, ref uint pRTime32Expiration, ref uint pRTime32Sent, ref uint pRTime32Redeemed)
         {
             return false;
