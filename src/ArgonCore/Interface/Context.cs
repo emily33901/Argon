@@ -40,7 +40,7 @@ namespace ArgonCore.Interface
                 // Find the delegate type that matches the method
                 var mi = impl.methods[i];
 
-                var type = iface.delegate_types.Find(x => x.Name.Contains(mi.Name));
+                var type = iface.delegate_types.Find(x => x.Name.Equals(mi.Name + "Delegate"));
 
                 if (type == null)
                 {
@@ -49,6 +49,7 @@ namespace ArgonCore.Interface
                 }
 
                 // Create new delegates that are bounded to this instance
+                Log.WriteLine("Binding function {0}", mi.Name);
                 var new_delegate = Delegate.CreateDelegate(type, instance, mi, true);
 
                 new_delegates.Add(new_delegate);
@@ -222,7 +223,7 @@ namespace ArgonCore.Interface
 
             if (impl == null)
             {
-                Log.WriteLine("Ubable to find map or impl for interface {0}", name);
+                Log.WriteLine("Unable to find map or impl for interface {0}", name);
                 return (IntPtr.Zero, null, false);
             }
 
