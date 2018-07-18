@@ -6,7 +6,6 @@
 #else
 #include <dlfcn.h>
 #include <unistd.h>
-using DWORD = unsigned int;
 #endif
 
 #include "../steam/steam_api.h"
