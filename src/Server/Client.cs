@@ -40,7 +40,8 @@ namespace Server
         public bool Connected { get; private set; }
 
         // Logging instance for this client
-        static Logger Log { get; set; } = new Logger("Server.Client");
+        static Logger ClientLog { get; set; } = new Logger("Server.Client");
+        Logger Log { get; set; }
 
         /// <summary>
         /// Create a new <see cref="Client"/> from the requested instance 
@@ -57,6 +58,8 @@ namespace Server
                 Id = next_client_id;
 
                 next_client_id += 1;
+
+                Log = new LoggerUid("Server.Client", Id);
 
 
                 // create our steamclient instance
@@ -263,7 +266,7 @@ namespace Server
                     return mi.Invoke(NoUserInterface[interface_id], args);
                 }
 
-                Log.WriteLine("Unable to find method \"{0}\" from interface \"{1}\"", name, iface.Implementation.name);
+                ClientLog.WriteLine("Unable to find method \"{0}\" from interface \"{1}\"", name, iface.Implementation.name);
 
                 return null;
             }
