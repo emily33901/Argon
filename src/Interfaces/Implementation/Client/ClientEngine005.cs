@@ -47,6 +47,12 @@ namespace InterfaceClient
             return user;
         }
 
+        public int CreatePipeToLocalUser(IntPtr _, int user, ref int pipe)
+        {
+            Log.WriteLine("CreatePipeToLocalUser is not implemented...");
+            return 0;
+        }
+
         public void ReleaseUser(IntPtr _, int user, int pipe)
         {
             // TODO: remove users
@@ -54,8 +60,15 @@ namespace InterfaceClient
             return;
         }
 
+        public bool IsValidHSteamUserPipe(IntPtr _, int pipe, int user)
+        {
+            Log.WriteLine("IsValidHSteamUserPipe not implemented...");
+            return true;
+        }
+
         IntPtr CreateInterface(int pipe, int user, string version)
         {
+            Log.WriteLine("CreateInterface {0}", version);
             try
             {
                 return Client.Client.GetClient(user).CreateInterface(pipe, version);
