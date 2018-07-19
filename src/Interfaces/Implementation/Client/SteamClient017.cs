@@ -171,7 +171,7 @@ namespace InterfaceClient
         public uint GetIPCCallCount(IntPtr _)
         {
             Log.WriteLine("GetIPCCallCount");
-            return Client.ClientPipe.GetIPCCallCount();
+            return Client.ClientPipe.GetIpcCallCount();
         }
 
         public void SetWarningMessageHook(IntPtr _, IntPtr function)
