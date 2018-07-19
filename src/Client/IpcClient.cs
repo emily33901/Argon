@@ -16,7 +16,7 @@ namespace Client
     {
         static Logger Log { get; set; } = new Logger("IPC.ClientPipe");
 
-        static uint TotalIPCCallCount { get; set; }
+        static uint TotalIpcCallCount { get; set; }
 
         public static List<ClientPipe> ActivePipes { get; set; } = new List<ClientPipe>();
 
@@ -85,7 +85,7 @@ namespace Client
 
         private void PushMessage(SerializedFunction f)
         {
-            TotalIPCCallCount += 1;
+            TotalIpcCallCount += 1;
             pipe.PushMessage(f);
         }
 
@@ -158,10 +158,10 @@ namespace Client
             return result;
         }
 
-        public static uint GetIPCCallCount()
+        public static uint GetIpcCallCount()
         {
-            var total = TotalIPCCallCount;
-            TotalIPCCallCount = 0;
+            var total = TotalIpcCallCount;
+            TotalIpcCallCount = 0;
             return total;
         }
     }
