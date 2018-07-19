@@ -5,6 +5,7 @@ using System.Threading;
 
 using NamedPipeWrapper;
 using ArgonCore.IPC;
+using ArgonCore;
 
 namespace Server
 {
@@ -36,6 +37,8 @@ namespace Server
             CurrentPipe.ClientMessage += OnClientMessage;
         }
 
+        static Logger Log { get; set; } = new Logger("Server.ServerPipe");
+
         // TODO: these functions should not block the ipc thread
         /// <summary>
         /// Handles messages that are sent by clients by dispatching functions and then sending the results back
@@ -49,25 +52,25 @@ namespace Server
 
             lock (client_lock)
             {
-                Console.WriteLine("Client message...");
+                Log.WriteLine("Client message...");
 
-                Console.WriteLine("{");
-                Console.WriteLine("\tClientId = {0}", message.ClientId);
-                Console.WriteLine("\tJobId = {0}", message.JobId);
-                Console.WriteLine("\tInterfaceId = {0}", message.InterfaceId);
-                Console.WriteLine("\tPipeId = \"{0}\"", connection.Id);
-                Console.WriteLine("\tName = \"{0}\"", message.Name);
+                Log.WriteLine("{");
+                Log.WriteLine("\tClientId = {0}", message.ClientId);
+                Log.WriteLine("\tJobId = {0}", message.JobId);
+                Log.WriteLine("\tInterfaceId = {0}", message.InterfaceId);
+                Log.WriteLine("\tPipeId = \"{0}\"", connection.Id);
+                Log.WriteLine("\tName = \"{0}\"", message.Name);
 
                 if (message.Args == null)
                 {
-                    Console.WriteLine("\tArgs = {}");
+                    Log.WriteLine("\tArgs = {}");
                 }
                 else
                 {
-                    Console.WriteLine("\tArgs = {{{0}}}", String.Join(",", message.Args));
+                    Log.WriteLine("\tArgs = {{{0}}}", String.Join(",", message.Args));
                 }
 
-                Console.WriteLine("}");
+                Log.WriteLine("}");
 
                 object result = null;
 
@@ -99,7 +102,7 @@ namespace Server
         /// <param name="connection"></param>
         private static void OnClientDisconnected(NamedPipeConnection<SerializedFunction, SerializedResult> connection)
         {
-            Console.WriteLine("Client disconnected [{0}]...", connection.Id);
+            Log.WriteLine("Client disconnected [{0}]...", connection.Id);
 
             // Becuase clients arent tied to pipes they are tied to user handles
             // there is nothing we can really do here...
@@ -116,7 +119,7 @@ namespace Server
             lock (client_lock)
             {
                 // TODO: create new client
-                Console.WriteLine("Client connected [{0}]...", connection.Id);
+                Log.WriteLine("Client connected [{0}]...", connection.Id);
             }
         }
     }
