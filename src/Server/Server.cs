@@ -23,6 +23,9 @@ namespace Server
         /// </summary>
         static public InternalServerPipe CurrentPipe { get; set; }
 
+        static Logger Log { get; set; } = new Logger("Server.ServerPipe");
+
+
         /// <summary>
         /// Create the server pipe and start the connection
         /// </summary>
@@ -36,8 +39,6 @@ namespace Server
             CurrentPipe.ClientDisconnected += OnClientDisconnected;
             CurrentPipe.ClientMessage += OnClientMessage;
         }
-
-        static Logger Log { get; set; } = new Logger("Server.ServerPipe");
 
         // TODO: these functions should not block the ipc thread
         /// <summary>
@@ -54,7 +55,7 @@ namespace Server
             {
                 Log.WriteLine("Client message...");
 
-                Log.WriteLine("{");
+                Log.WriteLine("{{");
                 Log.WriteLine("\tClientId = {0}", message.ClientId);
                 Log.WriteLine("\tJobId = {0}", message.JobId);
                 Log.WriteLine("\tInterfaceId = {0}", message.InterfaceId);
@@ -70,7 +71,7 @@ namespace Server
                     Log.WriteLine("\tArgs = {{{0}}}", String.Join(",", message.Args));
                 }
 
-                Log.WriteLine("}");
+                Log.WriteLine("}}");
 
                 object result = null;
 

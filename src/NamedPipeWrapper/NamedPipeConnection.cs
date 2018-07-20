@@ -160,7 +160,7 @@ namespace NamedPipeWrapper
                 }
                 catch
                 {
-                    //we must igonre exception, otherwise, the namepipe wrapper will stop work.
+                    //we must ignore exception, otherwise, the namepipe wrapper will stop work.
                 }
             }
 
