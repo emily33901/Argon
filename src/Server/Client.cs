@@ -188,6 +188,17 @@ namespace Server
             Connect();
         }
 
+
+        public void PostCallback(int callback_id, ArgonCore.Util.Buffer b)
+        {
+            Server.Client.PendingCallbacks.Enqueue(new ArgonCore.IPC.InternalCallbackMsg
+            {
+                user_id = Id,
+                callback_id = (uint)callback_id,
+                data = b.GetBuffer(),
+            });
+        }
+
         object CallSerializedFunction(int pipe_id, int interface_id, string name, object[] args)
         {
             if (interface_id != -1)

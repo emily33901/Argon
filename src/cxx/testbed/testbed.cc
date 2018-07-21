@@ -114,10 +114,19 @@ int main(int argc, const char **argv) {
             auto       user_handle = client_engine->CreateLocalUser(&pipe_handle, k_EAccountTypeIndividual);
             auto       user        = (IClientUser001 *)client_engine->GetIClientUser(user_handle, pipe_handle, "CLIENTUSER_INTERFACE_VERSION001");
 
+            auto friends = (ISteamFriends *)client_engine->GetIClientFriends(user_handle, pipe_handle, "SteamFriends015");
+
             if (user == nullptr) {
                 printf("Unable to get user!\n");
                 return 1;
             }
+
+            if (friends == nullptr) {
+                printf("Unable to get friends!\n");
+                return 1;
+            }
+
+            friends->GetPersonaName();
 
             char username[128];
             char password[128];
@@ -143,6 +152,13 @@ int main(int argc, const char **argv) {
             while (true) {
                 while (get_next_callback(pipe_handle, &msg)) {
                     printf("msg from user %u: id: %d size: %u\n", msg.m_hSteamUser, msg.m_iCallback, msg.m_cubParam);
+
+                    switch (msg.m_iCallback) {
+                    case PersonaStateChange_t::k_iCallback: {
+                        auto cb = (PersonaStateChange_t *)msg.m_pubParam;
+                        printf("State change for user %s\n", CSteamID(cb->m_ulSteamID).Render());
+                    } break;
+                    }
 
                     free_last_callback(pipe_handle);
                 }
