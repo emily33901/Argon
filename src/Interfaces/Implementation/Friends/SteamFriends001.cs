@@ -9,11 +9,10 @@ namespace InterfaceFriends
     [Impl(Name = "SteamFriends001", Implements = "SteamFriends", ServerMapped = true)]
     public class SteamFriends001 : IBaseInterface
     {
-        private Friends f;
+        private Friends f{ get { return Friends.FindOrCreate(ClientId); } }
 
         public SteamFriends001()
         {
-            f = Friends.FindOrCreate(ClientId);
         }
 
         public string GetPersonaName()
@@ -133,7 +132,7 @@ namespace InterfaceFriends
             return 0;
         }
 
-        public bool SendMsgToFriend(ulong steam_id, uint type, string message, int length)
+        public bool SendMsgToFriend2(ulong steam_id, uint type, string message, int length)
         {
             f.SendMsgToFriend(new SteamKit2.SteamID(steam_id), (SteamKit2.EChatEntryType)type, message);
 

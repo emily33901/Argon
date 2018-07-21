@@ -26,10 +26,11 @@ namespace InterfaceFriends
     {
         SteamFriends steam_friends;
 
-        public Friends()
+        public override void Init()
         {
             steam_friends = Instance.SteamClient.GetHandler<SteamFriends>();
             Instance.CallbackManager.Subscribe<SteamFriends.ChatMsgCallback>(cb => OnChatMessage(cb));
+            Instance.CallbackManager.Subscribe<SteamFriends.PersonaStateCallback>(cb => OnPersonaState(cb));
         }
 
         public string GetLocalName() => steam_friends.GetPersonaName();
@@ -114,6 +115,16 @@ namespace InterfaceFriends
         public SteamID GetClanByIndex(int index) => steam_friends.GetClanByIndex(index);
         public string GetClanName(SteamID clan) => steam_friends.GetClanName(clan);
         public string GetClanTag(SteamID clan) => GetClanName(clan);
-        
+
+        public void OnPersonaState(SteamFriends.PersonaStateCallback cb)
+        {
+            Log.WriteLine("PersonaState update");
+            ArgonCore.Util.Buffer b = new ArgonCore.Util.Buffer();
+
+            b.Write(cb.FriendID);
+            b.Write(cb.StatusFlags);
+
+            Instance.PostCallback(304, b);
+        }
     }
 }

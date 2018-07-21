@@ -7,12 +7,7 @@ namespace InterfaceFriends
     [Impl(Name = "SteamFriends015", Implements = "SteamFriends", ServerMapped = true)]
     public class SteamFriends015 : IBaseInterface
     {
-        private Friends f;
-
-        public SteamFriends015()
-        {
-            f = Friends.FindOrCreate(ClientId);
-        }
+        private Friends f { get { return Friends.FindOrCreate(ClientId); } }
 
         public string GetPersonaName()
         {
@@ -53,7 +48,7 @@ namespace InterfaceFriends
             return f.GetName(new SteamKit2.SteamID(steam_id));
         }
 
-        public bool GetFriendGamePlayed(ulong steam_id, IntPtr friend_game_info_out)
+        public bool GetFriendGamePlayed3(ulong steam_id, IntPtr friend_game_info_out)
         {
             return false;
         }
