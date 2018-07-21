@@ -27,6 +27,11 @@ namespace Server
         {
             Log.WriteLine("{0} [{1}] [{2}] -> [{3}]", packet.MsgType, (uint)packet.MsgType, packet.SourceJobID, packet.TargetJobID);
 
+            // TODO: none of this works due to a number of differences between the c++ and c# code
+            // All callbacks will need to be "manually" translated from c# to c++
+            // This could be made better with some custom member per member serialization
+            // and deserialization using functions and maps but other than that...
+
             Server.Client.PendingCallbacks.Enqueue(new ArgonCore.IPC.InternalCallbackMsg
             {
                 user_id = client.Id,

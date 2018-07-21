@@ -10,6 +10,9 @@ using ArgonCore.IPC;
 
 namespace Client
 {
+    /// <summary>
+    /// Represents a client on the client
+    /// </summary>
     public class Client
     {
         // Used for internal handling of clients, maps clients ids to their instance
