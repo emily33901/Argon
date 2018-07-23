@@ -5,7 +5,7 @@ using ArgonCore.Interface;
 
 namespace InterfaceHTTP
 {
-    [Impl(Name = "SteamHTTP002", Implements = "SteamHTTP", ServerMapped = true)]
+    [Impl(Name = "SteamHTTP002", ServerMapped = true)]
     public class SteamHTTP002 : IBaseInterface
     {
     }

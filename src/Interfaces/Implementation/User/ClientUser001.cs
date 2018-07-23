@@ -5,7 +5,7 @@ using ArgonCore.Interface;
 
 namespace InterfaceUser
 {
-    [Impl(Name = "CLIENTUSER_INTERFACE_VERSION001", Implements = "ClientUser", ServerMapped = true)]
+    [Impl(Name = "CLIENTUSER_INTERFACE_VERSION001", ServerMapped = true)]
     public class ClientUser001 : IBaseInterface
     {
 

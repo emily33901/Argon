@@ -10,7 +10,7 @@ using ArgonCore;
 
 namespace InterfaceClient
 {
-    [ArgonCore.Interface.Impl(Name = "SteamClient017", Implements = "SteamClient", ServerMapped = false)]
+    [ArgonCore.Interface.Impl(Name = "SteamClient017", ServerMapped = false)]
     public class SteamClient017 : ArgonCore.Interface.IBaseInterface
     {
         static Logger Log { get; set; } = new Logger("SteamClient.Client017");

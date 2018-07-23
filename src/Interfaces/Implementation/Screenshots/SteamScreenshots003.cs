@@ -5,7 +5,7 @@ using ArgonCore.Interface;
 
 namespace InterfaceScreenshots
 {
-    [Impl(Name = "SteamScreenshots003", Implements = "SteamScreenshots", ServerMapped = true)]
+    [Impl(Name = "SteamScreenshots003", ServerMapped = true)]
     public class SteamScreenshots003 : IBaseInterface
     {
     }

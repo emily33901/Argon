@@ -8,7 +8,7 @@ namespace InterfaceArgonCore
     /// <summary>
     /// Exports Argon functions to unmanaged code
     /// </summary>
-    [Impl(Name = "ArgonClient001", Implements = "ArgonClient", ServerMapped = false)]
+    [Impl(Name = "ArgonClient001", ServerMapped = false)]
     public class ArgonClient001 : IBaseInterface
     {
         /// <summary>

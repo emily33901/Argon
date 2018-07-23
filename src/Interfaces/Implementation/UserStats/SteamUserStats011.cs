@@ -5,7 +5,7 @@ using ArgonCore.Interface;
 
 namespace InterfaceUserStats
 {
-    [Impl(Name = "SteamUserStats011", Implements = "SteamUserStats", ServerMapped = true)]
+    [Impl(Name = "SteamUserStats011", ServerMapped = true)]
     public class SteamUserStats011 : IBaseInterface
     {
     }

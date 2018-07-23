@@ -10,7 +10,7 @@ using SteamKit2;
 
 namespace InterfaceUtils
 {
-    [Impl(Name = "SteamUtils009", Implements = "SteamUtils", ServerMapped = true)]
+    [Impl(Name = "SteamUtils009", ServerMapped = true)]
     public class SteamUtils009 : IBaseInterface
     {
         Utils u;

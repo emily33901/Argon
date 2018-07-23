@@ -5,7 +5,7 @@ using ArgonCore.Interface;
 
 namespace InterfaceController
 {
-    [Impl(Name = "SteamController006", Implements = "SteamController", ServerMapped = true)]
+    [Impl(Name = "SteamController006", ServerMapped = true)]
     public class SteamController006 : IBaseInterface
     {
     }

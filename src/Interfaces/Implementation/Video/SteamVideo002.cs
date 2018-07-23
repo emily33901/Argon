@@ -5,7 +5,7 @@ using ArgonCore.Interface;
 
 namespace InterfaceVideo
 {
-    [Impl(Name = "SteamVideo002", Implements = "SteamVideo", ServerMapped = true)]
+    [Impl(Name = "SteamVideo002", ServerMapped = true)]
     public class SteamVideo002 : IBaseInterface
     {
     }

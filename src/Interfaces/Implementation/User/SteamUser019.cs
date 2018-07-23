@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace InterfaceUser
 {
-    [Impl(Name = "SteamUser019", Implements = "SteamUser", ServerMapped = true)]
+    [Impl(Name = "SteamUser019", ServerMapped = true)]
     public class SteamUser019 : IBaseInterface
     {
         public User u;

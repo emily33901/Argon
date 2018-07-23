@@ -6,10 +6,10 @@ using ArgonCore.Interface;
 
 namespace InterfaceFriends
 {
-    [Impl(Name = "SteamFriends001", Implements = "SteamFriends", ServerMapped = true)]
+    [Impl(Name = "SteamFriends001", ServerMapped = true)]
     public class SteamFriends001 : IBaseInterface
     {
-        private Friends f{ get { return Friends.FindOrCreate(ClientId); } }
+        private Friends f { get { return Friends.FindOrCreate(ClientId); } }
 
         public SteamFriends001()
         {

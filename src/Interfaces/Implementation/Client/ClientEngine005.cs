@@ -8,7 +8,7 @@ using ArgonCore.Interface;
 
 namespace InterfaceClient
 {
-    [Impl(Name = "CLIENTENGINE_INTERFACE_VERSION005", Implements = "ClientEngine", ServerMapped = false)]
+    [Impl(Name = "CLIENTENGINE_INTERFACE_VERSION005", ServerMapped = false)]
     class ClientEngine005 : IBaseInterface
     {
         static Logger Log { get; set; } = new Logger("SteamClient.Engine005");

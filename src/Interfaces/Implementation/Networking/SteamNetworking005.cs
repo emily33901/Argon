@@ -5,7 +5,7 @@ using ArgonCore.Interface;
 
 namespace IntefaceNetworking
 {
-    [Impl(Name = "SteamNetworking005", Implements = "SteamNetworking", ServerMapped = true)]
+    [Impl(Name = "SteamNetworking005", ServerMapped = true)]
     public class SteamNetworking005 : IBaseInterface
     {
     }

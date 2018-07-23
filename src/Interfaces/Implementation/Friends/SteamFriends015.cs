@@ -4,7 +4,7 @@ using ArgonCore.Interface;
 
 namespace InterfaceFriends
 {
-    [Impl(Name = "SteamFriends015", Implements = "SteamFriends", ServerMapped = true)]
+    [Impl(Name = "SteamFriends015", ServerMapped = true)]
     public class SteamFriends015 : IBaseInterface
     {
         private Friends f { get { return Friends.FindOrCreate(ClientId); } }

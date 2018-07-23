@@ -5,7 +5,7 @@ using ArgonCore.Interface;
 
 namespace InterfaceUGC
 {
-    [Impl(Name = "SteamUGC010", Implements = "SteamUGC", ServerMapped = true)]
+    [Impl(Name = "SteamUGC010", ServerMapped = true)]
     public class SteamUGC010 : IBaseInterface
     {
     }
