@@ -33,11 +33,6 @@ namespace ArgonCore.Interface
             public string name;
 
             /// <summary>
-            /// Refer to <see cref="ImplAttribute.Implements"/>
-            /// </summary>
-            public string implements;
-
-            /// <summary>
             /// Methods that were extracted from the class at runtime
             /// </summary>
             public List<MethodInfo> methods;

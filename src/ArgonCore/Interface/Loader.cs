@@ -112,12 +112,10 @@ namespace ArgonCore.Interface
                     {
                         var attribute = t.GetCustomAttribute<MapAttribute>();
                         var name = attribute.Name;
-                        var implements = attribute.Implements;
 
                         var new_interface_map = new Plugin.InterfaceMap
                         {
                             name = name,
-                            implements = implements,
                             this_type = t,
                             methods = InterfaceMethodsForType(t),
                         };
@@ -130,12 +128,10 @@ namespace ArgonCore.Interface
                     {
                         var attribute = t.GetCustomAttribute<ImplAttribute>();
                         var name = attribute.Name;
-                        var implements = attribute.Implements;
 
                         var new_interface_impl = new Plugin.InterfaceImpl
                         {
                             name = name,
-                            implements = implements,
                             this_type = t,
                             methods = InterfaceMethodsForType(t)
                         };

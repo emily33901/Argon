@@ -40,7 +40,7 @@ namespace ArgonCore.Interface
                 // Find the delegate type that matches the method
                 var mi = impl.methods[i];
 
-                var type = iface.delegate_types.Find(x => x.Name.Equals(mi.Name + "Delegate"));
+                var type = iface.delegate_types.Find(x => x.Name.Equals(mi.Name));
 
                 if (type == null)
                 {
@@ -227,11 +227,11 @@ namespace ArgonCore.Interface
                 return (IntPtr.Zero, null, false);
             }
 
-            var iface = FindInterfaceDelegates(impl.implements);
+            var iface = FindInterfaceDelegates(impl.name);
 
             if (iface == null)
             {
-                Log.WriteLine("Unable to find delegates for interface that implements {0}", impl.implements);
+                Log.WriteLine("Unable to find delegates for interface that implements {0}", impl.name);
                 return (IntPtr.Zero, null, false);
             }
 
