@@ -20,6 +20,11 @@ namespace ArgonCore.Util
             return stream.GetBuffer();
         }
 
+        public int Length()
+        {
+            return stream.GetBuffer().Length;
+        }
+
         public void Write(ulong value) => writer.Write(value);
         public void Write(uint value) => writer.Write(value);
         public void Write(ushort value) => writer.Write(value);
