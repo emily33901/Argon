@@ -27,7 +27,7 @@ namespace InterfaceFriends
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate string GetFriendPersonaName(IntPtr _, ulong steam_id);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        public delegate bool GetFriendGamePlayed3(IntPtr _, ulong steam_id, IntPtr friend_game_info_out);
+        public delegate bool GetFriendGamePlayed(IntPtr _, ulong steam_id, IntPtr friend_game_info_out);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate string GetFriendPersonaNameHistory(IntPtr _, ulong steam_id, int index);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
@@ -77,6 +77,8 @@ namespace InterfaceFriends
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate void SetPlayedWith(IntPtr _, ulong steam_id);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
+        public delegate void ActivateGameOverlayInviteDialog(IntPtr _, ulong steam_id);
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate int GetSmallFriendAvatar(IntPtr _, ulong steam_id);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate int GetMediumFriendAvatar(IntPtr _, ulong steam_id);
@@ -90,6 +92,10 @@ namespace InterfaceFriends
         public delegate ulong GetClanOwner(IntPtr _, ulong steam_id);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate int GetClanOfficerCount(IntPtr _, ulong steam_id);
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
+        public delegate ulong GetClanOfficerByIndex(IntPtr _, ulong clan, int officer);
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
+        public delegate uint GetUserRestrictions(IntPtr _);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate bool SetRichPresence(IntPtr _, string key, string value);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]

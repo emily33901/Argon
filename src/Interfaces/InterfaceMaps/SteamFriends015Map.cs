@@ -97,13 +97,13 @@ namespace InterfaceFriends
             };
             return Client.ClientPipe.CallSerializedFunction<string>(PipeId, f);
         }
-        public bool GetFriendGamePlayed3(IntPtr _, ulong steam_id, IntPtr friend_game_info_out)
+        public bool GetFriendGamePlayed(IntPtr _, ulong steam_id, IntPtr friend_game_info_out)
         {
             var f = new ArgonCore.IPC.SerializedFunction
             {
                ClientId = ClientId,
                InterfaceId = InterfaceId,
-               Name = "GetFriendGamePlayed3",
+               Name = "GetFriendGamePlayed",
                Args = new object[] {steam_id, friend_game_info_out},
             };
             return Client.ClientPipe.CallSerializedFunction<bool>(PipeId, f);
@@ -372,6 +372,17 @@ namespace InterfaceFriends
             };
             Client.ClientPipe.CallSerializedFunction(PipeId, f);
         }
+        public void ActivateGameOverlayInviteDialog(IntPtr _, ulong steam_id)
+        {
+            var f = new ArgonCore.IPC.SerializedFunction
+            {
+               ClientId = ClientId,
+               InterfaceId = InterfaceId,
+               Name = "ActivateGameOverlayInviteDialog",
+               Args = new object[] {steam_id},
+            };
+            Client.ClientPipe.CallSerializedFunction(PipeId, f);
+        }
         public int GetSmallFriendAvatar(IntPtr _, ulong steam_id)
         {
             var f = new ArgonCore.IPC.SerializedFunction
@@ -448,6 +459,28 @@ namespace InterfaceFriends
                Args = new object[] {steam_id},
             };
             return Client.ClientPipe.CallSerializedFunction<int>(PipeId, f);
+        }
+        public ulong GetClanOfficerByIndex(IntPtr _, ulong clan, int officer)
+        {
+            var f = new ArgonCore.IPC.SerializedFunction
+            {
+               ClientId = ClientId,
+               InterfaceId = InterfaceId,
+               Name = "GetClanOfficerByIndex",
+               Args = new object[] {clan, officer},
+            };
+            return Client.ClientPipe.CallSerializedFunction<ulong>(PipeId, f);
+        }
+        public uint GetUserRestrictions(IntPtr _)
+        {
+            var f = new ArgonCore.IPC.SerializedFunction
+            {
+               ClientId = ClientId,
+               InterfaceId = InterfaceId,
+               Name = "GetUserRestrictions",
+               Args = new object[] {},
+            };
+            return Client.ClientPipe.CallSerializedFunction<uint>(PipeId, f);
         }
         public bool SetRichPresence(IntPtr _, string key, string value)
         {
