@@ -154,7 +154,8 @@ namespace Server
         public void RunFrame()
         {
             // Dont wait indefinitely for new callbacks
-            CallbackManager.RunWaitCallbacks(TimeSpan.FromSeconds(1));
+            CallbackManager.RunWaitCallbacks(TimeSpan.FromMilliseconds(1));
+            
         }
 
         public static void RunAllFrames()

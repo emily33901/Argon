@@ -32,35 +32,28 @@ namespace Server
             // This could be made better with some custom member per member serialization
             // and deserialization using functions and maps but other than that...
 
-            Server.Client.PendingCallbacks.Enqueue(new ArgonCore.IPC.InternalCallbackMsg
-            {
-                user_id = client.Id,
-                callback_id = (uint)packet.MsgType,
-                data = packet.GetData(),
-            });
+            // var job_result = AsyncCallManager.GetAsyncJob(packet.TargetJobID);
 
-            var job_result = AsyncCallManager.GetAsyncJob(packet.TargetJobID);
+            // if (job_result != null)
+            // {
+            //     Log.WriteLine("... Was AsyncCall, queuing callback now!");
 
-            if (job_result != null)
-            {
-                Log.WriteLine("... Was AsyncCall, queuing callback now!");
+            //     job_result.finished = true;
 
-                job_result.finished = true;
+            //     var result_buffer = new ArgonCore.Util.Buffer();
+            //     result_buffer.Write(job_result.job_id);
+            //     result_buffer.Write(job_result.callback_id);
+            //     result_buffer.Write(packet.GetData().Length);
+            //     result_buffer.Write(packet.GetData());
 
-                var result_buffer = new ArgonCore.Util.Buffer();
-                result_buffer.Write(job_result.job_id);
-                result_buffer.Write(job_result.callback_id);
-                result_buffer.Write(packet.GetData().Length);
-                result_buffer.Write(packet.GetData());
-
-                // TODO: Post callback to clients
-                Server.Client.PendingCallbacks.Enqueue(new ArgonCore.IPC.InternalCallbackMsg
-                {
-                    callback_id = 703,
-                    user_id = -1,
-                    data = result_buffer.GetBuffer(),
-                });
-            }
+            //     // TODO: Post callback to clients
+            //     Server.Client.PendingCallbacks.Enqueue(new ArgonCore.IPC.InternalCallbackMsg
+            //     {
+            //         callback_id = 703,
+            //         user_id = -1,
+            //         data = result_buffer.GetBuffer(),
+            //     });
+            // }
         }
     }
 }

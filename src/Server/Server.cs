@@ -53,25 +53,27 @@ namespace Server
 
             lock (client_lock)
             {
-                Log.WriteLine("Client message...");
+                // Log.WriteLine("Client message...");
 
-                Log.WriteLine("{{");
-                Log.WriteLine("\tClientId = {0}", message.ClientId);
-                Log.WriteLine("\tJobId = {0}", message.JobId);
-                Log.WriteLine("\tInterfaceId = {0}", message.InterfaceId);
-                Log.WriteLine("\tPipeId = \"{0}\"", connection.Id);
-                Log.WriteLine("\tName = \"{0}\"", message.Name);
+                // Log.WriteLine("{{");
+                // Log.WriteLine("\tClientId = {0}", message.ClientId);
+                // Log.WriteLine("\tJobId = {0}", message.JobId);
+                // Log.WriteLine("\tInterfaceId = {0}", message.InterfaceId);
+                // Log.WriteLine("\tPipeId = \"{0}\"", connection.Id);
+                // Log.WriteLine("\tName = \"{0}\"", message.Name);
 
-                if (message.Args == null)
-                {
-                    Log.WriteLine("\tArgs = {}");
-                }
-                else
-                {
-                    Log.WriteLine("\tArgs = {{{0}}}", String.Join(",", message.Args));
-                }
+                // if (message.Args == null)
+                // {
+                //     Log.WriteLine("\tArgs = {}");
+                // }
+                // else
+                // {
+                //     Log.WriteLine("\tArgs = {{{0}}}", String.Join(",", message.Args));
+                // }
 
-                Log.WriteLine("}}");
+                // Log.WriteLine("}}");
+
+                Log.WriteLine("[{3}] [ClientMessage c: {1} p: {2}] \"{0}\"", message.Name, message.ClientId, message.PipeId, message.JobId);
 
                 object result = null;
 
