@@ -69,6 +69,7 @@ const char *CSteamID::Render() const {
 }
 
 #include "clientengine.hh"
+#include "clientfriends.hh"
 #include "clientuser.hh"
 
 using CreateInterfaceFn = void *(*)(const char *);
@@ -110,9 +111,10 @@ int main(int argc, const char **argv) {
         auto steam_client  = (ISteamClient017 *)create_interface_proc("SteamClient017");
 
         if (steam_client != nullptr) {
-            HSteamPipe pipe_handle = client_engine->CreateSteamPipe();
-            auto       user_handle = client_engine->CreateLocalUser(&pipe_handle, k_EAccountTypeIndividual);
-            auto       user        = (IClientUser001 *)client_engine->GetIClientUser(user_handle, pipe_handle, "CLIENTUSER_INTERFACE_VERSION001");
+            HSteamPipe pipe_handle    = client_engine->CreateSteamPipe();
+            auto       user_handle    = client_engine->CreateLocalUser(&pipe_handle, k_EAccountTypeIndividual);
+            auto       user           = (IClientUser001 *)client_engine->GetIClientUser(user_handle, pipe_handle, "CLIENTUSER_INTERFACE_VERSION001");
+            auto       client_friends = (IClientFriends001 *)client_engine->GetIClientFriends(user_handle, pipe_handle, "CLIENTFRIENDS_INTERFACE_VERSION001");
 
             auto friends = (ISteamFriends *)client_engine->GetIClientFriends(user_handle, pipe_handle, "SteamFriends015");
 
@@ -151,12 +153,42 @@ int main(int argc, const char **argv) {
             CallbackMsg_t msg;
             while (true) {
                 while (get_next_callback(pipe_handle, &msg)) {
-                    printf("msg from user %u: id: %d size: %u\n", msg.m_hSteamUser, msg.m_iCallback, msg.m_cubParam);
 
                     switch (msg.m_iCallback) {
                     case PersonaStateChange_t::k_iCallback: {
-                        auto cb = (PersonaStateChange_t *)msg.m_pubParam;
-                        printf("State change for user %s\n", CSteamID(cb->m_ulSteamID).Render());
+                        static bool one_time = true;
+                        if (one_time) {
+                            client_friends->SetPersonaState(EPersonaState::k_EPersonaStateOnline);
+                            one_time = false;
+                        }
+
+                        auto cb       = (PersonaStateChange_t *)msg.m_pubParam;
+                        auto user_id  = CSteamID(cb->m_ulSteamID);
+                        auto user_acc = user_id.BIndividualAccount();
+
+                        if (user_acc) {
+                            printf("State change for user %s (%s)\n", user_id.Render(), friends->GetFriendPersonaName(user_id));
+                        } else {
+                            printf("State change for unknown %s\n", user_id.Render());
+                        }
+                    } break;
+                    case FriendChatMsg_t::k_iCallback: {
+                        auto cb = (FriendChatMsg_t *)msg.m_pubParam;
+
+                        auto user_id = CSteamID(cb->m_ulSenderID);
+
+                        char           message[2000];
+                        EChatEntryType entry;
+
+                        // Ignore user is typing messages
+                        if (cb->m_eChatEntryType == EChatEntryType::k_EChatEntryTypeTyping) break;
+
+                        auto msg = friends->GetFriendMessage(user_id, cb->m_iChatID, message, sizeof(message), &entry);
+
+                        printf("Message from %s (%s)\n>>%s<<\n", user_id.Render(), friends->GetFriendPersonaName(user_id), message);
+                    } break;
+                    default: {
+                        printf("Unknown message from user %u: id: %d size: %u\n", msg.m_hSteamUser, msg.m_iCallback, msg.m_cubParam);
                     } break;
                     }
 

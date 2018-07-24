@@ -15,10 +15,10 @@ public:
     virtual int        ReleaseUser(int, int)                                                   = 0;
     virtual int        IsValidHSteamUserPipe(int, int)                                         = 0;
     virtual void *     GetIClientUser(int, int, char const *)                                  = 0;
-    virtual int        GetIClientGameServer(int, int, char const *)                            = 0;
+    virtual void *     GetIClientGameServer(int, int, char const *)                            = 0;
     virtual int        SetLocalIPBinding(unsigned int, unsigned short)                         = 0;
     virtual int        GetUniverseName(EUniverse)                                              = 0;
-    virtual int        GetIClientFriends(int, int, char const *)                               = 0;
+    virtual void *     GetIClientFriends(int, int, char const *)                               = 0;
     virtual int        GetIClientUtils(int, char const *)                                      = 0;
     virtual int        GetIClientBilling(int, int, char const *)                               = 0;
     virtual int        GetIClientMatchmaking(int, int, char const *)                           = 0;
