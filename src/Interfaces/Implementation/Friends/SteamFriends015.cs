@@ -48,7 +48,7 @@ namespace InterfaceFriends
             return f.GetName(new SteamKit2.SteamID(steam_id));
         }
 
-        public bool GetFriendGamePlayed3(ulong steam_id, IntPtr friend_game_info_out)
+        public bool GetFriendGamePlayed(ulong steam_id, IntPtr friend_game_info_out)
         {
             return false;
         }
@@ -176,6 +176,11 @@ namespace InterfaceFriends
 
         }
 
+        public void ActivateGameOverlayInviteDialog(ulong steam_id)
+        {
+
+        }
+
         public int GetSmallFriendAvatar(ulong steam_id)
         {
             return 0;
@@ -205,6 +210,16 @@ namespace InterfaceFriends
         }
 
         public int GetClanOfficerCount(ulong steam_id)
+        {
+            return 0;
+        }
+
+        public ulong GetClanOfficerByIndex(ulong clan, int officer)
+        {
+            return 0;
+        }
+
+        public uint GetUserRestrictions()
         {
             return 0;
         }
@@ -325,9 +340,20 @@ namespace InterfaceFriends
             return false;
         }
 
-        public int GetFriendMessage(ulong steam_id, int id, IntPtr data_out, int max_data_out, uint chat_type)
+        public int GetFriendMessage(ulong steam_id, int id, IntPtr data_out, int max_data_out, ref uint chat_type)
         {
-            return 0;
+            var message = f.GetChatMessage(new SteamKit2.SteamID(steam_id), id);
+
+            ArgonCore.Util.Buffer b = new ArgonCore.Util.Buffer();
+
+            b.Write(message.Message);
+            var message_length = message.Message.Length;
+
+            var write_length = message_length < max_data_out ? message_length : max_data_out;
+
+            System.Runtime.InteropServices.Marshal.Copy(b.GetBuffer(), 0, data_out, write_length);
+
+            return write_length;
         }
 
         public int GetFollowerCount(ulong steam_id)
