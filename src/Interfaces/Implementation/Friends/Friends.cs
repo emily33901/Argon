@@ -31,6 +31,7 @@ namespace InterfaceFriends
             steam_friends = Instance.SteamClient.GetHandler<SteamFriends>();
             Instance.CallbackManager.Subscribe<SteamFriends.ChatMsgCallback>(cb => OnChatMessage(cb));
             Instance.CallbackManager.Subscribe<SteamFriends.PersonaStateCallback>(cb => OnPersonaState(cb));
+            Instance.CallbackManager.Subscribe<SteamFriends.FriendMsgCallback>(cb => OnFriendMessage(cb));
         }
 
         public string GetLocalName() => steam_friends.GetPersonaName();
@@ -89,6 +90,26 @@ namespace InterfaceFriends
             return total;
         }
 
+        void OnFriendMessage(SteamFriends.FriendMsgCallback cb)
+        {
+            Log.WriteLine("Msg from {0} {1} \"{2}\"", cb.Sender, cb.EntryType, cb.Message);
+
+            var room_id = cb.Sender;
+
+            var room = ChatRoom.Active.FindOrCreate(room_id);
+
+            room.Messages.Add(new ChatMessage { Message = cb.Message, Sender = cb.Sender, Type = cb.EntryType });
+
+            ArgonCore.Util.Buffer b = new ArgonCore.Util.Buffer();
+            b.Write(cb.Sender);
+            b.Write(cb.Sender);
+            b.Write(cb.EntryType);
+            b.Write(cb.FromLimitedAccount);
+            b.Write(room.Messages.Count);
+
+            Instance.PostCallback(805, b);
+        }
+
         void OnChatMessage(SteamFriends.ChatMsgCallback cb)
         {
             Log.WriteLine("Chat message recieved...");
@@ -118,7 +139,6 @@ namespace InterfaceFriends
 
         public void OnPersonaState(SteamFriends.PersonaStateCallback cb)
         {
-            Log.WriteLine("PersonaState update");
             ArgonCore.Util.Buffer b = new ArgonCore.Util.Buffer();
 
             b.Write(cb.FriendID);
