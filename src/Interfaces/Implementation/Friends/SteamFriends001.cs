@@ -129,7 +129,6 @@ namespace InterfaceFriends
                 b.Reset();
 
                 b.Write(cm.Message.ToCharArray());
-                // b.Write('\0');
                 msg_type = (uint)cm.Type;
 
                 return total_wrote;

@@ -47,6 +47,8 @@ namespace ArgonCore.Util
         {
             var alignment = (Length() % align);
 
+            if (alignment != 0) alignment = align - alignment;
+
             Console.WriteLine("l {0} a {1} r {2}", Length(), align, alignment);
 
             return alignment;

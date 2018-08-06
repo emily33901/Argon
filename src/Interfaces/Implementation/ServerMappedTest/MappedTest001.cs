@@ -32,5 +32,18 @@ namespace InterfaceArgonCore
 
             return b.Length();
         }
+
+        [Buffer(Index = 0, NewPointerIndex = 0, NewSizeIndex = 1)]
+        public void StructTest(ref ArgonCore.Util.Buffer b)
+        {
+            b.Reset();
+            b.SetAlignment(4);
+
+            b.WriteByte(0xAA);
+            b.WriteUInt(0xBBCCDDEE);
+            b.WriteUShort(0xFFAA);
+            b.WriteByte(0xBB);
+            b.WriteULong(0xCCDDEEFFAABBCCDD);
+        }
     }
 }

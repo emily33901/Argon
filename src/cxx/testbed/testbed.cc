@@ -156,6 +156,13 @@ int main(int argc, const char **argv) {
                 printf("Expected: (\"13 characters\") -> 13\n");
                 printf("Actual (\"%s\") -> %d\n", buffer, bytes_wrote);
 
+                MappedTestStruct s;
+                memset(&s, 0x11, sizeof(MappedTestStruct));
+                mapped_test->TestStruct(&s, sizeof(MappedTestStruct));
+
+                printf("StructTest: Testing struct alignment in buffers\n");
+                printf("%hhx %x %x %hhx %llx\n", s.a, s.b, s.c, s.d, s.e);
+
                 printf("\n\nMapped tests finished\n\n");
 
                 getc(stdin);
@@ -321,21 +328,21 @@ int main(int argc, const char **argv) {
     return 0;
 }
 
-#pragma pack(push, 4)
-struct packing_helper {
-    uint8  byte_a;
-    uint16 align_16;
+// #pragma pack(push, 4)
+// struct packing_helper {
+//     uint8  byte_a;
+//     uint16 align_16;
 
-    uint8  byte_b;
-    uint32 align_32;
+//     uint8  byte_b;
+//     uint32 align_32;
 
-    uint8  byte_c;
-    uint64 align_64;
-};
+//     uint8  byte_c;
+//     uint64 align_64;
+// };
 
-enum class packing_test {
-    a = offsetof(packing_helper, align_16) - offsetof(packing_helper, byte_a),
-    b = offsetof(packing_helper, align_32) - offsetof(packing_helper, byte_b),
-    c = offsetof(packing_helper, align_64) - offsetof(packing_helper, byte_c),
-};
-#pragma pack(pop)
+// enum class packing_test {
+//     a = offsetof(packing_helper, align_16) - offsetof(packing_helper, byte_a),
+//     b = offsetof(packing_helper, align_32) - offsetof(packing_helper, byte_b),
+//     c = offsetof(packing_helper, align_64) - offsetof(packing_helper, byte_c),
+// };
+// #pragma pack(pop)
