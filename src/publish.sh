@@ -10,6 +10,9 @@ pushd $BASEDIR
     
     TERM=xterm dotnet publish Testbed/PublishTest/PublishHelper.csproj --output "../../bin/argon" --self-contained --framework netcoreapp2.0 --runtime linux-x64
 
+    # fix dotnet issues with omnisharp
+    TERM=xterm dotnet restore 
+
     #mv "Testbed/PublishTest/bin/argon" "bin/argon"
 
     cp -f "cxx/bin/debug/testbed" "bin/testbed"
