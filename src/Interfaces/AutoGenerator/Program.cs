@@ -23,11 +23,14 @@ namespace DelegateGenerator
                 public string return_type;
 
                 // stored in the form (type, name)
-                public List<(string, string)> args;
+                public List<(Type, string)> args;
+
+                public List<ArgonCore.Interface.BufferAttribute> buffers;
 
                 public FunctionDefinition()
                 {
-                    args = new List<(string, string)>();
+                    args = new List<(Type, string)>();
+                    buffers = new List<ArgonCore.Interface.BufferAttribute>();
                 }
             }
 
@@ -45,17 +48,14 @@ namespace DelegateGenerator
 
         public static List<FunctionClassDefinition> InterfaceClasses { get; set; }
 
-        static string GetCorrectTypeName(Type t)
+        static string GetCorrectTypeName(Type t, bool no_ref = false)
         {
             var original_name = t.FullName;
             var new_name = original_name;
 
-            if (t.IsByRef)
-            {
-                new_name = "ref " + original_name.Substring(0, original_name.Length - 1);
-            }
+            if (t.IsByRef) new_name = original_name.Substring(0, original_name.Length - 1);
 
-            switch (t.FullName)
+            switch (new_name)
             {
                 case "System.Void":
                     new_name = "void";
@@ -75,6 +75,12 @@ namespace DelegateGenerator
                 case "System.UInt64":
                     new_name = "ulong";
                     break;
+                case "System.Int16":
+                    new_name = "ushort";
+                    break;
+                case "System.UInt16":
+                    new_name = "short";
+                    break;
                 case "System.Boolean":
                     new_name = "bool";
                     break;
@@ -83,7 +89,34 @@ namespace DelegateGenerator
                     break;
             }
 
+            if (t.IsByRef && !no_ref)
+            {
+                new_name = "ref " + new_name;
+            }
+
             return new_name;
+        }
+
+        static List<(string, string)> ComputeTypes(FunctionClassDefinition.FunctionDefinition f)
+        {
+            var computed_types = new List<(string, string)>();
+            for (var i = 0; i < f.args.Count; i++)
+            {
+                var (t, name) = f.args[i];
+
+                computed_types.Add((GetCorrectTypeName(t), name));
+            }
+
+            foreach (var b in f.buffers)
+            {
+                var (old_type, old_name) = computed_types[b.Index];
+                computed_types.RemoveAt(b.Index);
+
+                computed_types.Insert(b.NewPointerIndex, ("IntPtr", old_name + "_pointer"));
+                computed_types.Insert(b.NewSizeIndex, ("int", old_name + "_length"));
+            }
+
+            return computed_types;
         }
 
         static void FindClasses()
@@ -118,11 +151,33 @@ namespace DelegateGenerator
 
                             foreach (var param in mi.GetParameters())
                             {
-                                new_function.args.Add((GetCorrectTypeName(param.ParameterType), param.Name));
+                                new_function.args.Add((param.ParameterType, param.Name));
+                            }
+
+                            foreach (var attribute in mi.GetCustomAttributes())
+                            {
+                                if (attribute is ArgonCore.Interface.BufferAttribute)
+                                {
+                                    var buffer_attribute = (ArgonCore.Interface.BufferAttribute)attribute;
+
+                                    var (arg_t, _) = new_function.args[buffer_attribute.Index];
+
+                                    // Check attribute lines up properly
+                                    // These should only reference arguments that are of this type
+                                    if (GetCorrectTypeName(arg_t) != "ref ArgonCore.Util.Buffer")
+                                    {
+                                        Console.WriteLine("Parameter at index {0} of function {1} of class {3} does not use ArgonCore.Util.Buffer (type was {2})",
+                                                          buffer_attribute.Index, new_function.name, GetCorrectTypeName(arg_t), new_function.name);
+                                        throw new Exception();
+                                    }
+
+                                    new_function.buffers.Add(buffer_attribute);
+                                }
                             }
 
                             new_functions.Add(new_function);
                         }
+
                         this_class.functions.AddRange(new_functions);
 
                         InterfaceClasses.Add(this_class);
@@ -140,6 +195,8 @@ namespace DelegateGenerator
             WriteFiles();
 
             Console.WriteLine("Done!");
+            Console.WriteLine("Found {0} interfaces", InterfaceClasses.Count);
+            Console.WriteLine("With {0} functions", InterfaceClasses.Aggregate(0, (acc, x) => acc + x.functions.Count));
         }
 
         static void WriteDelegates()
@@ -159,7 +216,7 @@ namespace {0}
     {{";
 
             const string file_epilog =
-    @"    }
+@"    }
 }";
 
             foreach (var c in InterfaceClasses)
@@ -173,23 +230,24 @@ namespace {0}
                 foreach (var del in c.functions)
                 {
                     new_file.AppendLine("        [UnmanagedFunctionPointer(CallingConvention.ThisCall)]");
-                    new_file.AppendFormat("        public delegate {0} {1}(", del.return_type, del.name);
+                    new_file.Append($"        public delegate {del.return_type} {del.name}(");
 
+                    // Non server mapped classes already have the instance pointer
+                    // As a parameter (needed unless we pseudomap them)
                     if (c.server_mapped)
                     {
-                        new_file.AppendFormat("IntPtr _{0}", del.args.Count > 0 ? ", " : "");
+                        new_file.Append("IntPtr _");
                     }
 
-                    for (var i = 0; i < del.args.Count; i++)
+                    var computed_types = ComputeTypes(del);
+
+                    for (int i = 0; i < computed_types.Count; i++)
                     {
-                        var (t, name) = del.args[i];
+                        var (t, name) = computed_types[i];
 
-                        new_file.AppendFormat("{0} {1}", t, name);
+                        if (c.server_mapped || (i != 0 && !c.server_mapped)) new_file.Append(", ");
 
-                        if (i != del.args.Count - 1)
-                        {
-                            new_file.Append(", ");
-                        }
+                        new_file.Append($"{t} {name}");
                     }
 
                     new_file.AppendLine(");");
@@ -199,7 +257,7 @@ namespace {0}
 
                 Console.WriteLine(new_file.ToString());
 
-                File.WriteAllText(String.Format("../InterfaceDelegates/{0}Delegates.cs", c.declared_name), new_file.ToString());
+                File.WriteAllText($"../InterfaceDelegates/{c.declared_name}Delegates.cs", new_file.ToString());
             }
         }
 
@@ -219,7 +277,7 @@ namespace {0}
     {{";
 
             const string file_epilog =
-    @"    }
+@"    }
 }";
             foreach (var c in InterfaceClasses)
             {
@@ -235,63 +293,96 @@ namespace {0}
                 {
                     // Helper
                     var param_names = new StringBuilder();
+                    var argument_list = new StringBuilder();
 
-                    // Add the implicit thisptr arg to servermapped args
-                    new_file.AppendFormat("        public {0} {1}(IntPtr _{2}", f.return_type, f.name + "", f.args.Count > 0 ? ", " : "");
+                    var computed_types = ComputeTypes(f);
 
-                    // Create param data
+                    for (int i = 0; i < computed_types.Count; i++)
+                    {
+                        var (t, name) = computed_types[i];
+
+                        argument_list.Append($", {t} {name}");
+                    }
+
+                    // Create param string formats
+                    // Do this becuase the ComputedTypes replaces the buffers
+                    // with IntPtrs and sizes but we dont want this for the map
+                    // generation
                     for (var i = 0; i < f.args.Count; i++)
                     {
                         var (t, name) = f.args[i];
 
-                        param_names.Append(name);
-
-                        new_file.AppendFormat("{0} {1}", t, name);
-
-                        if (i != f.args.Count - 1)
-                        {
-                            new_file.Append(", ");
+                        if (i != 0)
                             param_names.Append(", ");
-                        }
+
+                        param_names.Append(name);
                     }
 
-                    new_file.AppendLine(")");
+                    new_file.AppendLine(
+                        $"        public {f.return_type} {f.name}(IntPtr _{argument_list})");
                     new_file.AppendLine("        {");
 
-                    // build the body of the function
-                    new_file.AppendLine("            var f = new ArgonCore.IPC.SerializedFunction");
-                    new_file.AppendLine("            {");
-                    new_file.AppendLine("               ClientId = ClientId,");
-                    new_file.AppendLine("               InterfaceId = InterfaceId,");
+
+                    // Construct needed buffers
+                    foreach (var b in f.buffers)
+                    {
+                        var (t, name) = f.args[b.Index];
+                        var (_, ptr_name) = computed_types[b.NewPointerIndex];
+                        var (_, size_name) = computed_types[b.NewSizeIndex];
+
+                        new_file.AppendLine($"            var {name} = new ArgonCore.Util.Buffer();");
+                        new_file.AppendLine($"            {name}.ReadFromPointer({ptr_name}, {size_name});");
+                        new_file.AppendLine();
+                    }
+
                     new_file.AppendLine(
-                        String.Format("               Name = \"{0}\",", f.name));
-                    new_file.Append("               Args = new object[] {"); new_file.Append(param_names); new_file.AppendLine("},");
-                    new_file.AppendLine("            };");
+                    $@"
+            var result = Client.ClientPipe.CallSerializedFunction(PipeId, new ArgonCore.IPC.SerializedFunction()
+            {{
+                ClientId = ClientId,
+                InterfaceId = InterfaceId,
+                Name = ""{f.name}"",
+                Args = new object[] {{{param_names}}},
+
+            }});" + "\n");
+
+                    for (int i = 0; i < f.args.Count; i++)
+                    {
+                        var (t, name) = f.args[i];
+
+                        if (t.IsByRef)
+                            new_file.AppendLine($"            {name} = ({GetCorrectTypeName(t, true)})result.Args[{i}];");
+                    }
+
+                    new_file.AppendLine();
+
+                    foreach (var b in f.buffers)
+                    {
+                        var (t, name) = f.args[b.Index];
+
+                        var (_, pointer_name) = computed_types[b.NewPointerIndex];
+                        var (_, size_name) = computed_types[b.NewSizeIndex];
+
+                        new_file.AppendLine($"            {name}.WriteToPointer({pointer_name}, {size_name});");
+                    }
+
+                    new_file.AppendLine();
+
 
                     if (f.return_type != "void")
                     {
-                        new_file.Append("            return ");
-                    }
-                    else
-                    {
-                        new_file.Append("            ");
+                        new_file.AppendLine($"            return ({f.return_type})result.Result;");
                     }
 
-                    new_file.AppendFormat("Client.ClientPipe.CallSerializedFunction");
-                    if (f.return_type != "void")
-                    {
-                        new_file.AppendFormat("<{0}>", f.return_type);
-                    }
-
-                    new_file.AppendLine("(PipeId, f);");
                     new_file.AppendLine("        }");
                 }
+
 
                 new_file.AppendLine(file_epilog);
 
                 Console.WriteLine(new_file.ToString());
 
-                File.WriteAllText(String.Format("../InterfaceMaps/{0}Map.cs", c.declared_name), new_file.ToString());
+                File.WriteAllText($"../InterfaceMaps/{c.declared_name}Map.cs", new_file.ToString());
             }
         }
 
