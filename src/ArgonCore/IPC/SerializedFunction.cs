@@ -34,6 +34,9 @@ namespace ArgonCore.IPC
     [Serializable]
     public class SerializedResult : SerializedJob
     {
+        // Value returned from the function
         public object Result { get; set; }
+
+        public object[] Args { get; set; }
     }
 }

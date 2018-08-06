@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -93,6 +94,7 @@ namespace Server
                     InterfaceId = message.InterfaceId,
                     JobId = message.JobId,
                     Result = result,
+                    Args = message.Args,
                 };
 
                 connection.PushMessage(result_message);

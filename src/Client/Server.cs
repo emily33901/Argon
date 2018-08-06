@@ -18,7 +18,7 @@ namespace Client
                 Args = new object[] { },
             };
 
-            return ClientPipe.CallSerializedFunction<int>(pipe_id, f);
+            return (int)ClientPipe.CallSerializedFunction(pipe_id, f).Result;
         }
 
         public static void ReleaseClient(int pipe_id, int client_id)
@@ -49,7 +49,7 @@ namespace Client
                 Args = new object[] { name },
             };
 
-            return ClientPipe.CallSerializedFunction<int>(pipe_id, f);
+            return (int)ClientPipe.CallSerializedFunction(pipe_id, f).Result;
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Client
                 Args = new object[] { name },
             };
 
-            return ClientPipe.CallSerializedFunction<int>(pipe_id, f);
+            return (int)ClientPipe.CallSerializedFunction(pipe_id, f).Result;
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Client
                 Args = new object[] { },
             };
 
-            return ClientPipe.CallSerializedFunction<InternalCallbackMsg>(pipe_id, f);
+            return (InternalCallbackMsg)ClientPipe.CallSerializedFunction(pipe_id, f).Result;
         }
 
         public static void SetAppId(int pipe_id, int app_id)

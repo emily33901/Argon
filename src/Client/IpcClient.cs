@@ -89,33 +89,7 @@ namespace Client
             pipe.PushMessage(f);
         }
 
-        /// <summary>
-        /// Call a function over ipc using the respective function name and interface id and wait for the result
-        /// </summary>
-        /// <param name="f">Function and arguments to be called</param>
-        public void CallSerializedFunction(SerializedFunction f)
-        {
-            var job = NextJobId;
-            NextJobId += 1;
-
-            f.JobId = job;
-            f.PipeId = Id;
-
-            PushMessage(f);
-        }
-        public static void CallSerializedFunction(int id, SerializedFunction f)
-        {
-            var pipe = ActivePipes[id];
-            pipe.CallSerializedFunction(f);
-        }
-
-        /// <summary>
-        /// Call a function over ipc using the respective function name and interface id and wait for the result
-        /// </summary>
-        /// <typeparam name="T">Return type of the function</typeparam>
-        /// <param name="f"></param>
-        /// <returns>Result of calling the function on the server</returns>
-        public T CallSerializedFunction<T>(SerializedFunction f)
+        public SerializedResult CallSerializedFunction(SerializedFunction f)
         {
             var job = NextJobId;
             NextJobId += 1;
@@ -127,21 +101,16 @@ namespace Client
 
             result_semaphores.Add(job, new Semaphore(0, 1));
 
-            return WaitForResultForFunction<T>(f.JobId);
-        }
-        public static T CallSerializedFunction<T>(int id, SerializedFunction f)
-        {
-            var pipe = ActivePipes[id];
-            return pipe.CallSerializedFunction<T>(f);
+            return WaitForResultForFunction(f.JobId);
         }
 
-        /// <summary>
-        /// Waits for a job to complete and returns the result
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="job_id"></param>
-        /// <returns></returns>
-        public T WaitForResultForFunction<T>(uint job_id)
+        public static SerializedResult CallSerializedFunction(int id, SerializedFunction f)
+        {
+            var pipe = ActivePipes[id];
+            return pipe.CallSerializedFunction(f);
+        }
+
+        public SerializedResult WaitForResultForFunction(uint job_id)
         {
             // Wait for the semaphore and then remove it so gc collects it
             var this_semaphore = result_semaphores[job_id];
@@ -151,11 +120,7 @@ namespace Client
             var found = current_results.Find(x => x.JobId == job_id);
             current_results.Remove(found);
 
-            if (found.Result == null) return default(T);
-
-            var result = (T)found.Result;
-
-            return result;
+            return found;
         }
 
         public static uint GetIpcCallCount()
