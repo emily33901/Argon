@@ -23,6 +23,7 @@ namespace ArgonHost
                     while (running)
                     {
                         Server.Client.RunAllFrames();
+                        System.Threading.Thread.Sleep(100);
                     }
 
                 });

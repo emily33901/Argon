@@ -19,6 +19,8 @@ public:
     virtual void SetPersonaState(EPersonaState ePersonaState) = 0;
 };
 
+#pragma pack(push, 4)
+
 struct FriendChatMsg_t {
     enum { k_iCallback = k_iClientFriendsCallbacks + 5 };
 
@@ -28,3 +30,5 @@ struct FriendChatMsg_t {
     uint8    m_bLimitedAccount;
     uint32   m_iChatID; // chat id
 };
+
+#pragma pack(pop)
