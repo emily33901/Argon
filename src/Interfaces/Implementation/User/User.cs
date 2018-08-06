@@ -132,15 +132,23 @@ namespace InterfaceUser
                     {
                         Log.WriteLine("Needs twofactor code...");
                         logon_needs = LogonNeeds.TwoFactor;
-                        return;
+                        break;
                     }
                 case EResult.AccountLogonDenied:
                     {
                         Log.WriteLine("Needs steamguard code...");
                         logon_needs = LogonNeeds.SteamGuard;
-                        return;
+                        break;
                     }
             }
+
+            var b = new ArgonCore.Util.Buffer();
+            b.SetAlignment(4);
+
+            b.Write((uint)cb.Result);
+            b.WriteBool(false);
+
+            Instance.PostCallback(102, b);
         }
         void OnAccountLogonSuccess(SteamUser.LoggedOnCallback cb)
         {
@@ -151,6 +159,8 @@ namespace InterfaceUser
 
             AccountFlags = cb.AccountFlags;
             public_ip = cb.PublicIP;
+
+            Instance.PostCallback(101, new ArgonCore.Util.Buffer());
         }
 
         void OnLoggedOn(SteamUser.LoggedOnCallback cb)
@@ -159,6 +169,7 @@ namespace InterfaceUser
             {
                 case EResult.AccountLogonDenied:
                 case EResult.AccountLoginDeniedNeedTwoFactor:
+                case EResult.InvalidPassword:
                     {
                         OnAccountLogonDenied(cb);
                         return;
