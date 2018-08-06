@@ -49,7 +49,7 @@ namespace ArgonCore.Util
 
             if (alignment != 0) alignment = align - alignment;
 
-            Console.WriteLine("l {0} a {1} r {2}", Length(), align, alignment);
+            // Console.WriteLine("l {0} a {1} r {2}", Length(), align, alignment);
 
             return alignment;
         }
