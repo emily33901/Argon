@@ -49,5 +49,25 @@ namespace InterfaceArgonCore
 
             return (int)result.Result;
         }
+        public void StructTest(IntPtr _, IntPtr b_pointer, int b_length)
+        {
+            var b = new ArgonCore.Util.Buffer();
+            b.ReadFromPointer(b_pointer, b_length);
+
+
+            var result = Client.ClientPipe.CallSerializedFunction(PipeId, new ArgonCore.IPC.SerializedFunction()
+            {
+                ClientId = ClientId,
+                InterfaceId = InterfaceId,
+                Name = "StructTest",
+                Args = new object[] {b},
+
+            });
+
+            b = (ArgonCore.Util.Buffer)result.Args[0];
+
+            b.WriteToPointer(b_pointer, b_length);
+
+        }
     }
 }

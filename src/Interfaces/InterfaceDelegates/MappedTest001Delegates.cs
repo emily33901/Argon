@@ -14,5 +14,7 @@ namespace InterfaceArgonCore
         public delegate int PointerTest(IntPtr _, ref int a, ref int b, ref int c);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         public delegate int BufferTest(IntPtr _, IntPtr b_pointer, int b_length);
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
+        public delegate void StructTest(IntPtr _, IntPtr b_pointer, int b_length);
     }
 }
