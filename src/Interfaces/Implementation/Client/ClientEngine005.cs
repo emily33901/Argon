@@ -42,6 +42,8 @@ namespace InterfaceClient
         {
             Log.WriteLine("CreateLocalUser {0} {1}", pipe, account_type);
 
+            if (pipe == 0) pipe = ClientPipe.CreatePipe();
+
             var user = Client.Client.CreateNewClient(pipe);
 
             return user;

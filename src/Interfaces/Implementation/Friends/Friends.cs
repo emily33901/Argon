@@ -43,7 +43,12 @@ namespace InterfaceFriends
         }
 
         public EPersonaState GetLocalState() => steam_friends.GetPersonaState();
-        public void SetLocalState(EPersonaState state) => steam_friends.SetPersonaState(state);
+        public void SetLocalState(EPersonaState state)
+        {
+            Log.WriteLine("SetPersonaState: {0}", state);
+            steam_friends.SetPersonaState(state);
+        }
+
 
         public int GetFriendCount() => steam_friends.GetFriendCount();
         public SteamID GetFriendByIndex(int index) => steam_friends.GetFriendByIndex(index);
@@ -92,7 +97,7 @@ namespace InterfaceFriends
 
         void OnFriendMessage(SteamFriends.FriendMsgCallback cb)
         {
-            Log.WriteLine("Msg from {0} {1} \"{2}\"", cb.Sender, cb.EntryType, cb.Message);
+            Log.WriteLine("Msg from {0} {1} {2} \"{3}\"", cb.Sender, cb.EntryType, (int)cb.EntryType, cb.Message);
 
             var room_id = cb.Sender;
 
@@ -100,12 +105,19 @@ namespace InterfaceFriends
 
             room.Messages.Add(new ChatMessage { Message = cb.Message, Sender = cb.Sender, Type = cb.EntryType });
 
-            ArgonCore.Util.Buffer b = new ArgonCore.Util.Buffer();
-            b.Write(cb.Sender);
-            b.Write(cb.Sender);
-            b.Write(cb.EntryType);
-            b.Write(cb.FromLimitedAccount);
-            b.Write(room.Messages.Count);
+            var message_index = room.Messages.Count - 1;
+
+            Log.WriteLine("Message is index {0}", message_index);
+
+            var b = new ArgonCore.Util.Buffer();
+            b.SetAlignment(4);
+
+            b.WriteULong(cb.Sender);
+            b.WriteULong(cb.Sender);
+            b.Write((byte)cb.EntryType);
+            b.Write((byte)(cb.FromLimitedAccount ? 1 : 0));
+            // b.Write((byte)0);
+            b.Write((uint)message_index);
 
             Instance.PostCallback(805, b);
         }
@@ -141,8 +153,8 @@ namespace InterfaceFriends
         {
             ArgonCore.Util.Buffer b = new ArgonCore.Util.Buffer();
 
-            b.Write(cb.FriendID);
-            b.Write(cb.StatusFlags);
+            b.WriteULong(cb.FriendID);
+            b.WriteUInt((uint)cb.StatusFlags);
 
             Instance.PostCallback(304, b);
         }

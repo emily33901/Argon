@@ -115,15 +115,21 @@ namespace InterfaceFriends
             return "";
         }
 
-        public int GetChatMessage(ulong steam_id, int msg_index, IntPtr msg_out, int max_msg, ref uint msg_type)
+        // Real sig is int GetChatMessage(u64, i32, void *, i32, u32 *)
+        [Buffer(Index = 2, NewPointerIndex = 2, NewSizeIndex = 3)]
+        public int GetChatMessage(ulong steam_id, int msg_index, ref ArgonCore.Util.Buffer b, ref uint msg_type)
         {
             var id = new SteamKit2.SteamID(steam_id);
             var cm = f.GetChatMessage(id, msg_index);
 
             if (cm != null)
             {
-                var total_wrote = Math.Max(max_msg, cm.Message.Length);
-                Marshal.Copy(System.Text.Encoding.ASCII.GetBytes(cm.Message), 0, msg_out, max_msg);
+                var total_wrote = Math.Min(b.Length(), cm.Message.Length);
+
+                b.Reset();
+
+                b.Write(cm.Message.ToCharArray());
+                // b.Write('\0');
                 msg_type = (uint)cm.Type;
 
                 return total_wrote;

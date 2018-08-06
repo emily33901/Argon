@@ -340,20 +340,27 @@ namespace InterfaceFriends
             return false;
         }
 
-        public int GetFriendMessage(ulong steam_id, int id, IntPtr data_out, int max_data_out, ref uint chat_type)
+        // Real sig is int GetFriendMessage(u64, i32, void *, i32, u32 *)
+        [Buffer(Index = 2, NewPointerIndex = 2, NewSizeIndex = 3)]
+        public int GetFriendMessage(ulong steam_id, int msg_index, ref ArgonCore.Util.Buffer b, ref uint msg_type)
         {
-            var message = f.GetChatMessage(new SteamKit2.SteamID(steam_id), id);
+            var id = new SteamKit2.SteamID(steam_id);
+            var cm = f.GetChatMessage(id, msg_index);
 
-            ArgonCore.Util.Buffer b = new ArgonCore.Util.Buffer();
+            if (cm != null)
+            {
+                var total_wrote = Math.Min(b.Length(), cm.Message.Length);
 
-            b.Write(message.Message);
-            var message_length = message.Message.Length;
+                b.Reset();
 
-            var write_length = message_length < max_data_out ? message_length : max_data_out;
+                b.Write(cm.Message.ToCharArray());
+                // b.Write('\0');
+                msg_type = (uint)cm.Type;
 
-            System.Runtime.InteropServices.Marshal.Copy(b.GetBuffer(), 0, data_out, write_length);
+                return total_wrote;
+            }
 
-            return write_length;
+            return 0;
         }
 
         public int GetFollowerCount(ulong steam_id)
