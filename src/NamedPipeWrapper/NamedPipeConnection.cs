@@ -191,7 +191,8 @@ namespace NamedPipeWrapper
                 catch (Exception e)
                 {
                     //we must igonre exception, otherwise, the namepipe wrapper will stop work.
-                    Console.WriteLine("Exception in WritePipe(): \"{0}\"", e.Message);
+                    Console.WriteLine("Exception in WritePipe(): \"{0}\" Inner: \"{1}\"", e.Message, e.InnerException);
+                    Console.WriteLine(e.StackTrace);
                 }
             }
 
