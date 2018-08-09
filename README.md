@@ -37,9 +37,10 @@ The `steamclient` project bootstraps the `ArgonCore` project and then through th
  
  ### Unversioned (IClient...)
  - [ ] IClientEngine
- Only some of IClientFriends and IClientUser have been implemented
+
+Only some of IClientFriends and IClientUser have been implemented
  
  ### Versioned (ISteam...010)
  - [x] ISteamClient017
  
- Most of ISteamFriends and some ISteamUser have been implemented
+Most of ISteamFriends and some ISteamUser have been implemented
