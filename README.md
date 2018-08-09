@@ -9,3 +9,37 @@ More reversing and implementing still needs to be done in order to make this pro
 `Argon` aims to mimic the frontend behaviour of `steamclient` (that is not the UI but rather the backend for steam) so that it can be dropped inplace and functionality should remain intact. 
 It primarily uses C# and alot of interoperability helpers to expose code. 
 The `steamclient` project bootstraps the `ArgonCore` project and then through the `steamclient` C api users will interact with `Argon` in the same way they did with the default `steamclient`.
+
+# TODO:
+
+## Infrastructure
+
+### IPC
+ - [x] Write an ipc api between server / multiple clients
+ - [x] IPC transport of Pointers ("out" variables)
+ - [x] IPC transport of Buffers (fixed size "out" variables)
+ 
+ ### Interop
+ - [x] Interop between cxx and csharp
+ - [ ] 32bit linux interop between cxx and csharp
+ - [x] Interop between csharp and cxx (Interface exporting)
+
+### Steam specific
+
+ - [ ] Send callbacks to client
+ - - [x] Send data
+ - - [ ] Replicate to all pipes
+ 
+ - [ ] "Async call" manager
+ 
+ 
+ ## Interfaces
+ 
+ ### Unversioned (IClient...)
+ - [ ] IClientEngine
+ Only some of IClientFriends and IClientUser have been implemented
+ 
+ ### Versioned (ISteam...010)
+ - [x] ISteamClient017
+ 
+ Most of ISteamFriends and some ISteamUser have been implemented
