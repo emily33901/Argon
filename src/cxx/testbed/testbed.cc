@@ -183,13 +183,6 @@ int main(int argc, const char **argv) {
                 return 1;
             }
 
-            // Right now the friends interface is only created
-            // When it is used as the result of lazy initialization
-            // This needs to be fixed in the c# by creating instances of each backend
-            // When we create the client (either through manually assigning them or r e f l e c t i o n)
-            // TODO: Remove when this is fixed
-            friends->GetPersonaName();
-
             char username[128];
             char password[128];
 

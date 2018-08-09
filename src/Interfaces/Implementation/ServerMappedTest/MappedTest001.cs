@@ -39,11 +39,11 @@ namespace InterfaceArgonCore
             b.Reset();
             b.SetAlignment(4);
 
-            b.WriteByte(0xAA);
-            b.WriteUInt(0xBBCCDDEE);
-            b.WriteUShort(0xFFAA);
-            b.WriteByte(0xBB);
-            b.WriteULong(0xCCDDEEFFAABBCCDD);
+            b.WriteByte(0xAA);          // 0
+            b.WriteUInt(0xBBCCDDEE);    // 4
+            b.WriteUShort(0xFFAA);      // 8
+            b.WriteByte(0xBB);          // 10
+            b.WriteULong(0xCCDDEEFFAABBCCDD);  // 12
         }
     }
 }

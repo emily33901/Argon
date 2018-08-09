@@ -88,8 +88,7 @@ namespace InterfaceFriends
             for (int i = 0; i < max; i++)
             {
                 var friend_id = steam_friends.GetFriendByIndex(i);
-                if (steam_friends.GetFriendRelationship(friend_id) == EFriendRelationship.Blocked)
-                    total += 1;
+                if (steam_friends.GetFriendRelationship(friend_id) == EFriendRelationship.Blocked) total += 1;
             }
 
             return total;
@@ -105,9 +104,8 @@ namespace InterfaceFriends
 
             room.Messages.Add(new ChatMessage { Message = cb.Message, Sender = cb.Sender, Type = cb.EntryType });
 
+	    // TODO: Thread safety
             var message_index = room.Messages.Count - 1;
-
-            Log.WriteLine("Message is index {0}", message_index);
 
             var b = new ArgonCore.Util.Buffer();
             b.SetAlignment(4);
@@ -126,9 +124,7 @@ namespace InterfaceFriends
         {
             Log.WriteLine("Chat message recieved...");
 
-            var room_id = cb.ChatRoomID;
-
-            var room = ChatRoom.Active.FindOrCreate(room_id);
+            var room = ChatRoom.Active.FindOrCreate(cb.ChatRoomID);
 
             room.Messages.Add(new ChatMessage { Message = cb.Message, Sender = cb.ChatterID, Type = cb.ChatMsgType });
         }
@@ -152,6 +148,7 @@ namespace InterfaceFriends
         public void OnPersonaState(SteamFriends.PersonaStateCallback cb)
         {
             ArgonCore.Util.Buffer b = new ArgonCore.Util.Buffer();
+	    b.SetAlignment(4);
 
             b.WriteULong(cb.FriendID);
             b.WriteUInt((uint)cb.StatusFlags);

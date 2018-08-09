@@ -61,24 +61,48 @@ namespace Server
 
                 Log = new LoggerUid("Server.Client", Id);
 
-
-                // create our steamclient instance
-                SteamClient = new SteamClient();
-
-                // create the callback manager which will route callbacks to function calls
-                CallbackManager = new CallbackManager(SteamClient);
-
-                // Setup our packet handler for all packets
-                SteamClient.AddHandler(new PacketHandler(this));
-
-                // Subscribe to some important callbacks
-                CallbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnect);
-                CallbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnect);
-
-                // Automatically try to connect...
-                Connect();
-            }
+		InitSteam();
+	    }
         }
+
+	public void InitSteam()
+	{
+	    // create our steamclient instance
+	    SteamClient = new SteamClient();
+
+	    // create the callback manager which will route callbacks to function calls
+	    CallbackManager = new CallbackManager(SteamClient);
+
+	    // Setup our packet handler for all packets
+	    SteamClient.AddHandler(new PacketHandler(this));
+
+	    // Subscribe to some important callbacks
+	    CallbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnect);
+	    CallbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnect);
+
+	    // Automatically try to connect...
+	    Connect();
+
+	    Log.WriteLine("Initialising modules");
+
+	    // Initialise modules (These need to be created now as otherwise we wont be
+	    // subscribed to callbacks for those classes)
+
+	    foreach(var a in Loader.GetInterfaceAssemblies())
+	    {
+		var subclasses = ArgonCore.Util.Types.FindSubClassesOfGeneric(typeof(ClientTied<>), a);
+		foreach(var c in subclasses)
+		{
+		    Log.WriteLine("Found class {0}", c.FullName);
+
+		    var find_or_create = c.BaseType.GetMethod("FindOrCreate");
+		    
+		    find_or_create.Invoke(null, new object[] {Id});
+		}
+	    }
+
+	    Log.WriteLine("Modules inited successfully");
+	}
 
         public static int CreateNewClient()
         {
