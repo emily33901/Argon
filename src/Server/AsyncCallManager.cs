@@ -61,38 +61,27 @@ namespace Server
         }
         public static bool IsCallFinished(int handle)
         {
-            lock (call_id_lock)
-            {
-                if (registered_calls.TryGetValue(handle, out var v))
-                    return v.finished;
-
-                return false;
-            }
-
+	    if (registered_calls.TryGetValue(handle, out var v))
+		return v.finished;
+	    
+	    return false;
         }
         public static byte[] GetCallResult(int handle)
         {
-            lock (call_id_lock)
-            {
-                if (registered_calls.TryGetValue(handle, out var v))
-                {
-                    if (v.finished) return v.result;
-                }
-
-                return null;
-            }
+	    if (registered_calls.TryGetValue(handle, out var v))
+	    {
+		if (v.finished) return v.result;
+	    }
+	    
+	    return null;
         }
         public static bool IsHandleValid(int handle)
         {
-            lock (call_id_lock)
-            {
-                if (registered_calls.TryGetValue(handle, out var _))
-                {
-                    return true;
-                }
-
-                return false;
-            }
+	    if (registered_calls.TryGetValue(handle, out var _))
+		return true;
+	    
+	    
+	    return false;
         }
     }
 }
