@@ -39,6 +39,7 @@ namespace Server
                 Log = new LoggerUid(typeof(T).FullName, id),
             };
 
+	    // Call an init function so that the derived class can perform loading code
             Active[id].Init();
 
             return Active[id];

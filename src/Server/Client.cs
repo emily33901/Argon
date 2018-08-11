@@ -18,17 +18,17 @@ namespace Server
         public static int next_client_id = 1;
         static Dictionary<int, Client> ActiveClients { get; set; } = new Dictionary<int, Client>();
 
-        public static Queue<InternalCallbackMsg> PendingCallbacks { get; set; } = new Queue<InternalCallbackMsg>();
-
         // Lookup for pipeids to their appids
         // This maps the real serverside pipeid to its appid
         public static Dictionary<int, int> PipeAppId { get; set; } = new Dictionary<int, int>();
 
+	// Pipes that are connected to this user
+	public HashSet<int> ConnectedPipes{ get; private set; }
+	
         // Used for internal handling of clients
         public int Id { get; private set; }
 
         public List<IBaseInterface> interfaces;
-
         public static List<IBaseInterface> NoUserInterface { get; set; } = new List<IBaseInterface>();
 
         // Steamkit helpers for this client
@@ -49,6 +49,7 @@ namespace Server
         Client()
         {
             interfaces = new List<IBaseInterface>();
+	    ConnectedPipes = new HashSet<int>();
 
             Loader.Load();
 
@@ -107,10 +108,22 @@ namespace Server
         public static int CreateNewClient()
         {
             var c = new Client();
-
             return c.Id;
         }
 
+	public static int CreateNewClient(int pipe_id)
+	{
+	    var id = CreateNewClient();
+	    GetClient(id).ConnectPipeToUser(pipe_id);
+
+	    return id;
+	}
+	
+	public void ConnectPipeToUser(int pipe_id)
+	{
+	    ConnectedPipes.Add(pipe_id);
+	}
+	
         public void Release()
         {
             Disconnect();
@@ -123,8 +136,7 @@ namespace Server
 
         public static Client GetClient(int id)
         {
-            lock (active_client_lock)
-                return ActiveClients[id];
+	    return ActiveClients[id];
         }
 
         public IBaseInterface CreateInterface(int pipe_id, string name)
@@ -178,8 +190,7 @@ namespace Server
         public void RunFrame()
         {
             // Dont wait indefinitely for new callbacks
-            CallbackManager.RunWaitCallbacks(TimeSpan.FromMilliseconds(1));
-            
+            CallbackManager.RunWaitCallbacks(TimeSpan.FromMilliseconds(10));
         }
 
         public static void RunAllFrames()
@@ -205,7 +216,9 @@ namespace Server
         {
             Log.WriteLine("Disconnected (User Initiated: {0})", cb.UserInitiated);
 
-            // SteamClientDisconnected_t packets are already sent...
+	    // TOOD: SteamClientDisconnected callbacks are only sent
+	    // elsewhere for login failure and not for steam connection failure
+	    // which we should probably handle here
 
             Connected = false;
 
@@ -213,16 +226,14 @@ namespace Server
             Connect();
         }
 
-
-        public void PostCallback(int callback_id, ArgonCore.Util.Buffer b)
-        {
-            Server.Client.PendingCallbacks.Enqueue(new ArgonCore.IPC.InternalCallbackMsg
-            {
-                user_id = Id,
-                callback_id = (uint)callback_id,
-                data = b.GetBuffer(),
-            });
-        }
+	public void PostCallback(int callback_id, ArgonCore.Util.Buffer b)
+	{
+	    // TODO: we probably need a lock here to be threadsafe
+	    foreach(var p in ConnectedPipes)
+	    {
+		CallbackHandler.PostCallback(p, Id, callback_id, b);
+	    }
+	}
 
         object CallSerializedFunction(int pipe_id, int interface_id, string name, object[] args)
         {
@@ -241,7 +252,7 @@ namespace Server
                 return null;
             }
 
-            // TODO: handle special server related functions
+            // Handle special server related functions
             switch (name)
             {
                 case "CreateInterface": { return CreateInterface(pipe_id, (string)args[0]).InterfaceId; }
@@ -255,8 +266,13 @@ namespace Server
                         Release();
                         return null;
                     }
+		case "ConnectPipeToUser":
+		    {
+			ConnectPipeToUser(pipe_id);
+			return null;
+		    }
                 default:
-                    Log.WriteLine("Method \"{0}\" is not defined for Interface -1", name);
+                    Log.WriteLine("Method \"{0}\" is not defined for Non-interface client function", name);
                     break;
             }
 
@@ -274,7 +290,7 @@ namespace Server
                 {
                     case "CreateClient":
                         {
-                            return CreateNewClient();
+                            return CreateNewClient(pipe_id);
                         }
                     case "CreateInterface":
                         {
@@ -282,14 +298,10 @@ namespace Server
                         }
                     case "NextCallback":
                         {
-                            if (PendingCallbacks.Count > 0)
-                            {
-                                return PendingCallbacks.Dequeue();
-                            }
-
-                            return null;
+			    return CallbackHandler.GetCallbackForPipe(pipe_id);
                         }
                 }
+		
                 return null;
             }
             else if (client_id == -1 && interface_id != -1)
@@ -307,7 +319,13 @@ namespace Server
                 return null;
             }
 
-            return ActiveClients[client_id].CallSerializedFunction(pipe_id, interface_id, name, args);
+	    if(!GetClient(client_id).ConnectedPipes.Contains(pipe_id))
+	    {
+		ClientLog.WriteLine("Pipe {0} is not connected to Client {1}", pipe_id, client_id);
+		return null;
+	    }
+
+            return GetClient(client_id).CallSerializedFunction(pipe_id, interface_id, name, args);
         }
     }
 }

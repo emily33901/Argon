@@ -56,6 +56,17 @@ namespace Client
             return c.Id;
         }
 
+	public void ConnectPipeToClient(int pipe_id)
+	{
+	    Server.ConnectPipeToClient(pipe_id, Id);
+	}
+
+	public bool HasPipeConnected(int pipe_id)
+	{
+	    // TODO: needs a server function
+	    return true;
+	}
+
         public static void ReleaseClient(int user, int pipe_id)
         {
             if (ActiveClients.TryGetValue(user, out var c))

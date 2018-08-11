@@ -5,6 +5,7 @@ using System.Text;
 
 namespace ArgonCore.IPC
 {
+
     [Serializable]
     public class InternalCallbackMsg
     {

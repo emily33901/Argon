@@ -34,6 +34,17 @@ namespace Client
             ClientPipe.CallSerializedFunction(pipe_id, f);
         }
 
+	public static void ConnectPipeToClient(int pipe_id, int client_id)
+	{
+	    ClientPipe.CallSerializedFunction(pipe_id, new SerializedFunction
+		    {
+			ClientId = client_id,
+			InterfaceId = -1,
+			Name = "ConnectPipeToClient",
+			Args = new object[] { },
+		    });
+	}
+
         /// <summary>
         /// Aks the server to create its instance for this interface
         /// </summary>
