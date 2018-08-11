@@ -15,8 +15,12 @@ namespace InterfaceClient
 
         public int CreateClientPipe(IntPtr _)
         {
-            Log.WriteLine("CreateClientPipe");
-            return ClientPipe.CreatePipe();
+            Log.WriteLine("CreateSteamPipe");
+            var new_pipe = ClientPipe.CreatePipe();
+
+            Client.Client.TryFindAppId(new_pipe);
+
+            return new_pipe;
         }
 
         public bool ReleaseClientPipe(IntPtr _, int pipe)
@@ -31,7 +35,7 @@ namespace InterfaceClient
             return 0;
         }
 
-        // TODO: Deal with global users
+        // TODO: Deal with global users (See ISteamClient017)
         public int ConnectToGlobalUser(IntPtr _, int pipe)
         {
             Log.WriteLine("ConnectToGlobalUser");
@@ -49,10 +53,12 @@ namespace InterfaceClient
             return user;
         }
 
-        public int CreatePipeToLocalUser(IntPtr _, int user, ref int pipe)
+        public void CreatePipeToLocalUser(IntPtr _, int user, ref int pipe)
         {
-            Log.WriteLine("CreatePipeToLocalUser is not implemented...");
-            return 0;
+	    if(pipe == 0) pipe = ClientPipe.CreatePipe();
+
+	    var c = Client.Client.GetClient(user);
+	    c.ConnectPipeToClient(pipe);
         }
 
         public void ReleaseUser(IntPtr _, int user, int pipe)
