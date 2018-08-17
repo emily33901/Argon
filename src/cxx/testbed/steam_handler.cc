@@ -38,9 +38,8 @@ void steam::handle_callback(const CallbackMsg_t &c) {
         }
     }
 
-    if (!handled)
-        printf("Unknown message from user %u: id: %d size: %u\n",
-               c.m_hSteamUser, c.m_iCallback, c.m_cubParam);
+    if (!handled) printf("Unknown message from user %u: id: %d size: %u\n",
+                         c.m_hSteamUser, c.m_iCallback, c.m_cubParam);
 }
 
 void steam::process_callbacks() {

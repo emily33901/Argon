@@ -30,20 +30,19 @@ namespace Server
         public static int RegisterAsyncJob<T>(AsyncJob<T> job, int callback_id, int user_id)
         where T : CallbackMsg
         {
-            var call_id = 0;
             lock (call_id_lock)
             {
-                call_id += 1;
-                registered_calls[call_id] = new AsyncJobResult()
+                last_call_id += 1;
+                registered_calls[last_call_id] = new AsyncJobResult()
                 {
-                    job_id = call_id,
+                    job_id = last_call_id,
                     internal_job_id = job.JobID,
                     finished = false,
                     result = null,
                 };
             }
 
-            return call_id;
+            return last_call_id;
         }
 
         public static AsyncJobResult GetAsyncJob(JobID id)

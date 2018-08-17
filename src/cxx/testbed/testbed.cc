@@ -103,11 +103,16 @@ bool run_tests() {
     int b = 3;
     int c = 10;
 
-    mapped_test->PointerTest(&a, &b, &c);
-    printf("PointerTest: Testing pointers across IPC\n");
-    printf("Input (3, 3, 10)\n");
-    printf("Expected (4, 5, 6) -> 15\n");
-    printf("Actual (%d, %d, %d) -> 15\n", a, b, c);
+    auto res = mapped_test->PointerTest(&a, &b, &c);
+
+    if (a == 4 && b == 5 && c == 6 && res == 15) {
+        printf("PointerTest succeeded\n");
+    } else {
+        printf("PointerTest failed\n");
+        printf("Expected 4, 5, 6, 15\n"
+               "Got %d, %d, %d, %d\n",
+               a, b, c, res);
+    }
 
     char buffer[1024];
     memset(buffer, 0, sizeof(buffer));
@@ -115,10 +120,14 @@ bool run_tests() {
 
     int bytes_wrote = mapped_test->BufferTest(buffer, 1024);
 
-    printf("BufferTest: Testing buffers across IPC\n");
-    printf("Input (\"OverrideMe\")\n");
-    printf("Expected: (\"13 characters\") -> 13\n");
-    printf("Actual (\"%s\") -> %d\n", buffer, bytes_wrote);
+    if (bytes_wrote == 13 && strcmp(buffer, "OverrideMe") == 0) {
+        printf("BufferTest succeeded\n");
+    } else {
+        printf("BufferTest failed\n");
+        printf("Expected '13 characters', 13\n"
+               "Got '%s', %d\n",
+               buffer, bytes_wrote);
+    }
 
     MappedTestStruct s;
     memset(&s, 0x11, sizeof(MappedTestStruct));
@@ -137,139 +146,15 @@ void login_to_steam() {
     char password[128];
 
     printf("Enter your username: ");
-    scanf("%s", username);
+    scanf("%128s", username);
 
     printf("Enter your password: ");
-    scanf("%s", password);
+    scanf("%128s", password);
 
     steam::user->LogOnWithPassword(username, password);
 }
 
-class ListenerRegister {
-public:
-    static ListenerRegister *head;
-    ListenerRegister *       next;
-
-    steam::CallbackListener listener;
-    int                     id;
-
-    ListenerRegister(int id, steam::CallbackListener l) : id(id), listener(l) {
-        next = head;
-        head = this;
-    }
-
-    static void register_all() {
-        for (auto l = head;
-             l != nullptr;
-             l = l->next) {
-            steam::add_listener(l->id, l->listener);
-        }
-    }
-};
-
-ListenerRegister *ListenerRegister::head = nullptr;
-
-#define listener(callback)                                                                                                   \
-    void             on_##callback(const callback *);                                                                        \
-    ListenerRegister register_##callback = ListenerRegister(callback::k_iCallback, (steam::CallbackListener)&on_##callback); \
-    void             on_##callback(const callback *cb)
-
-listener(SteamServerConnectFailure_t) {
-    auto result = cb->m_eResult;
-
-    printf("Failed to connect (%d)\n", result);
-
-    switch (result) {
-    case EResult::k_EResultAccountLoginDeniedNeedTwoFactor: {
-        printf("Account needs 2fa!\n");
-
-        char twofactor[128];
-
-        printf("Enter 2fa: ");
-        scanf("%s", twofactor);
-
-        steam::user->SetTwoFactorCode(twofactor);
-
-        steam::user->LogOn({});
-    } break;
-    case EResult::k_EResultNoConnection: {
-        printf("No connection...\n");
-        printf("Retrying in 5 seconds\n");
-        sleep(5);
-
-        // We already have login information stored LogOn will just reuse that
-        steam::user->LogOn({});
-    } break;
-    case EResult::k_EResultInvalidPassword: {
-        printf("Invalid username / password...\n");
-
-        login_to_steam();
-    } break;
-    default: {
-        printf("Unknown eresult!\n");
-    } break;
-    }
-}
-
-listener(SteamServersConnected_t) {
-    printf("Connected!\n");
-
-    printf("Setting state to online\n");
-    steam::client_friends->SetPersonaState(EPersonaState::k_EPersonaStateOnline);
-}
-
-listener(PersonaStateChange_t) {
-    auto user_id  = CSteamID(cb->m_ulSteamID);
-    auto user_acc = user_id.BIndividualAccount();
-
-    auto change = cb->m_nChangeFlags;
-
-    if (user_acc) {
-        printf("State change for user %s (%s)", user_id.Render(), steam::steam_friends->GetFriendPersonaName(user_id));
-    } else {
-        printf("State change for unknown %s", user_id.Render());
-    }
-
-    if (change & EPersonaChange::k_EPersonaChangeStatus) {
-        printf(" [state changed to %d]", steam::steam_friends->GetFriendPersonaState(user_id));
-    }
-    if (change & EPersonaChange::k_EPersonaChangeComeOnline) {
-        printf(" [Went offline]");
-    }
-    if (change & EPersonaChange::k_EPersonaChangeComeOnline) {
-        printf(" [Came online]");
-    }
-
-    printf("\n");
-}
-
-listener(FriendChatMsg_t) {
-    auto user_id = CSteamID(cb->m_ulSenderID);
-
-    printf("Message index is %d (%X)\n", cb->m_iChatID, cb->m_iChatID);
-    printf("Message is limited? %s\n", cb->m_bLimitedAccount ? "true" : "false");
-
-    // Ignore user is typing messages
-    if (cb->m_eChatEntryType == EChatEntryType::k_EChatEntryTypeTyping) {
-        printf("%s (%s) is typing (1)...\n", user_id.Render(), steam::steam_friends->GetFriendPersonaName(user_id));
-        return;
-    }
-
-    char message[2000];
-    memset(message, 0, sizeof(message));
-    EChatEntryType entry;
-
-    auto msg = steam::steam_friends->GetFriendMessage(user_id, cb->m_iChatID, message, sizeof(message), &entry);
-
-    if (entry == EChatEntryType::k_EChatEntryTypeTyping) {
-        printf("%s (%s) is typing (2)...\n", user_id.Render(), steam::steam_friends->GetFriendPersonaName(user_id));
-        return;
-    }
-
-    printf("Message from %s (%s) Length %d\n>>%s<<\n", user_id.Render(), steam::steam_friends->GetFriendPersonaName(user_id), msg, message);
-}
-
-#undef listener
+#include "listener.hh"
 
 int main(int argc, const char **argv) {
     if (!load_steam_dll()) {

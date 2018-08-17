@@ -49,9 +49,17 @@ namespace ArgonCore.Interface
                 }
 
                 // Create new delegates that are bounded to this instance
-                Log.WriteLine("Binding function {0}", mi.Name);
-                var new_delegate = Delegate.CreateDelegate(type, instance, mi, true);
-
+		Delegate new_delegate;
+		try
+		{
+		    new_delegate = Delegate.CreateDelegate(type, instance, mi, true);
+		}
+		catch(Exception e)
+		{
+		    Log.WriteLine("EXCEPTION whilst binding function {0}", mi.Name);
+		    throw e;
+		}
+		
                 new_delegates.Add(new_delegate);
             }
 
