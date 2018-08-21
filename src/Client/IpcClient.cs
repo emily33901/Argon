@@ -4,9 +4,9 @@ using System.Text;
 using System.Threading;
 
 using NamedPipeWrapper;
-using ArgonCore.IPC;
+using Core.IPC;
 
-using ArgonCore;
+using Core;
 
 namespace Client
 {
@@ -14,7 +14,7 @@ namespace Client
 
     public class ClientPipe
     {
-        static Logger Log { get; set; } = new Logger("IPC.ClientPipe");
+        Logger Log { get; set; }
 
         static uint TotalIpcCallCount { get; set; }
 
@@ -54,9 +54,12 @@ namespace Client
 
             ActivePipes.Add(this);
 
-            Log.WriteLine("[pipe {0}] Waiting for connection...", Id);
+            Log = new LoggerUid("IPC.ClientPipe", Id);
+
+
+            Log.WriteLine("Waiting for connection...");
             pipe.WaitForConnection();
-            Log.WriteLine("[pipe {0}] Connected...", Id);
+            Log.WriteLine("Connected...");
         }
 
         public static int CreatePipe()
