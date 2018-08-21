@@ -56,8 +56,9 @@ void steam::add_listener(int id, CallbackListener listener) {
 }
 
 void steam::remove_listener(CallbackListener listener) {
-    std::remove_if(callback_listeners.begin(), callback_listeners.end(),
-                   [listener](auto &x) -> bool { return x.second == listener; });
+    callback_listeners.erase(std::remove_if(callback_listeners.begin(), callback_listeners.end(),
+                                            [listener](auto &x) -> bool { return x.second == listener; }),
+                             callback_listeners.end());
 }
 
 // Stolen from open-steamworks

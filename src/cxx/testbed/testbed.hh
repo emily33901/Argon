@@ -1,11 +1,13 @@
 #pragma once
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <cassert>
 #include <cstdio>
 
 #ifdef _MSC_VER
 #include <Windows.h>
-void sleep(int seconds) {
+inline void sleep(int seconds) {
     return Sleep(seconds * 1000);
 }
 #else

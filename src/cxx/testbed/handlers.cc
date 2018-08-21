@@ -8,23 +8,27 @@
 listener(SteamServerConnectFailure_t) {
     auto result = cb->m_eResult;
 
-    printf("Failed to connect (%d)\n", result);
+    printf("Failed to Logon (Error code: %d)\n", result);
 
     switch (result) {
+        // Steamguard or twofactor needed (or if either of those are incorrect)
+    case EResult::k_EResultAccountLogonDenied:
+    case EResult::k_EResultTwoFactorCodeMismatch:
     case EResult::k_EResultAccountLoginDeniedNeedTwoFactor: {
-        printf("Account needs 2fa!\n");
+        printf("Account needs 2fa (or steamguard)!\n");
 
         char twofactor[128];
 
-        printf("Enter 2fa: ");
+        printf("Enter code: ");
         scanf("%128s", twofactor);
 
         steam::user->SetTwoFactorCode(twofactor);
 
         steam::user->LogOn({});
     } break;
+    case EResult::k_EResultRateLimitExceeded:
     case EResult::k_EResultNoConnection: {
-        printf("No connection...\n");
+        printf("No connection... / rate limit exceeded\n");
         printf("Retrying in 5 seconds\n");
         sleep(5);
 
@@ -32,7 +36,7 @@ listener(SteamServerConnectFailure_t) {
         steam::user->LogOn({});
     } break;
     case EResult::k_EResultInvalidPassword: {
-        printf("Invalid username / password...\n");
+        printf("Invalid username or password...\n");
 
         extern void login_to_steam();
         login_to_steam();
@@ -44,7 +48,7 @@ listener(SteamServerConnectFailure_t) {
 }
 
 listener(SteamServersConnected_t) {
-    printf("Connected!\n");
+    printf("Logged on successfully!\n");
 
     printf("Setting state to online\n");
     steam::client_friends->SetPersonaState(EPersonaState::k_EPersonaStateOnline);
@@ -65,11 +69,15 @@ listener(PersonaStateChange_t) {
     if (change & EPersonaChange::k_EPersonaChangeStatus) {
         printf(" [state changed to %d]", steam::steam_friends->GetFriendPersonaState(user_id));
     }
-    if (change & EPersonaChange::k_EPersonaChangeComeOnline) {
+    if (change & EPersonaChange::k_EPersonaChangeGoneOffline) {
         printf(" [Went offline]");
     }
     if (change & EPersonaChange::k_EPersonaChangeComeOnline) {
         printf(" [Came online]");
+    }
+
+    if (change & EPersonaChange::k_EPersonaChangeNickname) {
+        printf(" [Changed their nickname to '%s']", steam::steam_friends->GetPlayerNickname(user_id));
     }
 
     printf("\n");
@@ -79,7 +87,6 @@ listener(FriendChatMsg_t) {
     auto user_id = CSteamID(cb->m_ulSenderID);
 
     printf("Message index is %d (%X)\n", cb->m_iChatID, cb->m_iChatID);
-    printf("Message is limited? %s\n", cb->m_bLimitedAccount ? "true" : "false");
 
     // Ignore user is typing messages
     if (cb->m_eChatEntryType == EChatEntryType::k_EChatEntryTypeTyping) {
@@ -91,14 +98,14 @@ listener(FriendChatMsg_t) {
     memset(message, 0, sizeof(message));
     EChatEntryType entry;
 
-    auto msg = steam::steam_friends->GetFriendMessage(user_id, cb->m_iChatID, message, sizeof(message), &entry);
+    auto msg_length = steam::steam_friends->GetFriendMessage(user_id, cb->m_iChatID, message, sizeof(message), &entry);
 
     if (entry == EChatEntryType::k_EChatEntryTypeTyping) {
         printf("%s (%s) is typing (2)...\n", user_id.Render(), steam::steam_friends->GetFriendPersonaName(user_id));
         return;
     }
 
-    printf("Message from %s (%s) Length %d\n>>%s<<\n", user_id.Render(), steam::steam_friends->GetFriendPersonaName(user_id), msg, message);
+    printf("Message from %s (%s)\n>>%s<<\n", user_id.Render(), steam::steam_friends->GetFriendPersonaName(user_id), message);
 }
 
 #undef listener
