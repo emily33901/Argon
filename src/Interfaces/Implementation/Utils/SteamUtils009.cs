@@ -1,7 +1,7 @@
 ﻿using System;
 
-using ArgonCore;
-using ArgonCore.Interface;
+using Core;
+using Core.Interface;
 using Server;
 
 using System.Runtime.InteropServices;

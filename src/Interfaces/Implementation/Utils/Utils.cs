@@ -1,13 +1,11 @@
 using System;
 
-using ArgonCore;
-using ArgonCore.Interface;
-using ArgonCore.Server;
+using Core;
+using Core.Interface;
 
 using SteamKit2;
 
 using Server;
-using ArgonCore;
 
 namespace InterfaceUtils
 {

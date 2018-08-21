@@ -2,7 +2,7 @@ using System;
 
 using System.Runtime.InteropServices;
 
-using ArgonCore.Interface;
+using Core.Interface;
 
 namespace InterfaceFriends
 {
@@ -13,7 +13,7 @@ namespace InterfaceFriends
 
         public string GetPersonaName() => f.GetLocalName();
 
-        public void SetPeronaName(string name) => f.SetLocalName(name);
+        public void SetPersonaName(string name) => f.SetLocalName(name);
         public int SetPersonaNameEx(string name, bool send_cb) => f.SetLocalName(name);
 
         public bool IsPersonaNameSet() => f.GetLocalName() != null;

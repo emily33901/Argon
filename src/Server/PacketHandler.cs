@@ -5,7 +5,7 @@ using System.Text;
 
 using SteamKit2;
 
-using ArgonCore;
+using Core;
 
 namespace Server
 {
@@ -40,14 +40,14 @@ namespace Server
 
             //     job_result.finished = true;
 
-            //     var result_buffer = new ArgonCore.Util.Buffer();
+            //     var result_buffer = new Core.Util.Buffer();
             //     result_buffer.Write(job_result.job_id);
             //     result_buffer.Write(job_result.callback_id);
             //     result_buffer.Write(packet.GetData().Length);
             //     result_buffer.Write(packet.GetData());
 
             //     // TODO: Post callback to clients
-            //     Server.Client.PendingCallbacks.Enqueue(new ArgonCore.IPC.InternalCallbackMsg
+            //     Server.Client.PendingCallbacks.Enqueue(new Core.IPC.InternalCallbackMsg
             //     {
             //         callback_id = 703,
             //         user_id = -1,

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 
 using Client;
-using ArgonCore;
-using ArgonCore.Interface;
+using Core;
+using Core.Interface;
 
 namespace InterfaceClient
 {

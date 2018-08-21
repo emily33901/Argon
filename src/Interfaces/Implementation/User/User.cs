@@ -5,7 +5,7 @@ using System.Net;
 using System.Security.Cryptography;
 
 using Server;
-using ArgonCore.Extensions;
+using Core.Extensions;
 
 using SteamKit2;
 using SteamKit2.Internal;
@@ -142,7 +142,7 @@ namespace InterfaceUser
                     }
             }
 
-            var b = new ArgonCore.Util.Buffer();
+            var b = new Core.Util.Buffer();
             b.SetAlignment(4);
 
             b.Write((uint)cb.Result);
@@ -160,7 +160,7 @@ namespace InterfaceUser
             AccountFlags = cb.AccountFlags;
             public_ip = cb.PublicIP;
 
-            Instance.PostCallback(101, new ArgonCore.Util.Buffer());
+            Instance.PostCallback(101, new Core.Util.Buffer());
         }
 
         void OnLoggedOn(SteamUser.LoggedOnCallback cb)
@@ -365,7 +365,7 @@ namespace InterfaceUser
 
             // TODO: check whether server port / ip are valid
 
-            var b = new ArgonCore.Util.Buffer();
+            var b = new Core.Util.Buffer();
 
             // TODO: write a real game connect token in here
             if (game_connect_tokens.Count > 0)
@@ -405,7 +405,7 @@ namespace InterfaceUser
             Log.WriteLine("GetAuthSessionTicket for app_id {0}", app_id);
             var ownership_ticket = GetAppOwnershipTicket((uint)app_id);
 
-            var client_ticket_buffer = new ArgonCore.Util.Buffer();
+            var client_ticket_buffer = new Core.Util.Buffer();
 
             // Write the token into the ticket
             var token = GetGameConnectToken();
@@ -424,7 +424,7 @@ namespace InterfaceUser
             client_ticket_buffer.Write(ip_bytes);
 
             client_ticket_buffer.Write(Instance.SteamClient.LocalIP.GetAddressBytes());
-            client_ticket_buffer.Write(ArgonCore.Platform.MilisecondTime());
+            client_ticket_buffer.Write(Core.Platform.MilisecondTime());
             client_ticket_buffer.Write(++ticket_request_count);
 
             var client_ticket_crc = BitConverter.ToUInt32(CryptoHelper.CRCHash(client_ticket_buffer.GetBuffer()), 0);
@@ -445,7 +445,7 @@ namespace InterfaceUser
 
             // Create the ticket that will actually be sent to the server
 
-            var server_ticket_buffer = new ArgonCore.Util.Buffer();
+            var server_ticket_buffer = new Core.Util.Buffer();
 
             var size = 8 + client_ticket_buffer.GetBuffer().Length + 4 + ownership_ticket.Length;
 

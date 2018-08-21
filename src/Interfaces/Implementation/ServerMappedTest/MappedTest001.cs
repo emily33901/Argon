@@ -1,9 +1,9 @@
 ﻿using System;
 
-using ArgonCore.Interface;
-using ArgonCore.IPC;
+using Core.Interface;
+using Core.IPC;
 
-namespace InterfaceArgonCore
+namespace InterfaceCore
 {
     /// <summary>
     /// Series of tests for the mapping code
@@ -20,7 +20,7 @@ namespace InterfaceArgonCore
         }
 
         [Buffer(Index = 0, NewPointerIndex = 0, NewSizeIndex = 1)]
-        public int BufferTest(ref ArgonCore.Util.Buffer b)
+        public int BufferTest(ref Core.Util.Buffer b)
         {
             // Reset the buffer
             b.Reset();
@@ -34,7 +34,7 @@ namespace InterfaceArgonCore
         }
 
         [Buffer(Index = 0, NewPointerIndex = 0, NewSizeIndex = 1)]
-        public void StructTest(ref ArgonCore.Util.Buffer b)
+        public void StructTest(ref Core.Util.Buffer b)
         {
             b.Reset();
             b.SetAlignment(4);

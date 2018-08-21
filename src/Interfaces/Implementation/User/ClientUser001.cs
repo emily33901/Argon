@@ -1,7 +1,7 @@
 using System;
 
 using Server;
-using ArgonCore.Interface;
+using Core.Interface;
 
 namespace InterfaceUser
 {

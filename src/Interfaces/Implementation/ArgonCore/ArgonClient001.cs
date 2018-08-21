@@ -1,9 +1,9 @@
 ﻿using System;
 
-using ArgonCore.Interface;
-using ArgonCore.IPC;
+using Core.Interface;
+using Core.IPC;
 
-namespace InterfaceArgonCore
+namespace InterfaceCore
 {
     /// <summary>
     /// Exports Argon functions to unmanaged code
@@ -17,13 +17,13 @@ namespace InterfaceArgonCore
         /// <param name="name"></param>
         public IntPtr CreateInterface(IntPtr _, int pipe_id, string name)
         {
-            Console.WriteLine("ArgonCore001.CreateInterface({0})", name);
+            Console.WriteLine("Core001.CreateInterface({0})", name);
             return Client.Client.CreateInterfaceNoUser(pipe_id, name);
         }
 
         public IntPtr CreateInterfaceNoPipe(IntPtr _, string name)
         {
-            Console.WriteLine("ArgonCore001.CreateInterfaceNoPipe({0})", name);
+            Console.WriteLine("Core001.CreateInterfaceNoPipe({0})", name);
             return Client.Client.CreateInterfaceNoUserNoPipe(name);
         }
 

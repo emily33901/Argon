@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading;
 
 using NamedPipeWrapper;
-using ArgonCore.IPC;
-using ArgonCore;
+using Core.IPC;
+using Core;
 
 namespace Server
 {

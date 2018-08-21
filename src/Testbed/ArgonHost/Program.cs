@@ -2,7 +2,6 @@
 
 using System.Threading;
 
-using ArgonCore;
 using Server;
 
 namespace ArgonHost
@@ -37,6 +36,9 @@ namespace ArgonHost
             t.Join();
 
             ServerPipe.CurrentPipe.Stop();
+
+            Console.WriteLine("Done.");
+            Console.ReadKey();
         }
     }
 }

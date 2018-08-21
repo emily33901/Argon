@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 
 using Server;
-using ArgonCore;
+using Core;
 
 using SteamKit2;
 
@@ -104,10 +104,10 @@ namespace InterfaceFriends
 
             room.Messages.Add(new ChatMessage { Message = cb.Message, Sender = cb.Sender, Type = cb.EntryType });
 
-	    // TODO: Thread safety
+            // TODO: Thread safety
             var message_index = room.Messages.Count - 1;
 
-            var b = new ArgonCore.Util.Buffer();
+            var b = new Core.Util.Buffer();
             b.SetAlignment(4);
 
             b.WriteULong(cb.Sender);
@@ -122,8 +122,6 @@ namespace InterfaceFriends
 
         void OnChatMessage(SteamFriends.ChatMsgCallback cb)
         {
-            Log.WriteLine("Chat message recieved...");
-
             var room = ChatRoom.Active.FindOrCreate(cb.ChatRoomID);
 
             room.Messages.Add(new ChatMessage { Message = cb.Message, Sender = cb.ChatterID, Type = cb.ChatMsgType });
@@ -147,8 +145,8 @@ namespace InterfaceFriends
 
         public void OnPersonaState(SteamFriends.PersonaStateCallback cb)
         {
-            ArgonCore.Util.Buffer b = new ArgonCore.Util.Buffer();
-	    b.SetAlignment(4);
+            Core.Util.Buffer b = new Core.Util.Buffer();
+            b.SetAlignment(4);
 
             b.WriteULong(cb.FriendID);
             b.WriteUInt((uint)cb.StatusFlags);

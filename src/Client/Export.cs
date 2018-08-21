@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-using ArgonCore.Interface;
+using Core.Interface;
 
 namespace Client
 {
@@ -13,10 +13,10 @@ namespace Client
         /// Called by the runtime bootstrap in order to get access to argon
         /// </summary>
         /// <returns></returns>
-        public static IntPtr RecieveArgonCore()
+        public static IntPtr RecieveCore()
         {
             // Create an argon core interface
-            Console.WriteLine("RecieveArgonCore");
+            Console.WriteLine("RecieveCore");
             Loader.Load();
             var (argon_core, _, _) = Context.CreateInterface("ArgonClient001");
 

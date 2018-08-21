@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ArgonCore\Core.csproj" />
+    <ProjectReference Include="..\..\Core\Core.csproj" />
     <ProjectReference Include="..\..\Interfaces\Implementation\InterfaceImpl.csproj" />
   </ItemGroup>
 

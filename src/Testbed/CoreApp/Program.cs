@@ -7,7 +7,7 @@ using System.Threading;
 using System.IO;
 
 using Newtonsoft.Json;
-using ArgonCore;
+using Core;
 using Client;
 
 namespace testbed
@@ -60,7 +60,7 @@ namespace testbed
 
             while (!Console.KeyAvailable)
             {
-                ArgonCore.IPC.CallbackMsg? callback;
+                Core.IPC.CallbackMsg? callback;
 
                 do
                 {

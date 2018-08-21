@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using ArgonCore;
+using Core;
 
 namespace DelegateGenerator
 {
@@ -25,12 +25,12 @@ namespace DelegateGenerator
                 // stored in the form (type, name)
                 public List<(Type, string)> args;
 
-                public List<ArgonCore.Interface.BufferAttribute> buffers;
+                public List<Core.Interface.BufferAttribute> buffers;
 
                 public FunctionDefinition()
                 {
                     args = new List<(Type, string)>();
-                    buffers = new List<ArgonCore.Interface.BufferAttribute>();
+                    buffers = new List<Core.Interface.BufferAttribute>();
                 }
             }
 
@@ -123,13 +123,13 @@ namespace DelegateGenerator
         {
             InterfaceClasses = new List<FunctionClassDefinition>();
 
-            foreach (var a in ArgonCore.Interface.Loader.GetInterfaceAssemblies())
+            foreach (var a in Core.Interface.Loader.GetInterfaceAssemblies())
             {
                 foreach (var type in a.GetTypes())
                 {
-                    if (ArgonCore.Interface.Loader.IsInterfaceImpl(type))
+                    if (Core.Interface.Loader.IsInterfaceImpl(type))
                     {
-                        var impl_attribute = type.GetCustomAttribute<ArgonCore.Interface.ImplAttribute>();
+                        var impl_attribute = type.GetCustomAttribute<Core.Interface.ImplAttribute>();
 
                         var this_class = new FunctionClassDefinition
                         {
@@ -138,7 +138,7 @@ namespace DelegateGenerator
                             server_mapped = impl_attribute.ServerMapped,
                             declared_name = type.Name,
                         };
-                        var methods = ArgonCore.Interface.Loader.InterfaceMethodsForType(type);
+                        var methods = Core.Interface.Loader.InterfaceMethodsForType(type);
 
                         var new_functions = new List<FunctionClassDefinition.FunctionDefinition>();
                         foreach (var mi in methods)
@@ -156,17 +156,17 @@ namespace DelegateGenerator
 
                             foreach (var attribute in mi.GetCustomAttributes())
                             {
-                                if (attribute is ArgonCore.Interface.BufferAttribute)
+                                if (attribute is Core.Interface.BufferAttribute)
                                 {
-                                    var buffer_attribute = (ArgonCore.Interface.BufferAttribute)attribute;
+                                    var buffer_attribute = (Core.Interface.BufferAttribute)attribute;
 
                                     var (arg_t, _) = new_function.args[buffer_attribute.Index];
 
                                     // Check attribute lines up properly
                                     // These should only reference arguments that are of this type
-                                    if (GetCorrectTypeName(arg_t) != "ref ArgonCore.Util.Buffer")
+                                    if (GetCorrectTypeName(arg_t) != "ref Core.Util.Buffer")
                                     {
-                                        Console.WriteLine("Parameter at index {0} of function {1} of class {3} does not use ArgonCore.Util.Buffer (type was {2})",
+                                        Console.WriteLine("Parameter at index {0} of function {1} of class {3} does not use Core.Util.Buffer (type was {2})",
                                                           buffer_attribute.Index, new_function.name, GetCorrectTypeName(arg_t), new_function.name);
                                         throw new Exception();
                                     }
@@ -211,7 +211,7 @@ namespace {0}
     /// <summary>
     /// Exports the delegates for all interfaces that implement {1}
     /// </summary>
-    [ArgonCore.Interface.Delegate(Name = ""{1}"")]
+    [Core.Interface.Delegate(Name = ""{1}"")]
     class {1}_Delegates
     {{";
 
@@ -272,8 +272,8 @@ namespace {0}
     /// <summary>
     /// Implements the map for interface {1}
     /// </summary>
-    [ArgonCore.Interface.Map(Name = ""{1}"")]
-    public class {2}_Map : ArgonCore.Interface.IBaseInterfaceMap
+    [Core.Interface.Map(Name = ""{1}"")]
+    public class {2}_Map : Core.Interface.IBaseInterfaceMap
     {{";
 
             const string file_epilog =
@@ -330,14 +330,14 @@ namespace {0}
                         var (_, ptr_name) = computed_types[b.NewPointerIndex];
                         var (_, size_name) = computed_types[b.NewSizeIndex];
 
-                        new_file.AppendLine($"            var {name} = new ArgonCore.Util.Buffer();");
+                        new_file.AppendLine($"            var {name} = new Core.Util.Buffer();");
                         new_file.AppendLine($"            {name}.ReadFromPointer({ptr_name}, {size_name});");
                         new_file.AppendLine();
                     }
 
                     new_file.AppendLine(
                     $@"
-            var result = Client.ClientPipe.CallSerializedFunction(PipeId, new ArgonCore.IPC.SerializedFunction()
+            var result = Client.ClientPipe.CallSerializedFunction(PipeId, new Core.IPC.SerializedFunction()
             {{
                 ClientId = ClientId,
                 InterfaceId = InterfaceId,

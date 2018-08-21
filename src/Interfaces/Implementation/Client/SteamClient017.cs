@@ -6,12 +6,12 @@ using System.Runtime.InteropServices;
 using NamedPipeWrapper;
 
 using Client;
-using ArgonCore;
+using Core;
 
 namespace InterfaceClient
 {
-    [ArgonCore.Interface.Impl(Name = "SteamClient017", ServerMapped = false)]
-    public class SteamClient017 : ArgonCore.Interface.IBaseInterface
+    [Core.Interface.Impl(Name = "SteamClient017", ServerMapped = false)]
+    public class SteamClient017 : Core.Interface.IBaseInterface
     {
         static Logger Log { get; set; } = new Logger("SteamClient.Client017");
 

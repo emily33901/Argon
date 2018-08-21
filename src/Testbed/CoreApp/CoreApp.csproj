@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ArgonCore\Core.csproj" />
+    <ProjectReference Include="..\..\Core\Core.csproj" />
     <ProjectReference Include="..\..\Interfaces\Implementation\InterfaceImpl.csproj" />
     <ProjectReference Include="..\..\Server\Server.csproj" />
   </ItemGroup>

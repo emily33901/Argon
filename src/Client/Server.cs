@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-using ArgonCore.IPC;
+using Core.IPC;
 
 namespace Client
 {

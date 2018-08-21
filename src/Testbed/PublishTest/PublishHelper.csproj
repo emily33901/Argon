@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ArgonCore\Core.csproj" />
+    <ProjectReference Include="..\..\Core\Core.csproj" />
     <ProjectReference Include="..\..\Client\Client.csproj" />
     <ProjectReference Include="..\..\Interfaces\Implementation\InterfaceImpl.csproj" />
     <ProjectReference Include="..\..\Interfaces\InterfaceDelegates\InterfaceDelegates.csproj" />

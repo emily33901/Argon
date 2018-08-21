@@ -2,7 +2,7 @@
 
 using System.Runtime.InteropServices;
 
-using ArgonCore.Interface;
+using Core.Interface;
 
 namespace InterfaceFriends
 {
@@ -117,7 +117,7 @@ namespace InterfaceFriends
 
         // Real sig is int GetChatMessage(u64, i32, void *, i32, u32 *)
         [Buffer(Index = 2, NewPointerIndex = 2, NewSizeIndex = 3)]
-        public int GetChatMessage(ulong steam_id, int msg_index, ref ArgonCore.Util.Buffer b, ref uint msg_type)
+        public int GetChatMessage(ulong steam_id, int msg_index, ref Core.Util.Buffer b, ref uint msg_type)
         {
             var id = new SteamKit2.SteamID(steam_id);
             var cm = f.GetChatMessage(id, msg_index);
