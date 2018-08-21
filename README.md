@@ -28,7 +28,7 @@ The `steamclient` project bootstraps the `ArgonCore` project and then through th
 
  - [ ] Send callbacks to client
  - - [x] Send data
- - - [ ] Replicate to all pipes
+ - - [x] Replicate to all pipes
  
  - [ ] "Async call" manager
  
