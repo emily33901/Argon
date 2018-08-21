@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace ArgonCore.IPC
+namespace Core.IPC
 {
 
     [Serializable]
@@ -17,6 +17,7 @@ namespace ArgonCore.IPC
     /// <summary>
     /// Similar to CallbackMsg_t from steamclient
     /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct CallbackMsg
     {
         public int user_id;

@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 using System.IO;
 using System.Xml.Serialization;
 
-namespace ArgonCore.Server.Config
+namespace Core.Config
 {
     // Represents a CConfigStore
     // Configstore is usually mirrored to server in some form

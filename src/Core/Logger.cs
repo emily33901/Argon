@@ -4,7 +4,7 @@ using System.Threading;
 using System.IO;
 using System.Text;
 
-namespace ArgonCore
+namespace Core
 {
     public class Logger
     {
@@ -22,7 +22,7 @@ namespace ArgonCore
 
         public virtual string FormatLogFormat(string format)
         {
-            return String.Format("{0}:: {1}", section, format);
+            return String.Format("[{0}] {1}", section, format);
         }
 
         public void WriteLine(string format, params object[] args)
@@ -57,7 +57,7 @@ namespace ArgonCore
 
         public override string FormatLogFormat(string format)
         {
-            return String.Format("{0}[{1}]:: {2}", section, uid, format);
+            return String.Format("[{0}[{1}]] {2}", section, uid, format);
         }
     }
 }

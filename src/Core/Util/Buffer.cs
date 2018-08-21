@@ -4,7 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace ArgonCore.Util
+namespace Core.Util
 {
     [Serializable]
     public class Buffer : ISerializable

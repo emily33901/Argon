@@ -2,7 +2,7 @@ using System;
 
 using SteamKit2;
 
-namespace ArgonCore.Extensions
+namespace Core.Extensions
 {
     public static class EResultExtensions
     {

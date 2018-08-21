@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ArgonCore.Interface
+namespace Core.Interface
 {
     /// <summary>
-    /// Used to signal to <see cref="Loader"/> that this class is used for interface delegates
+    /// Used to signal to <see cref="Loader"/> that this class is used for interface implementations
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
-    public class DelegateAttribute : Attribute
+    public class ImplAttribute : Attribute
     {
         /// <summary>
-        /// General name of the interfaces that use these delegates
+        /// Name that this interface wants to be exported as
         /// </summary>
         public string Name { get; set; }
+
+        public bool ServerMapped { get; set; }
     }
 }

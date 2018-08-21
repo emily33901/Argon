@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-using ArgonCore;
-using ArgonCore.Interface;
+using Core;
+using Core.Interface;
 
-namespace ArgonCore.Interface
+namespace Core.Interface
 {
     public class Context
     {
@@ -49,17 +49,17 @@ namespace ArgonCore.Interface
                 }
 
                 // Create new delegates that are bounded to this instance
-		Delegate new_delegate;
-		try
-		{
-		    new_delegate = Delegate.CreateDelegate(type, instance, mi, true);
-		}
-		catch(Exception e)
-		{
-		    Log.WriteLine("EXCEPTION whilst binding function {0}", mi.Name);
-		    throw e;
-		}
-		
+                Delegate new_delegate;
+                try
+                {
+                    new_delegate = Delegate.CreateDelegate(type, instance, mi, true);
+                }
+                catch (Exception e)
+                {
+                    Log.WriteLine("EXCEPTION whilst binding function {0}", mi.Name);
+                    throw e;
+                }
+
                 new_delegates.Add(new_delegate);
             }
 
@@ -209,6 +209,10 @@ namespace ArgonCore.Interface
         /// <returns></returns>
         public static (IntPtr, IBaseInterface, bool) CreateInterface(string name, bool try_create_map = false)
         {
+            // TODO: this really should "try" create map this should fail if it cant find a map and we want a map
+            // Otherwise we are going to get unexpected behaviour
+            // But then again some createinterfaces dont know whether they are going to be a map or not so...
+
             // Ensure that we are loaded before trying to query loaded plugins
             Loader.Load();
 

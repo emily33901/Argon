@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace ArgonCore.Interface
+namespace Core.Interface
 {
     /// <summary>
     /// Creates interfaces from their respective dlls on disk

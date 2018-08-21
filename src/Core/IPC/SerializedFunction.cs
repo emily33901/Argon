@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ArgonCore.IPC
+namespace Core.IPC
 {
     /// <summary>
     /// Represents a job sent by the client to be completed on the server

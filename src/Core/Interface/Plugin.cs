@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace ArgonCore.Interface
+namespace Core.Interface
 {
     public class Plugin
     {

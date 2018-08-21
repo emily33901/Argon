@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using NamedPipeWrapper;
 
-namespace ArgonCore.Interface
+namespace Core.Interface
 {
     /// <summary>
     /// Interface that all interface implementations must inherit from
