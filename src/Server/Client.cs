@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-using ArgonCore;
-using ArgonCore.Interface;
-using ArgonCore.IPC;
+using Core;
+using Core.Interface;
+using Core.IPC;
 using SteamKit2;
 
 namespace Server
@@ -22,9 +22,9 @@ namespace Server
         // This maps the real serverside pipeid to its appid
         public static Dictionary<int, int> PipeAppId { get; set; } = new Dictionary<int, int>();
 
-	// Pipes that are connected to this user
-	public HashSet<int> ConnectedPipes{ get; private set; }
-	
+        // Pipes that are connected to this user
+        public HashSet<int> ConnectedPipes { get; private set; }
+
         // Used for internal handling of clients
         public int Id { get; private set; }
 
@@ -49,7 +49,7 @@ namespace Server
         Client()
         {
             interfaces = new List<IBaseInterface>();
-	    ConnectedPipes = new HashSet<int>();
+            ConnectedPipes = new HashSet<int>();
 
             Loader.Load();
 
@@ -62,48 +62,48 @@ namespace Server
 
                 Log = new LoggerUid("Server.Client", Id);
 
-		InitSteam();
-	    }
+                InitSteam();
+            }
         }
 
-	public void InitSteam()
-	{
-	    // create our steamclient instance
-	    SteamClient = new SteamClient();
+        public void InitSteam()
+        {
+            // create our steamclient instance
+            SteamClient = new SteamClient();
 
-	    // create the callback manager which will route callbacks to function calls
-	    CallbackManager = new CallbackManager(SteamClient);
+            // create the callback manager which will route callbacks to function calls
+            CallbackManager = new CallbackManager(SteamClient);
 
-	    // Setup our packet handler for all packets
-	    SteamClient.AddHandler(new PacketHandler(this));
+            // Setup our packet handler for all packets
+            SteamClient.AddHandler(new PacketHandler(this));
 
-	    // Subscribe to some important callbacks
-	    CallbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnect);
-	    CallbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnect);
+            // Subscribe to some important callbacks
+            CallbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnect);
+            CallbackManager.Subscribe<SteamClient.DisconnectedCallback>(OnDisconnect);
 
-	    // Automatically try to connect...
-	    Connect();
+            // Automatically try to connect...
+            Connect();
 
-	    Log.WriteLine("Initialising modules");
+            Log.WriteLine("Initialising modules");
 
-	    // Initialise modules (These need to be created now as otherwise we wont be
-	    // subscribed to callbacks for those classes)
+            // Initialise modules (These need to be created now as otherwise we wont be
+            // subscribed to callbacks for those classes)
 
-	    foreach(var a in Loader.GetInterfaceAssemblies())
-	    {
-		var subclasses = ArgonCore.Util.Types.FindSubClassesOfGeneric(typeof(ClientTied<>), a);
-		foreach(var c in subclasses)
-		{
-		    Log.WriteLine("Found class {0}", c.FullName);
+            foreach (var a in Loader.GetInterfaceAssemblies())
+            {
+                var subclasses = Core.Util.Types.FindSubClassesOfGeneric(typeof(ClientTied<>), a);
+                foreach (var c in subclasses)
+                {
+                    Log.WriteLine("Found class {0}", c.FullName);
 
-		    var find_or_create = c.BaseType.GetMethod("FindOrCreate");
-		    
-		    find_or_create.Invoke(null, new object[] {Id});
-		}
-	    }
+                    var find_or_create = c.BaseType.GetMethod("FindOrCreate");
 
-	    Log.WriteLine("Modules inited successfully");
-	}
+                    find_or_create.Invoke(null, new object[] { Id });
+                }
+            }
+
+            Log.WriteLine("Modules inited successfully");
+        }
 
         public static int CreateNewClient()
         {
@@ -111,19 +111,19 @@ namespace Server
             return c.Id;
         }
 
-	public static int CreateNewClient(int pipe_id)
-	{
-	    var id = CreateNewClient();
-	    GetClient(id).ConnectPipeToUser(pipe_id);
+        public static int CreateNewClient(int pipe_id)
+        {
+            var id = CreateNewClient();
+            GetClient(id).ConnectPipeToUser(pipe_id);
 
-	    return id;
-	}
-	
-	public void ConnectPipeToUser(int pipe_id)
-	{
-	    ConnectedPipes.Add(pipe_id);
-	}
-	
+            return id;
+        }
+
+        public void ConnectPipeToUser(int pipe_id)
+        {
+            ConnectedPipes.Add(pipe_id);
+        }
+
         public void Release()
         {
             Disconnect();
@@ -136,7 +136,7 @@ namespace Server
 
         public static Client GetClient(int id)
         {
-	    return ActiveClients[id];
+            return ActiveClients[id];
         }
 
         public IBaseInterface CreateInterface(int pipe_id, string name)
@@ -216,9 +216,9 @@ namespace Server
         {
             Log.WriteLine("Disconnected (User Initiated: {0})", cb.UserInitiated);
 
-	    // TOOD: SteamClientDisconnected callbacks are only sent
-	    // elsewhere for login failure and not for steam connection failure
-	    // which we should probably handle here
+            // TOOD: SteamClientDisconnected callbacks are only sent
+            // elsewhere for login failure and not for steam connection failure
+            // which we should probably handle here
 
             Connected = false;
 
@@ -226,14 +226,14 @@ namespace Server
             Connect();
         }
 
-	public void PostCallback(int callback_id, ArgonCore.Util.Buffer b)
-	{
-	    // TODO: we probably need a lock here to be threadsafe
-	    foreach(var p in ConnectedPipes)
-	    {
-		CallbackHandler.PostCallback(p, Id, callback_id, b);
-	    }
-	}
+        public void PostCallback(int callback_id, Core.Util.Buffer b)
+        {
+            // TODO: we probably need a lock here to be threadsafe
+            foreach (var p in ConnectedPipes)
+            {
+                CallbackHandler.PostCallback(p, Id, callback_id, b);
+            }
+        }
 
         object CallSerializedFunction(int pipe_id, int interface_id, string name, object[] args)
         {
@@ -266,11 +266,11 @@ namespace Server
                         Release();
                         return null;
                     }
-		case "ConnectPipeToUser":
-		    {
-			ConnectPipeToUser(pipe_id);
-			return null;
-		    }
+                case "ConnectPipeToUser":
+                    {
+                        ConnectPipeToUser(pipe_id);
+                        return null;
+                    }
                 default:
                     Log.WriteLine("Method \"{0}\" is not defined for Non-interface client function", name);
                     break;
@@ -298,10 +298,10 @@ namespace Server
                         }
                     case "NextCallback":
                         {
-			    return CallbackHandler.GetCallbackForPipe(pipe_id);
+                            return CallbackHandler.GetCallbackForPipe(pipe_id);
                         }
                 }
-		
+
                 return null;
             }
             else if (client_id == -1 && interface_id != -1)
@@ -319,11 +319,11 @@ namespace Server
                 return null;
             }
 
-	    if(!GetClient(client_id).ConnectedPipes.Contains(pipe_id))
-	    {
-		ClientLog.WriteLine("Pipe {0} is not connected to Client {1}", pipe_id, client_id);
-		return null;
-	    }
+            if (!GetClient(client_id).ConnectedPipes.Contains(pipe_id))
+            {
+                ClientLog.WriteLine("Pipe {0} is not connected to Client {1}", pipe_id, client_id);
+                return null;
+            }
 
             return GetClient(client_id).CallSerializedFunction(pipe_id, interface_id, name, args);
         }

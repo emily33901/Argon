@@ -4,9 +4,9 @@ using System.Text;
 using System.IO;
 using System.Runtime.InteropServices;
 
-using ArgonCore;
-using ArgonCore.Interface;
-using ArgonCore.IPC;
+using Core;
+using Core.Interface;
+using Core.IPC;
 
 namespace Client
 {
@@ -56,16 +56,16 @@ namespace Client
             return c.Id;
         }
 
-	public void ConnectPipeToClient(int pipe_id)
-	{
-	    Server.ConnectPipeToClient(pipe_id, Id);
-	}
+        public void ConnectPipeToClient(int pipe_id)
+        {
+            Server.ConnectPipeToClient(pipe_id, Id);
+        }
 
-	public bool HasPipeConnected(int pipe_id)
-	{
-	    // TODO: needs a server function
-	    return true;
-	}
+        public bool HasPipeConnected(int pipe_id)
+        {
+            // TODO: needs a server function
+            return true;
+        }
 
         public static void ReleaseClient(int user, int pipe_id)
         {
@@ -111,6 +111,12 @@ namespace Client
 
             if (context == IntPtr.Zero) return IntPtr.Zero;
 
+            if (!is_map)
+            {
+                Log.WriteLine("Context.CreateInterface didnt create map (is_map expected to be true)");
+                return IntPtr.Zero;
+            }
+
             iface.ClientId = Id;
             iface.InterfaceId = -1;
 
@@ -119,7 +125,6 @@ namespace Client
                 iface.InterfaceId = Server.CreateInterface(pipe_id, Id, name);
 
                 var map = (IBaseInterfaceMap)iface;
-
                 map.PipeId = pipe_id;
             }
 
@@ -179,7 +184,7 @@ namespace Client
             var c = Server.NextCallback(pipe_id);
 
             // No new callback from server
-            if (c == default(InternalCallbackMsg)) return null;
+            if (c == null) return null;
 
             bool found = CallbackAllocHandles.TryGetValue(pipe_id, out IntPtr current_value);
 
