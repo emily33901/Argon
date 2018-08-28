@@ -13,10 +13,10 @@ namespace Client
         /// Called by the runtime bootstrap in order to get access to argon
         /// </summary>
         /// <returns></returns>
-        public static IntPtr RecieveCore()
+        public static IntPtr RecieveArgonCore()
         {
             // Create an argon core interface
-            Console.WriteLine("RecieveCore");
+            Console.WriteLine("RecieveArgonCore");
             Loader.Load();
             var (argon_core, _, _) = Context.CreateInterface("ArgonClient001");
 

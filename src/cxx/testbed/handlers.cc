@@ -80,6 +80,14 @@ listener(PersonaStateChange_t) {
         printf(" [Changed their nickname to '%s']", steam::steam_friends->GetPlayerNickname(user_id));
     }
 
+    if (change & EPersonaChange::k_EPersonaChangeJoinedSource) {
+        printf(" [Joined source]");
+    }
+
+    if (change & EPersonaChange::k_EPersonaChangeLeftSource) {
+        printf(" [Left source]");
+    }
+
     printf("\n");
 }
 
@@ -100,6 +108,7 @@ listener(FriendChatMsg_t) {
 
     auto msg_length = steam::steam_friends->GetFriendMessage(user_id, cb->m_iChatID, message, sizeof(message), &entry);
 
+    // This should not be reached!
     if (entry == EChatEntryType::k_EChatEntryTypeTyping) {
         printf("%s (%s) is typing (2)...\n", user_id.Render(), steam::steam_friends->GetFriendPersonaName(user_id));
         return;

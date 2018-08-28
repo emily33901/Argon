@@ -30,6 +30,7 @@ namespace InterfaceFriends
         {
             steam_friends = Instance.SteamClient.GetHandler<SteamFriends>();
             Instance.CallbackManager.Subscribe<SteamFriends.ChatMsgCallback>(cb => OnChatMessage(cb));
+            Instance.CallbackManager.Subscribe<SteamFriends.ChatEnterCallback>(cb => OnChatEnter(cb));
             Instance.CallbackManager.Subscribe<SteamFriends.PersonaStateCallback>(cb => OnPersonaState(cb));
             Instance.CallbackManager.Subscribe<SteamFriends.FriendMsgCallback>(cb => OnFriendMessage(cb));
         }
@@ -122,9 +123,16 @@ namespace InterfaceFriends
 
         void OnChatMessage(SteamFriends.ChatMsgCallback cb)
         {
+            Log.WriteLine("OnChatMessage {0}", cb.ChatRoomID);
+
             var room = ChatRoom.Active.FindOrCreate(cb.ChatRoomID);
 
             room.Messages.Add(new ChatMessage { Message = cb.Message, Sender = cb.ChatterID, Type = cb.ChatMsgType });
+        }
+
+        void OnChatEnter(SteamFriends.ChatEnterCallback cb)
+        {
+            Log.WriteLine("OnChatEnter {0} {1} {2}", cb.ChatID.Render(), cb.ClanID.Render(), cb.FriendID.Render());
         }
 
         public ChatMessage GetChatMessage(SteamID s, int id)

@@ -60,27 +60,15 @@ namespace Server
         }
         public static bool IsCallFinished(int handle)
         {
-	    if (registered_calls.TryGetValue(handle, out var v))
-		return v.finished;
-	    
-	    return false;
+            return registered_calls.TryGetValue(handle, out var v) ? v.finished : false;
         }
         public static byte[] GetCallResult(int handle)
         {
-	    if (registered_calls.TryGetValue(handle, out var v))
-	    {
-		if (v.finished) return v.result;
-	    }
-	    
-	    return null;
+            return registered_calls.TryGetValue(handle, out var v) ? v.result : null;
         }
         public static bool IsHandleValid(int handle)
         {
-	    if (registered_calls.TryGetValue(handle, out var _))
-		return true;
-	    
-	    
-	    return false;
+            return registered_calls.TryGetValue(handle, out var _);
         }
     }
 }

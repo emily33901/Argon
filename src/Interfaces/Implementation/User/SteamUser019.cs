@@ -32,7 +32,7 @@ namespace InterfaceUser
         public ulong GetSteamID()
         {
             u.Log.WriteLine("GetSteamID");
-            return 0;
+            return u.SteamId;
         }
 
         public int InitiateGameConnection(IntPtr blob, uint blob_count, ulong gameserver_id, uint server_ip, ushort server_port, bool secure)
