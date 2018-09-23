@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Text;
 
 using SteamKit2;
 
 using Core;
+using Core.Extensions;
 
 namespace Server
 {
@@ -15,45 +15,57 @@ namespace Server
     /// </summary>
     public class PacketHandler : ClientMsgHandler
     {
-        public static Logger Log { get; set; } = new Logger("PacketHandler");
-        public Client client;
+        private Logger log;
+
+        private Dictionary<EMsg, List<Action<IPacketMsg>>> dispatch_map = new Dictionary<EMsg, List<Action<IPacketMsg>>>();
 
         public PacketHandler(Client c)
         {
-            client = c;
+            log = new LoggerUid("PacketHandler", c.Id);
         }
 
         public override void HandleMsg(IPacketMsg packet)
         {
-            Log.WriteLine("{0} [{1}] [{2}] -> [{3}]", packet.MsgType, (uint)packet.MsgType, packet.SourceJobID, packet.TargetJobID);
+            log.WriteLine("{0} [{1}] [{2}] -> [{3}]", packet.MsgType, (uint)packet.MsgType, packet.SourceJobID, packet.TargetJobID);
 
-            // TODO: none of this works due to a number of differences between the c++ and c# code
-            // All callbacks will need to be "manually" translated from c# to c++
-            // This could be made better with some custom member per member serialization
-            // and deserialization using functions and maps but other than that...
+            if (dispatch_map.TryGetValue(packet.MsgType, out var arr))
+            {
+                foreach (var cb in arr)
+                {
+                    cb(packet);
+                }
+            }
+        }
 
-            // var job_result = AsyncCallManager.GetAsyncJob(packet.TargetJobID);
+        public void Subscribe<T>(EMsg id, Action<ClientMsgProtobuf<T>> func)
+        where T : ProtoBuf.IExtensible, new()
+        {
+            Subscribe(id, new Action<IPacketMsg>(x =>
+            {
+                var msg = new ClientMsgProtobuf<T>(x);
+                func(msg);
+            }));
+        }
 
-            // if (job_result != null)
-            // {
-            //     Log.WriteLine("... Was AsyncCall, queuing callback now!");
+        public void Subscribe(EMsg id, Action<IPacketMsg> cb)
+        {
+            dispatch_map.FindOrCreate(id).Add(cb);
+            if (dispatch_map.TryGetValue(id, out var arr))
+            {
+                arr.Add(cb);
+                return;
+            }
 
-            //     job_result.finished = true;
+            dispatch_map[id] = new List<Action<IPacketMsg>>();
+            dispatch_map[id].Add(cb);
+        }
 
-            //     var result_buffer = new Core.Util.Buffer();
-            //     result_buffer.Write(job_result.job_id);
-            //     result_buffer.Write(job_result.callback_id);
-            //     result_buffer.Write(packet.GetData().Length);
-            //     result_buffer.Write(packet.GetData());
-
-            //     // TODO: Post callback to clients
-            //     Server.Client.PendingCallbacks.Enqueue(new Core.IPC.InternalCallbackMsg
-            //     {
-            //         callback_id = 703,
-            //         user_id = -1,
-            //         data = result_buffer.GetBuffer(),
-            //     });
-            // }
+        public void Unsubscribe(EMsg id, Action<IPacketMsg> cb)
+        {
+            if (dispatch_map.TryGetValue(id, out var arr))
+            {
+                arr.RemoveAll(x => (x == cb));
+            }
         }
     }
 }

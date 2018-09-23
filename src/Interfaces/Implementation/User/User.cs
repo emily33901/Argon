@@ -161,6 +161,11 @@ namespace InterfaceUser
             public_ip = cb.PublicIP;
 
             Instance.PostCallback(101, new Core.Util.Buffer());
+
+            // Tell steam that we are running the `nEw Ui`
+            Instance.SteamClient.Send(new ClientMsgProtobuf<CMsgClientUIMode>(EMsg.ClientCurrentUIMode) { Body = { chat_mode = 2 } });
+
+            GetAppOwnershipTicketAsync(7);
         }
 
         void OnLoggedOn(SteamUser.LoggedOnCallback cb)
@@ -316,11 +321,23 @@ namespace InterfaceUser
                 // Request an app ownership ticket from steam
                 var job = steam_apps.GetAppOwnershipTicket(app_id);
 
-                // Wait for the result
-                job.ToTask().Wait();
-
                 // Get the now stored ticket
                 return ownership_ticket_store[app_id];
+            }
+        }
+
+        public byte[] GetAppOwnershipTicketAsync(uint app_id)
+        {
+            if (ownership_ticket_store.TryGetValue(app_id, out var result))
+            {
+                return result;
+            }
+            else
+            {
+                // Request an app ownership ticket from steam
+                var job = steam_apps.GetAppOwnershipTicket(app_id);
+
+                return null;
             }
         }
 
@@ -328,8 +345,7 @@ namespace InterfaceUser
         public void OnGameConnectTokens(SteamApps.GameConnectTokensCallback cb)
         {
             Log.WriteLine("OnGameConnectTokens");
-            foreach (var tok in cb.Tokens)
-                game_connect_tokens.Add(tok);
+            game_connect_tokens.AddRange(cb.Tokens);
 
             while (game_connect_tokens.Count > cb.TokensToKeep)
                 game_connect_tokens.RemoveAt(0);

@@ -17,7 +17,7 @@ namespace Core.IPC
     /// <summary>
     /// Similar to CallbackMsg_t from steamclient
     /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public struct CallbackMsg
     {
         public int user_id;

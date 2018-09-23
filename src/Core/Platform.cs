@@ -30,5 +30,10 @@ namespace Core
         {
             return (DateTime.Now - LoadTime).Milliseconds;
         }
+
+        public static uint ToUnixTime(DateTime t)
+        {
+            return (uint)(new DateTimeOffset(t)).ToUnixTimeSeconds();
+        }
     }
 }

@@ -34,10 +34,11 @@ namespace Server
         // Steamkit helpers for this client
         public SteamClient SteamClient { get; private set; }
         public CallbackManager CallbackManager { get; set; }
+        public PacketHandler PacketHandler { get; set; }
 
         // Whether user is connected / running
-        public bool Running { get; private set; }
-        public bool Connected { get; private set; }
+        public bool Running { get; private set; } = false;
+        public bool Connected { get; private set; } = false;
 
         // Logging instance for this client
         static Logger ClientLog { get; set; } = new Logger("Server.Client");
@@ -75,7 +76,8 @@ namespace Server
             CallbackManager = new CallbackManager(SteamClient);
 
             // Setup our packet handler for all packets
-            SteamClient.AddHandler(new PacketHandler(this));
+            PacketHandler = new PacketHandler(this);
+            SteamClient.AddHandler(PacketHandler);
 
             // Subscribe to some important callbacks
             CallbackManager.Subscribe<SteamClient.ConnectedCallback>(OnConnect);
