@@ -289,6 +289,24 @@ namespace InterfaceFriends
                         break;
                 }
             }
+            else if (cb.ServiceName == "ChatRoom")
+            {
+                switch (cb.RpcName)
+                {
+                    default:
+                        Log.WriteLine("Unknown method `{0}` for service `{1}`", cb.RpcName, "ChatRoom");
+                        break;
+                }
+            }
+            else if (cb.ServiceName == "Chat")
+            {
+                switch (cb.RpcName)
+                {
+                    default:
+                        Log.WriteLine("Unknown method `{0}` for service `{1}`", cb.RpcName, "Chat");
+                        break;
+                }
+            }
 
         }
 
